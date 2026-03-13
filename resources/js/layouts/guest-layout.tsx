@@ -1,6 +1,6 @@
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
-import { LayoutDashboard, LogIn, UserPlus, Home, Package, ShoppingCart, Settings } from 'lucide-react';
+import { LayoutDashboard, LogIn, UserPlus, Home, Package, ShoppingCart, Settings, User, LogOut } from 'lucide-react';
 
 const navLinks = [
     { name: 'Home', icon: Home, href: '/' },
@@ -16,6 +16,9 @@ export default function GuestLayout({
     children: React.ReactNode;
     canRegister?: boolean;
 }) {
+    const { auth } = usePage().props as { auth?: { user?: { name?: string; email?: string } } };
+    const isLoggedIn = !!auth?.user;
+
     return (
         <div className="flex h-screen flex-col bg-transparent overflow-hidden">
             {/* SKILL.md Designed Navbar - Refined Minimalism */}
@@ -56,7 +59,7 @@ export default function GuestLayout({
                         </div>
                     </div>
                     
-                    {/* Navigation buttons */}
+                    {/* Navigation buttons - Desktop */}
                     <nav className="hidden md:flex items-center gap-2">
                         <Link href="/dashboard">
                             <Button variant="ghost" className="text-white/70 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/20 transition-all duration-300">
@@ -64,27 +67,55 @@ export default function GuestLayout({
                                 Dashboard
                             </Button>
                         </Link>
-                        <Link href="/login">
-                            <Button variant="ghost" className="text-white/70 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/20 transition-all duration-300">
-                                <LogIn className="mr-2 h-4 w-4" />
-                                Log in
-                            </Button>
-                        </Link>
-                        <Link href="/register">
-                            <Button className="bg-gradient-to-r from-white/20 to-white/10 hover:from-white/30 hover:to-white/20 text-white border border-white/20 hover:border-white/40 transition-all duration-300 backdrop-blur-sm">
-                                <UserPlus className="mr-2 h-4 w-4" />
-                                Register
-                            </Button>
-                        </Link>
+                        
+                        {isLoggedIn ? (
+                            <>
+                                {/* User profile button */}
+                                <Button variant="ghost" className="flex items-center gap-2 text-white hover:bg-white/10 border border-white/20 transition-all duration-300">
+                                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-white/30 to-white/10 border border-white/30 flex items-center justify-center">
+                                        <User className="h-4 w-4 text-white" />
+                                    </div>
+                                    <span className="text-sm font-medium">{auth.user?.name || 'User'}</span>
+                                </Button>
+                                <Link href="/logout">
+                                    <Button variant="ghost" className="text-white/70 hover:text-red-300 hover:bg-red-500/10 border border-transparent hover:border-red-500/30 transition-all duration-300">
+                                        <LogOut className="h-4 w-4" />
+                                    </Button>
+                                </Link>
+                            </>
+                        ) : (
+                            <>
+                                <Link href="/login">
+                                    <Button variant="ghost" className="text-white/70 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/20 transition-all duration-300">
+                                        <LogIn className="mr-2 h-4 w-4" />
+                                        Log in
+                                    </Button>
+                                </Link>
+                                <Link href="/register">
+                                    <Button className="bg-gradient-to-r from-white/20 to-white/10 hover:from-white/30 hover:to-white/20 text-white border border-white/20 hover:border-white/40 transition-all duration-300 backdrop-blur-sm">
+                                        <UserPlus className="mr-2 h-4 w-4" />
+                                        Register
+                                    </Button>
+                                </Link>
+                            </>
+                        )}
                     </nav>
                     
-                    {/* Mobile - Log in button only */}
+                    {/* Mobile - User icon or Log in button */}
                     <div className="flex md:hidden">
-                        <Link href="/login">
-                            <Button variant="ghost" className="text-white hover:bg-white/10 transition-all duration-300">
-                                <LogIn className="h-5 w-5" />
-                            </Button>
-                        </Link>
+                        {isLoggedIn ? (
+                            <Link href="/profile">
+                                <Button variant="ghost" className="text-white hover:bg-white/10 transition-all duration-300">
+                                    <User className="h-5 w-5" />
+                                </Button>
+                            </Link>
+                        ) : (
+                            <Link href="/login">
+                                <Button variant="ghost" className="text-white hover:bg-white/10 transition-all duration-300">
+                                    <LogIn className="h-5 w-5" />
+                                </Button>
+                            </Link>
+                        )}
                     </div>
                 </div>
             </header>
