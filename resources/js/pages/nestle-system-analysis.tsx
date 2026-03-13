@@ -36,17 +36,17 @@ export default function NestleSystemAnalysis({
     return (
         <GuestLayout canRegister={canRegister}>
             <Head title="Nestlé System Analysis" />
-            <div className="flex flex-col gap-6">
-                
+            <div className="flex flex-col gap-6 px-4 md:px-8 lg:px-16">
+            
 
                 {/* Layout Structure */}
-                <div className="grid gap-4 md:grid-cols-3">
+                <div className="grid gap-4 md:grid-cols-3 mt-8">
                     {layoutSections.map((section) => (
                         <div
                             key={section.area}
-                            className="flex flex-col items-center rounded-xl p-6 text-center shadow-lg backdrop-blur-sm bg-background/40 border border-white/10"
+                            className="flex flex-col items-center rounded-xl p-4 text-center shadow-lg backdrop-blur-sm bg-background/40 border border-white/10"
                         >
-                            <section.icon className="mb-2 h-8 w-8 text-primary" />
+                            <section.icon className="mb-2 h-6 w-6 text-primary" />
                             <Badge className="mb-2" variant="outline">
                                 {section.percentage}
                             </Badge>
