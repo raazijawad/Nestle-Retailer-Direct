@@ -1,0 +1,81 @@
+import { Link } from '@inertiajs/react';
+import { Button } from '@/components/ui/button';
+import { LayoutDashboard, LogIn, UserPlus, Home, Package, ShoppingCart, Percent, Settings } from 'lucide-react';
+
+const navLinks = [
+    { name: 'Home', icon: Home, href: '/' },
+    { name: 'Orders', icon: ShoppingCart, href: '/dashboard' },
+    { name: 'Inventory', icon: Package, href: '/dashboard' },
+    { name: 'Promotions', icon: Percent, href: '/dashboard' },
+    { name: 'Settings', icon: Settings, href: '/dashboard' },
+];
+
+export default function GuestLayout({
+    children,
+    canRegister = true,
+}: {
+    children: React.ReactNode;
+    canRegister?: boolean;
+}) {
+    return (
+        <div className="flex min-h-screen flex-col">
+            {/* Top Navigation */}
+            <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+                <div className="container flex h-14 items-center justify-between px-4">
+                    <div className="flex items-center gap-2">
+                        <LayoutDashboard className="h-6 w-6" />
+                        <span className="font-bold">Nestlé Retailer Direct</span>
+                    </div>
+                    <nav className="flex items-center gap-2">
+                        <Link href="/dashboard">
+                            <Button variant="ghost" size="sm">
+                                <LayoutDashboard className="mr-2 h-4 w-4" />
+                                Dashboard
+                            </Button>
+                        </Link>
+                        <Link href="/login">
+                            <Button variant="ghost" size="sm">
+                                <LogIn className="mr-2 h-4 w-4" />
+                                Log in
+                            </Button>
+                        </Link>
+                        {canRegister && (
+                            <Link href="/register">
+                                <Button size="sm">
+                                    <UserPlus className="mr-2 h-4 w-4" />
+                                    Register
+                                </Button>
+                            </Link>
+                        )}
+                    </nav>
+                </div>
+            </header>
+
+            
+
+            {/* Main Content */}
+            <main className="flex-1 container py-6">{children}</main>
+
+            {/* Footer */}
+            <footer className="border-t py-6">
+                <div className="container px-4">
+                    <div className="flex items-center justify-between">
+                        
+                        <div className="flex items-center gap-6">
+                            {navLinks.map((link) => (
+                                <Link
+                                    key={link.name}
+                                    href={link.href}
+                                    className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                                >
+                                    <link.icon className="h-4 w-4" />
+                                    {link.name}
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    );
+}
