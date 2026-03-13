@@ -1,6 +1,5 @@
 import { Head } from '@inertiajs/react';
 import GuestLayout from '@/layouts/guest-layout';
-import { Badge } from '@/components/ui/badge';
 import {
     ShoppingCart,
     Package,
@@ -10,20 +9,14 @@ import {
 const layoutSections = [
     {
         area: 'One-Tap Reorder',
-        percentage: '20%',
-        content: 'Quick-action widget with last 3 orders and "Reorder" button',
         icon: ShoppingCart,
     },
     {
         area: 'Inventory Snapshots',
-        percentage: '10%',
-        content: 'Mini-table showing top 5 moving items and stock levels',
         icon: Package,
     },
     {
         area: 'My Orders',
-        percentage: '70%',
-        content: 'Summary list of active orders with status trackers',
         icon: Clock,
     },
 ];
@@ -44,18 +37,25 @@ export default function NestleSystemAnalysis({
                     {layoutSections.map((section) => (
                         <div
                             key={section.area}
-                            className="flex flex-col items-center rounded-xl p-4 text-center shadow-lg backdrop-blur-sm bg-white/90 border border-white/50 dark:bg-white/10"
+                            className="flex flex-col items-center rounded-xl p-6 text-center shadow-lg backdrop-blur-sm bg-white/90 border border-white/50 dark:bg-white/10"
                         >
-                            <section.icon className="mb-2 h-6 w-6 text-primary" />
-                            <Badge className="mb-2" variant="outline">
-                                {section.percentage}
-                            </Badge>
+                            <section.icon className="mb-2 h-8 w-8 text-primary" />
                             <p className="font-medium">{section.area}</p>
-                            <p className="text-sm text-muted-foreground">
-                                {section.content}
-                            </p>
                         </div>
                     ))}
+                </div>
+
+                {/* In Progress Cards */}
+                <div className="grid gap-4 md:grid-cols-3 mt-4">
+                    <div className="flex flex-col items-center rounded-xl p-6 text-center shadow-lg backdrop-blur-sm bg-white/90 border border-white/50 dark:bg-white/10 opacity-50">
+                        <p className="font-medium text-muted-foreground">Coming Soon</p>
+                    </div>
+                    <div className="flex flex-col items-center rounded-xl p-6 text-center shadow-lg backdrop-blur-sm bg-white/90 border border-white/50 dark:bg-white/10 opacity-50">
+                        <p className="font-medium text-muted-foreground">Coming Soon</p>
+                    </div>
+                    <div className="flex flex-col items-center rounded-xl p-6 text-center shadow-lg backdrop-blur-sm bg-white/90 border border-white/50 dark:bg-white/10 opacity-50">
+                        <p className="font-medium text-muted-foreground">Coming Soon</p>
+                    </div>
                 </div>
             </div>
         </GuestLayout>
