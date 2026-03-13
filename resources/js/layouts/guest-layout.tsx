@@ -50,15 +50,13 @@ export default function GuestLayout({
                 </div>
             </header>
 
-            
-
             {/* Main Content */}
-            <main className="flex-1 container">{children}</main>
+            <main className="flex-1 container pb-20">{children}</main>
 
             {/* Footer */}
-            <footer className="border-t py-6">
+            <footer className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 py-4">
                 <div className="container px-4">
-                    <div className="flex flex-col items-center gap-4">
+                    <div className="flex flex-col items-center gap-2">
                         <div className="grid w-full max-w-md grid-cols-4 gap-4">
                             {navLinks.map((link) => (
                                 <Link
