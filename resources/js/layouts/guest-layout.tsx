@@ -20,7 +20,7 @@ export default function GuestLayout({
         <div className="flex h-screen flex-col bg-transparent overflow-hidden">
             {/* Top Navigation */}
             <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-                <div className="container flex h-14 items-center justify-between px-4">
+                <div className="container flex h-20 md:h-14 items-center justify-between px-4">
                     <div className="flex items-center gap-2">
                         <LayoutDashboard className="h-6 w-6" />
                         <span className="font-bold">Nestlé Retailer Direct</span>
