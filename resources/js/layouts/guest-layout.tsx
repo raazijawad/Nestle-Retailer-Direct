@@ -51,13 +51,13 @@ export default function GuestLayout({
                         
                         {/* Brand text */}
                         <div className="flex flex-col">
-                            <span className="text-lg font-bold text-white tracking-tight">Nestlé Retailer Direct</span>
+                            <span className="text-xs md:text-lg font-bold text-white tracking-tight">Nestlé Retailer Direct</span>
                             <span className="text-[9px] text-white/50 font-medium tracking-widest uppercase">System Analysis</span>
                         </div>
                     </div>
                     
                     {/* Navigation buttons */}
-                    <nav className="flex items-center gap-2">
+                    <nav className="hidden md:flex items-center gap-2">
                         <Link href="/dashboard">
                             <Button variant="ghost" className="text-white/70 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/20 transition-all duration-300">
                                 <LayoutDashboard className="mr-2 h-4 w-4" />
@@ -77,6 +77,15 @@ export default function GuestLayout({
                             </Button>
                         </Link>
                     </nav>
+                    
+                    {/* Mobile - Log in button only */}
+                    <div className="flex md:hidden">
+                        <Link href="/login">
+                            <Button variant="ghost" className="text-white hover:bg-white/10 transition-all duration-300">
+                                <LogIn className="h-5 w-5" />
+                            </Button>
+                        </Link>
+                    </div>
                 </div>
             </header>
 
