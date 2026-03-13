@@ -10,7 +10,7 @@ const frequentOrders = [
         status: 'In Stock: High',
         statusColor: 'text-emerald-600',
         quantity: 2,
-        image: '📦',
+        image: '/nestle-system/milo.png',
     },
     {
         id: 2,
@@ -18,7 +18,7 @@ const frequentOrders = [
         status: 'In Stock: Medium',
         statusColor: 'text-amber-600',
         quantity: 1,
-        image: '💧',
+        image: '/nestle-system/water.png',
     },
     {
         id: 3,
@@ -26,7 +26,7 @@ const frequentOrders = [
         status: 'In Stock: Low',
         statusColor: 'text-red-600',
         quantity: 3,
-        image: '☕',
+        image: '/nestle-system/coffee-mate.png',
     },
     {
         id: 4,
@@ -34,7 +34,7 @@ const frequentOrders = [
         status: 'In Stock: High',
         statusColor: 'text-emerald-600',
         quantity: 1,
-        image: '🍼',
+        image: '/nestle-system/cerelac.png',
     },
     {
         id: 5,
@@ -42,7 +42,7 @@ const frequentOrders = [
         status: 'In Stock: High',
         statusColor: 'text-emerald-600',
         quantity: 5,
-        image: '🍫',
+        image: '/nestle-system/kitkat.png',
     },
 ];
 
@@ -109,8 +109,8 @@ export default function QuickReorder() {
                             {frequentOrders.map((order) => (
                                 <div key={order.id} className="flex items-center gap-3 p-3 hover:bg-gray-50/80 transition-colors duration-200">
                                     {/* Product thumbnail */}
-                                    <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-gradient-to-br from-gray-100 to-gray-50 border border-gray-200 flex items-center justify-center text-xl shadow-sm">
-                                        {order.image}
+                                    <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-gradient-to-br from-gray-100 to-gray-50 border border-gray-200 flex items-center justify-center overflow-hidden shadow-sm">
+                                        <img src={order.image} alt={order.name} className="w-full h-full object-cover" />
                                     </div>
                                     
                                     {/* Product info */}

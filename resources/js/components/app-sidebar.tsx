@@ -1,6 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { BookOpen, FolderGit2, LayoutGrid } from 'lucide-react';
-import AppLogo from '@/components/app-logo';
+import { BookOpen, FolderGit2, LayoutGrid, ShoppingCart, Truck, FileText } from 'lucide-react';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -18,9 +17,28 @@ import type { NavItem } from '@/types';
 
 const mainNavItems: NavItem[] = [
     {
+        title: 'Menu',
+        isGroup: true,
+    },
+    {
         title: 'Dashboard',
         href: dashboard(),
         icon: LayoutGrid,
+    },
+    {
+        title: 'Retailer Orders',
+        href: '/dashboard/orders',
+        icon: ShoppingCart,
+    },
+    {
+        title: 'Deliveries',
+        href: '/dashboard/deliveries',
+        icon: Truck,
+    },
+    {
+        title: 'Reports',
+        href: '/dashboard/reports',
+        icon: FileText,
     },
 ];
 
@@ -45,7 +63,10 @@ export function AppSidebar() {
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
                             <Link href={dashboard()} prefetch>
-                                <AppLogo />
+                                <div className="flex items-center gap-3">
+                                    <img src="/Nestle-Logo-2015.png" alt="Nestlé" className="h-8 w-auto object-contain" />
+                                    <span className="text-lg font-bold text-[#00447C]">Nestlé</span>
+                                </div>
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
