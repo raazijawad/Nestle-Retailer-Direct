@@ -115,7 +115,7 @@ export default function QuickReorder() {
                                     
                                     {/* Product info */}
                                     <div className="flex-1 min-w-0">
-                                        <h3 className="font-semibold text-gray-900 text-sm truncate">{order.name}</h3>
+                                        <h3 className="font-semibold text-gray-900 text-xs md:text-sm    truncate">{order.name}</h3>
                                         <p className={`text-xs font-medium mt-0.5 ${order.statusColor}`}>{order.status}</p>
                                     </div>
                                     
