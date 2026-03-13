@@ -1,13 +1,12 @@
 import { Link } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
-import { LayoutDashboard, LogIn, UserPlus, Home, Package, ShoppingCart, Percent, Settings } from 'lucide-react';
+import { LayoutDashboard, LogIn, UserPlus, Home, Package, ShoppingCart, Settings } from 'lucide-react';
 
 const navLinks = [
     { name: 'Home', icon: Home, href: '/' },
     { name: 'Orders', icon: ShoppingCart, href: '/dashboard' },
     { name: 'Inventory', icon: Package, href: '/dashboard' },
-    { name: 'Promotions', icon: Percent, href: '/dashboard' },
-    { name: 'Settings', icon: Settings, href: '/dashboard' },
+    { name: 'Profile', icon: Settings, href: '/dashboard' },
 ];
 
 export default function GuestLayout({
@@ -59,16 +58,16 @@ export default function GuestLayout({
             {/* Footer */}
             <footer className="border-t py-6">
                 <div className="container px-4">
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col items-center gap-4">
                         
-                        <div className="flex items-center gap-6">
+                        <div className="grid w-full max-w-md grid-cols-4 gap-4">
                             {navLinks.map((link) => (
                                 <Link
                                     key={link.name}
                                     href={link.href}
-                                    className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                                    className="flex flex-col items-center justify-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
                                 >
-                                    <link.icon className="h-4 w-4" />
+                                    <link.icon className="h-5 w-5" />
                                     {link.name}
                                 </Link>
                             ))}
