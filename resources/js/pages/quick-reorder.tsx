@@ -91,7 +91,7 @@ export default function QuickReorder() {
             </header>
 
             {/* Main Content */}
-            <main className="container py-6 pb-32">
+            <main className="container md:py-6 pb-32">
                 {/* Frequent Orders Card */}
                 <Card className="max-w-2xl mx-auto border-0 shadow-xl bg-white/90 backdrop-blur-sm">
                     <CardContent className="p-0">
@@ -165,17 +165,19 @@ export default function QuickReorder() {
                 {/* Content */}
                 <div className="relative container px-4 py-4">
                     {/* Reorder button */}
-                    <button className="group relative w-full h-12 rounded-xl bg-gradient-to-r from-white/20 to-white/10 hover:from-white/30 hover:to-white/20 border border-white/20 hover:border-white/40 transition-all duration-300 backdrop-blur-sm shadow-lg hover:shadow-xl overflow-hidden">
-                        {/* Shine effect */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-                        
-                        {/* Content */}
-                        <div className="relative flex items-center justify-center gap-2">
-                            <ShoppingCart className="h-5 w-5 text-white group-hover:scale-110 transition-transform duration-300" />
-                            <span className="text-sm font-bold text-white tracking-wide">REORDER NOW</span>
-                            <span className="text-xs text-white/70">({frequentOrders.reduce((acc, item) => acc + item.quantity, 0)} items)</span>
-                        </div>
-                    </button>
+                    <div className="flex justify-center">
+                        <button className="group relative w-full max-w-xs h-11 rounded-xl bg-gradient-to-r from-white/20 to-white/10 hover:from-white/30 hover:to-white/20 border border-white/20 hover:border-white/40 transition-all duration-300 backdrop-blur-sm shadow-lg hover:shadow-xl overflow-hidden">
+                            {/* Shine effect */}
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                            
+                            {/* Content */}
+                            <div className="relative flex items-center justify-center gap-2">
+                                <ShoppingCart className="h-4 w-4 text-white group-hover:scale-110 transition-transform duration-300" />
+                                <span className="text-xs font-bold text-white tracking-wide">REORDER NOW</span>
+                                <span className="text-[10px] text-white/70">({frequentOrders.reduce((acc, item) => acc + item.quantity, 0)} items)</span>
+                            </div>
+                        </button>
+                    </div>
                     
                     {/* Decorative pulse dot */}
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2">
