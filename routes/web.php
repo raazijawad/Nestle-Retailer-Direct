@@ -4,12 +4,13 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Fortify\Features;
 use App\Http\Controllers\Dashboard\AccountsController;
+use App\Http\Controllers\OrderController;
 
 Route::inertia('/', 'nestle-system-analysis', [
     'canRegister' => Features::enabled(Features::registration()),
 ])->name('home');
 
-Route::inertia('/quick-reorder', 'quick-reorder')->name('quick-reorder');
+Route::inertia('/quick-reorder', 'quick-reorder')->name('quick-reorder')->middleware(['auth']);
 
 // Logout route (GET for link, POST for form)
 Route::get('/logout', function () {
@@ -30,6 +31,9 @@ Route::middleware(['auth'])->get('/re-login', function () {
 Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     Route::inertia('dashboard', 'dashboard')->name('dashboard');
     Route::get('dashboard/accounts', [AccountsController::class, 'index'])->name('dashboard.accounts');
+    Route::get('dashboard/orders', [OrderController::class, 'index'])->name('dashboard.orders');
 });
+
+Route::middleware(['auth'])->post('/orders', [OrderController::class, 'store'])->name('orders.store');
 
 require __DIR__.'/settings.php';
