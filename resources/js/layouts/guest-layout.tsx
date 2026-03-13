@@ -51,7 +51,7 @@ export default function GuestLayout({
             </header>
 
             {/* Main Content */}
-            <main className="flex-1 container overflow-hidden">{children}</main>
+            <main className="flex-1 container overflow-hidden pb-20">{children}</main>
 
             {/* Footer */}
             <footer className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 py-4">

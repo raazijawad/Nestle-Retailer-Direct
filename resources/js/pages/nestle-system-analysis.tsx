@@ -31,7 +31,7 @@ export default function NestleSystemAnalysis({
             <Head title="Nestlé System Analysis" />
             <div className="flex h-full flex-col items-center justify-center bg-blue-50 dark:bg-blue-950">
                 {/* Cards Container */}
-                <div className="flex flex-col gap-10">
+                <div className="flex flex-col gap-10 py-8">
                     {/* Row 1 */}
                     <div className="grid gap-10 md:grid-cols-3">
                         {layoutSections.map((section) => (
