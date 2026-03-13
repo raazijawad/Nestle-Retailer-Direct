@@ -38,22 +38,22 @@ const typographyInfo = [
 
 const layoutSections = [
     {
-        area: 'Left Sidebar',
+        area: 'One-Tap Reorder',
         percentage: '20%',
-        content: 'Navigation (Home, Orders, Inventory, Promotions, Settings)',
-        icon: LayoutDashboard,
+        content: 'Quick-action widget with last 3 orders and "Reorder" button',
+        icon: ShoppingCart,
     },
     {
-        area: 'Top Bar',
+        area: 'Inventory Snapshots',
         percentage: '10%',
-        content: 'Header with Search and User Profile',
-        icon: User,
+        content: 'Mini-table showing top 5 moving items and stock levels',
+        icon: Package,
     },
     {
-        area: 'Main Content',
+        area: 'My Orders',
         percentage: '70%',
-        content: 'Dashboard grid with alerts, stats, and panels',
-        icon: LayoutDashboard,
+        content: 'Summary list of active orders with status trackers',
+        icon: Clock,
     },
 ];
 
