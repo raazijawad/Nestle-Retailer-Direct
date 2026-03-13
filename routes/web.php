@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use Laravel\Fortify\Features;
 
 Route::inertia('/', 'nestle-system-analysis', [
@@ -9,7 +10,23 @@ Route::inertia('/', 'nestle-system-analysis', [
 
 Route::inertia('/quick-reorder', 'quick-reorder')->name('quick-reorder');
 
-Route::middleware(['auth', 'verified'])->group(function () {
+// Logout route (GET for link, POST for form)
+Route::get('/logout', function () {
+    Auth::logout();
+    return redirect('/');
+})->name('logout');
+
+Route::post('/logout', function () {
+    Auth::logout();
+    return redirect('/');
+});
+
+// Re-login page for non-admin users
+Route::middleware(['auth'])->get('/re-login', function () {
+    return inertia('re-login');
+})->name('re-login');
+
+Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     Route::inertia('dashboard', 'dashboard')->name('dashboard');
 });
 

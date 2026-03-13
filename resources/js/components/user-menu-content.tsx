@@ -30,6 +30,17 @@ export function UserMenuContent({ user }: Props) {
                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                     <UserInfo user={user} showEmail={true} />
                 </div>
+                {user.role && (
+                    <div className="px-1 py-1 text-left">
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                            user.role === 'admin' 
+                                ? 'bg-[#00447C] text-white' 
+                                : 'bg-gray-200 text-gray-700'
+                        }`}>
+                            {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                        </span>
+                    </div>
+                )}
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
@@ -47,16 +58,16 @@ export function UserMenuContent({ user }: Props) {
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-                <Link
-                    className="block w-full cursor-pointer"
-                    href={logout()}
-                    as="button"
-                    onClick={handleLogout}
-                    data-test="logout-button"
-                >
-                    <LogOut className="mr-2" />
-                    Log out
-                </Link>
+                <form action="/logout" method="POST" className="w-full">
+                    <button
+                        type="submit"
+                        className="flex w-full cursor-pointer items-center"
+                        onClick={handleLogout}
+                    >
+                        <LogOut className="mr-2" />
+                        Log out
+                    </button>
+                </form>
             </DropdownMenuItem>
         </>
     );
