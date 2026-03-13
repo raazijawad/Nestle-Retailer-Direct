@@ -1,6 +1,15 @@
 import { Link, usePage } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { LayoutDashboard, LogIn, UserPlus, Home, Package, ShoppingCart, Settings, User, LogOut } from 'lucide-react';
+import {
+    DropdownMenu,
+    DropdownMenuTrigger,
+    DropdownMenuContent,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+} from '@/components/ui/dropdown-menu';
 
 const navLinks = [
     { name: 'Home', icon: Home, href: '/' },
@@ -101,14 +110,52 @@ export default function GuestLayout({
                         )}
                     </nav>
                     
-                    {/* Mobile - User icon or Log in button */}
+                    {/* Mobile - User dropdown or Log in button */}
                     <div className="flex md:hidden">
                         {isLoggedIn ? (
-                            <Link href="/profile">
-                                <Button variant="ghost" className="text-white hover:bg-white/10 transition-all duration-300">
-                                    <User className="h-5 w-5" />
-                                </Button>
-                            </Link>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" className="text-white hover:bg-white/10 transition-all duration-300">
+                                        <User className="h-5 w-5" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent
+                                    className="w-48 bg-white"
+                                    align="end"
+                                    side="bottom"
+                                >
+                                    <DropdownMenuLabel className="flex items-center gap-2">
+                                        <div className="flex flex-col">
+                                            <span className="text-sm font-medium">{auth.user?.name || 'User'}</span>
+                                            <span className="text-xs text-gray-500">{auth.user?.email || 'user@example.com'}</span>
+                                        </div>
+                                    </DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuGroup>
+                                        <DropdownMenuItem asChild>
+                                            <Link href="/dashboard" className="flex items-center gap-2">
+                                                <LayoutDashboard className="h-4 w-4" />
+                                                Dashboard
+                                            </Link>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem asChild>
+                                            <Link href="/profile" className="flex items-center gap-2">
+                                                <User className="h-4 w-4" />
+                                                Profile
+                                            </Link>
+                                        </DropdownMenuItem>
+                                    </DropdownMenuGroup>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem asChild>
+                                        <form action="/logout" method="POST" className="w-full">
+                                            <button type="submit" className="flex w-full items-center gap-2 text-red-600">
+                                                <LogOut className="h-4 w-4" />
+                                                Log out
+                                            </button>
+                                        </form>
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                         ) : (
                             <Link href="/login">
                                 <Button variant="ghost" className="text-white hover:bg-white/10 transition-all duration-300">
