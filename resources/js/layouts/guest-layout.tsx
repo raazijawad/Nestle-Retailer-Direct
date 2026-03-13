@@ -17,7 +17,7 @@ export default function GuestLayout({
     canRegister?: boolean;
 }) {
     return (
-        <div className="flex min-h-screen flex-col">
+        <div className="flex min-h-screen flex-col bg-transparent">
             {/* Top Navigation */}
             <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
                 <div className="container flex h-14 items-center justify-between px-4">
@@ -59,7 +59,6 @@ export default function GuestLayout({
             <footer className="border-t py-6">
                 <div className="container px-4">
                     <div className="flex flex-col items-center gap-4">
-                        
                         <div className="grid w-full max-w-md grid-cols-4 gap-4">
                             {navLinks.map((link) => (
                                 <Link
