@@ -36,9 +36,9 @@ export default function NestleSystemAnalysis({
                 {/* Cards Container */}
                 <div className="flex h-full flex-col justify-center gap-2 md:gap-10 py-0 md:py-8">
                     {/* Mobile Layout - 3 rows x 2 cols */}
-                    <div className="flex flex-col gap-1.5 md:hidden">
+                    <div className="flex flex-col gap-6 md:hidden">
                         {/* Row 1 */}
-                        <div className="grid grid-cols-2 gap-1.5">
+                        <div className="grid grid-cols-2 gap-7">
                             {layoutSections.slice(0, 2).map((section) => {
                                 const Icon = section.icon;
                                 return (
@@ -65,7 +65,7 @@ export default function NestleSystemAnalysis({
                         </div>
 
                         {/* Row 2 */}
-                        <div className="grid grid-cols-2 gap-1.5">
+                        <div className="grid grid-cols-2 gap-7">
                             {layoutSections.slice(2, 3).map((section) => {
                                 const Icon = section.icon;
                                 return (
@@ -95,7 +95,7 @@ export default function NestleSystemAnalysis({
                         </div>
 
                         {/* Row 3 */}
-                        <div className="grid grid-cols-2 gap-1.5">
+                        <div className="grid grid-cols-2 gap-7">
                             <div className="flex h-30 w-full flex-col items-center justify-center rounded-xl bg-white/90 p-2 text-center shadow-lg backdrop-blur-sm border border-white/50 dark:bg-white/10 opacity-50">
                                 <p className="font-medium text-[10px] text-muted-foreground">Coming Soon</p>
                             </div>
