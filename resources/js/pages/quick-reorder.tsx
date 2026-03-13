@@ -21,7 +21,7 @@ const initialOrders: OrderItem[] = [
         status: 'In Stock: High',
         statusColor: 'text-emerald-600',
         quantity: 0,
-        image: '/nestle-system/milo.png',
+        image: '/milo.jpeg',
         price: 45.00,
     },
     {
@@ -30,7 +30,7 @@ const initialOrders: OrderItem[] = [
         status: 'In Stock: Medium',
         statusColor: 'text-amber-600',
         quantity: 0,
-        image: '/nestle-system/water.png',
+        image: '/Nestlé Pure Life Water 500ml.jpg',
         price: 12.00,
     },
     {
@@ -39,7 +39,7 @@ const initialOrders: OrderItem[] = [
         status: 'In Stock: Low',
         statusColor: 'text-red-600',
         quantity: 0,
-        image: '/nestle-system/coffee-mate.png',
+        image: '/Nestlé Coffee Mate.jpg',
         price: 38.00,
     },
     {
@@ -48,7 +48,7 @@ const initialOrders: OrderItem[] = [
         status: 'In Stock: High',
         statusColor: 'text-emerald-600',
         quantity: 0,
-        image: '/nestle-system/cerelac.png',
+        image: '/Nestlé Cerelac Wheat.jpg',
         price: 22.00,
     },
     {
@@ -57,7 +57,7 @@ const initialOrders: OrderItem[] = [
         status: 'In Stock: High',
         statusColor: 'text-emerald-600',
         quantity: 0,
-        image: '/nestle-system/kitkat.png',
+        image: '/Nestlé KitKat Bar.jpg',
         price: 8.00,
     },
 ];
