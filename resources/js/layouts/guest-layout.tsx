@@ -53,7 +53,7 @@ export default function GuestLayout({
             
 
             {/* Main Content */}
-            <main className="flex-1 container py-6">{children}</main>
+            <main className="flex-1 container">{children}</main>
 
             {/* Footer */}
             <footer className="border-t py-6">
