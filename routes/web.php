@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Fortify\Features;
+use App\Http\Controllers\Dashboard\AccountsController;
 
 Route::inertia('/', 'nestle-system-analysis', [
     'canRegister' => Features::enabled(Features::registration()),
@@ -28,6 +29,7 @@ Route::middleware(['auth'])->get('/re-login', function () {
 
 Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     Route::inertia('dashboard', 'dashboard')->name('dashboard');
+    Route::get('dashboard/accounts', [AccountsController::class, 'index'])->name('dashboard.accounts');
 });
 
 require __DIR__.'/settings.php';

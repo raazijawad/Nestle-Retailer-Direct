@@ -2,6 +2,19 @@ import { Head } from '@inertiajs/react';
 import { Users, Mail, Calendar, UserCheck } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { dashboard } from '@/routes';
+import type { BreadcrumbItem } from '@/types';
+
+const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: 'Dashboard',
+        href: dashboard(),
+    },
+    {
+        title: 'Accounts',
+        href: '/dashboard/accounts',
+    },
+];
 
 interface Account {
     id: number;
@@ -21,7 +34,7 @@ interface Props {
 
 export default function Accounts({ accounts, stats }: Props) {
     return (
-        <AppLayout>
+        <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Accounts" />
             
             <div className="flex flex-col gap-6 p-6">
