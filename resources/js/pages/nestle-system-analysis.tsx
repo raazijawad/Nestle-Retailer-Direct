@@ -10,7 +10,7 @@ const layoutSections = [
     {
         area: 'One-Tap Reorder',
         icon: ShoppingCart,
-        href: '/dashboard/orders',
+        href: '/quick-reorder',
     },
     {
         area: 'Inventory Snapshots',
