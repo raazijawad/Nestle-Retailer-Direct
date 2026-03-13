@@ -91,9 +91,9 @@ export default function QuickReorder() {
             </header>
 
             {/* Main Content */}
-            <main className="container py-4 pb-32">
+            <main className="container py-6 pb-32">
                 {/* Frequent Orders Card */}
-                <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm">
+                <Card className="max-w-2xl mx-auto border-0 shadow-xl bg-white/90 backdrop-blur-sm">
                     <CardContent className="p-0">
                         {/* Card header */}
                         <div className="flex items-center justify-between p-4 border-b border-gray-100">
@@ -107,9 +107,9 @@ export default function QuickReorder() {
                         {/* Order list */}
                         <div className="divide-y divide-gray-100">
                             {frequentOrders.map((order) => (
-                                <div key={order.id} className="flex items-center gap-3 p-4 hover:bg-gray-50/80 transition-colors duration-200">
+                                <div key={order.id} className="flex items-center gap-3 p-3 hover:bg-gray-50/80 transition-colors duration-200">
                                     {/* Product thumbnail */}
-                                    <div className="flex-shrink-0 w-14 h-14 rounded-lg bg-gradient-to-br from-gray-100 to-gray-50 border border-gray-200 flex items-center justify-center text-2xl shadow-sm">
+                                    <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-gradient-to-br from-gray-100 to-gray-50 border border-gray-200 flex items-center justify-center text-xl shadow-sm">
                                         {order.image}
                                     </div>
                                     
@@ -138,7 +138,7 @@ export default function QuickReorder() {
                 </Card>
                 
                 {/* Estimated delivery */}
-                <div className="flex items-center justify-center gap-2 mt-4 text-center">
+                <div className="flex items-center justify-center gap-2 mt-6 text-center">
                     <CheckCircle className="h-4 w-4 text-emerald-600" />
                     <p className="text-xs text-gray-500 font-medium">Estimated Delivery: <span className="text-gray-700">March 18-20, 2026</span></p>
                 </div>
