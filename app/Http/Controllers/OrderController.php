@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -15,9 +16,10 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         \Log::info('Order request data:', $request->all());
-        
+
         $validated = $request->validate([
             'items' => 'required|array|min:1',
+            'items.*.product_id' => 'nullable|integer|exists:products,id',
             'items.*.product_name' => 'required|string',
             'items.*.product_image' => 'nullable|string',
             'items.*.quantity' => 'required|integer|min:1',
@@ -43,12 +45,22 @@ class OrderController extends Controller
         foreach ($validated['items'] as $item) {
             OrderItem::create([
                 'order_id' => $order->id,
+                'product_id' => $item['product_id'] ?? null,
                 'product_name' => $item['product_name'],
                 'product_image' => $item['product_image'] ?? null,
                 'quantity' => $item['quantity'],
                 'price' => $item['price'],
                 'subtotal' => $item['quantity'] * $item['price'],
             ]);
+
+            // Increase stock quantity for the product (adding to inventory)
+            if (!empty($item['product_id'])) {
+                $product = Product::find($item['product_id']);
+                if ($product) {
+                    $newQuantity = $product->stock_quantity + $item['quantity'];
+                    $product->update(['stock_quantity' => $newQuantity]);
+                }
+            }
         }
 
         return redirect()->back()->with('success', 'Order placed successfully!');

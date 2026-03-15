@@ -73,6 +73,7 @@ export default function QuickReorder({ products }: Props) {
 
         const orderData = {
             items: itemsToOrder.map((item) => ({
+                product_id: item.id,
                 product_name: item.name,
                 product_image: item.image,
                 quantity: item.quantity,
@@ -91,7 +92,7 @@ export default function QuickReorder({ products }: Props) {
                     description: 'Your order has been submitted for review.',
                 });
                 // Reset quantities to 0
-                setOrderItems(initialOrders);
+                setOrderItems((prev) => prev.map(item => ({ ...item, quantity: 0 })));
                 setIsSubmitting(false);
             },
             onError: (errors) => {
@@ -182,20 +183,29 @@ export default function QuickReorder({ products }: Props) {
                                         <p className={`text-xs font-medium mt-0.5 ${order.statusColor}`}>
                                             {order.status} {order.stock_quantity > 0 && `(${order.stock_quantity} available)`}
                                         </p>
+                                        <p className="text-xs text-gray-500 mt-0.5">
+                                            ${order.price.toFixed(2)} each
+                                            {order.quantity > 0 && (
+                                                <span className="ml-2 font-semibold text-[#00447C]">
+                                                    = ${(order.quantity * order.price).toFixed(2)}
+                                                </span>
+                                            )}
+                                        </p>
                                     </div>
 
                                     {/* Quantity controls */}
                                     <div className="flex items-center gap-2">
-                                        <button 
+                                        <button
                                             onClick={() => handleQuantityChange(order.id, -1)}
-                                            className="group p-1.5 rounded-md border border-gray-200 hover:border-[#00447C] hover:bg-[#00447C]/5 transition-all duration-200"
+                                            disabled={order.quantity === 0}
+                                            className="group p-1.5 rounded-md border border-gray-200 hover:border-[#00447C] hover:bg-[#00447C]/5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                                         >
                                             <Minus className="h-3.5 w-3.5 text-gray-600 group-hover:text-[#00447C]" />
                                         </button>
 
                                         <span className="w-8 text-center text-sm font-semibold text-gray-900">{order.quantity}</span>
 
-                                        <button 
+                                        <button
                                             onClick={() => handleQuantityChange(order.id, 1)}
                                             className="group p-1.5 rounded-md bg-[#00447C] border border-[#00447C] hover:bg-[#003d6f] transition-all duration-200 shadow-sm"
                                         >
