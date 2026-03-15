@@ -4,67 +4,47 @@ import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 
-interface OrderItem {
+interface Product {
     id: number;
     name: string;
+    description: string;
+    price: number;
+    image: string;
+    stock_quantity: number;
+}
+
+interface OrderItem extends Product {
     status: string;
     statusColor: string;
     quantity: number;
-    image: string;
-    price: number;
 }
 
-const initialOrders: OrderItem[] = [
-    {
-        id: 1,
-        name: 'Nestlé Milo Powder 3kg',
-        status: 'In Stock: High',
-        statusColor: 'text-emerald-600',
-        quantity: 0,
-        image: '/milo.jpeg',
-        price: 45.00,
-    },
-    {
-        id: 2,
-        name: 'Nestlé Pure Life Water 500ml',
-        status: 'In Stock: Medium',
-        statusColor: 'text-amber-600',
-        quantity: 0,
-        image: '/Nestlé Pure Life Water 500ml.jpg',
-        price: 12.00,
-    },
-    {
-        id: 3,
-        name: 'Nestlé Coffee Mate 1.5kg',
-        status: 'In Stock: Low',
-        statusColor: 'text-red-600',
-        quantity: 0,
-        image: '/Nestlé Coffee Mate.jpg',
-        price: 38.00,
-    },
-    {
-        id: 4,
-        name: 'Nestlé Cerelac Wheat 400g',
-        status: 'In Stock: High',
-        statusColor: 'text-emerald-600',
-        quantity: 0,
-        image: '/Nestlé Cerelac Wheat.jpg',
-        price: 22.00,
-    },
-    {
-        id: 5,
-        name: 'Nestlé KitKat Bar 45g',
-        status: 'In Stock: High',
-        statusColor: 'text-emerald-600',
-        quantity: 0,
-        image: '/Nestlé KitKat Bar.jpg',
-        price: 8.00,
-    },
-];
+// Stock status based on quantity: >20 In Stock, <=20 Low Stock, =0 Out of Stock
+function getStockStatus(stockQuantity: number): { status: string; statusColor: string } {
+    if (stockQuantity === 0) {
+        return { status: 'Out of Stock', statusColor: 'text-red-600' };
+    }
+    if (stockQuantity <= 20) {
+        return { status: 'Low Stock', statusColor: 'text-amber-600' };
+    }
+    return { status: 'In Stock', statusColor: 'text-emerald-600' };
+}
 
-export default function QuickReorder() {
+interface Props {
+    products: Product[];
+}
+
+export default function QuickReorder({ products }: Props) {
     const { toast } = useToast();
-    const [orderItems, setOrderItems] = useState<OrderItem[]>(initialOrders);
+    
+    // Initialize order items with products from database
+    const [orderItems, setOrderItems] = useState<OrderItem[]>(() => 
+        products.map(product => ({
+            ...product,
+            ...getStockStatus(product.stock_quantity),
+            quantity: 0
+        }))
+    );
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleQuantityChange = (id: number, delta: number) => {
@@ -199,7 +179,9 @@ export default function QuickReorder() {
                                     {/* Product info */}
                                     <div className="flex-1 min-w-0">
                                         <h3 className="font-semibold text-gray-900 text-xs md:text-sm truncate">{order.name}</h3>
-                                        <p className={`text-xs font-medium mt-0.5 ${order.statusColor}`}>{order.status}</p>
+                                        <p className={`text-xs font-medium mt-0.5 ${order.statusColor}`}>
+                                            {order.status} {order.stock_quantity > 0 && `(${order.stock_quantity} available)`}
+                                        </p>
                                     </div>
 
                                     {/* Quantity controls */}

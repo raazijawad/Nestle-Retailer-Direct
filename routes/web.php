@@ -8,6 +8,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\DistributorController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\StockController;
+use App\Http\Controllers\QuickReorderController;
 
 // Home route - redirects based on user role
 Route::get('/', function () {
@@ -37,7 +38,7 @@ Route::middleware(['auth', 'verified', 'distributor'])->group(function () {
     Route::get('/distributor/notifications', [DistributorController::class, 'notifications'])->name('distributor.notifications');
 });
 
-Route::inertia('/quick-reorder', 'quick-reorder')->name('quick-reorder')->middleware(['auth']);
+Route::middleware(['auth'])->get('/quick-reorder', [QuickReorderController::class, 'index'])->name('quick-reorder');
 
 // Stock/Inventory routes (not related to dashboard)
 Route::middleware(['auth'])->get('/stock', [StockController::class, 'index'])->name('stock.index');
