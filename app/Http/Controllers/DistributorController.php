@@ -78,6 +78,132 @@ class DistributorController extends Controller
     }
 
     /**
+     * Display retailer orders assigned to this distributor.
+     */
+    public function retailerOrders(Request $request)
+    {
+        $distributorId = auth()->id();
+        
+        $query = Order::with(['user', 'items'])
+            ->where('distributor_id', $distributorId);
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $orders = $query->latest()->get()->map(function ($order) {
+            return [
+                'id' => $order->id,
+                'status' => $order->status,
+                'total_amount' => (float) $order->total_amount,
+                'created_at' => $order->created_at->diffForHumans(),
+                'created_date' => $order->created_at->format('M d, Y'),
+                'user' => [
+                    'id' => $order->user->id,
+                    'name' => $order->user->name,
+                    'email' => $order->user->email,
+                    'shop_name' => $order->user->shopProfile?->shop_name,
+                ],
+                'items' => $order->items->map(function ($item) {
+                    return [
+                        'product_name' => $item->product_name,
+                        'quantity' => (int) $item->quantity,
+                        'price' => (float) $item->price,
+                        'subtotal' => (float) $item->subtotal,
+                    ];
+                })->toArray(),
+            ];
+        })->toArray();
+
+        return inertia('distributor/retailer-orders', [
+            'orders' => $orders,
+            'stats' => [
+                'total_orders' => Order::where('distributor_id', $distributorId)->count(),
+                'pending_orders' => Order::where('distributor_id', $distributorId)->where('status', 'pending')->count(),
+                'approved_orders' => Order::where('distributor_id', $distributorId)->where('status', 'approved')->count(),
+                'rejected_orders' => Order::where('distributor_id', $distributorId)->where('status', 'rejected')->count(),
+            ],
+        ]);
+    }
+
+    /**
+     * Display incoming orders (new UI).
+     */
+    public function incomingOrders(Request $request)
+    {
+        $distributorId = auth()->id();
+        
+        $query = Order::with(['user', 'items'])
+            ->where('distributor_id', $distributorId);
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $orders = $query->latest()->get()->map(function ($order) {
+            return [
+                'id' => $order->id,
+                'status' => $order->status,
+                'total_amount' => (float) $order->total_amount,
+                'created_at' => $order->created_at->diffForHumans(),
+                'created_date' => $order->created_at->format('M d, Y'),
+                'user' => [
+                    'id' => $order->user->id,
+                    'name' => $order->user->name,
+                    'email' => $order->user->email,
+                    'shop_name' => $order->user->shopProfile?->shop_name,
+                ],
+                'items' => $order->items->map(function ($item) {
+                    return [
+                        'product_name' => $item->product_name,
+                        'quantity' => (int) $item->quantity,
+                        'price' => (float) $item->price,
+                        'subtotal' => (float) $item->subtotal,
+                    ];
+                })->toArray(),
+            ];
+        })->toArray();
+
+        return inertia('distributor/incoming-orders', [
+            'orders' => $orders,
+            'stats' => [
+                'total_orders' => Order::where('distributor_id', $distributorId)->count(),
+                'pending_orders' => Order::where('distributor_id', $distributorId)->where('status', 'pending')->count(),
+                'approved_orders' => Order::where('distributor_id', $distributorId)->where('status', 'approved')->count(),
+                'rejected_orders' => Order::where('distributor_id', $distributorId)->where('status', 'rejected')->count(),
+            ],
+        ]);
+    }
+
+    /**
+     * Approve an incoming order.
+     */
+    public function approveIncomingOrder(Order $order)
+    {
+        // Verify the order belongs to this distributor
+        if ($order->distributor_id !== auth()->id()) {
+            abort(403, 'Unauthorized');
+        }
+        
+        $order->update(['status' => 'approved']);
+        return redirect()->back()->with('success', 'Order approved successfully!');
+    }
+
+    /**
+     * Reject an incoming order.
+     */
+    public function rejectIncomingOrder(Order $order)
+    {
+        // Verify the order belongs to this distributor
+        if ($order->distributor_id !== auth()->id()) {
+            abort(403, 'Unauthorized');
+        }
+        
+        $order->update(['status' => 'rejected']);
+        return redirect()->back()->with('success', 'Order rejected.');
+    }
+
+    /**
      * Approve an order (DF04).
      */
     public function approveOrder(Order $order)
@@ -91,6 +217,34 @@ class DistributorController extends Controller
      */
     public function rejectOrder(Order $order)
     {
+        $order->update(['status' => 'rejected']);
+        return redirect()->back()->with('success', 'Order rejected.');
+    }
+
+    /**
+     * Approve a retailer order.
+     */
+    public function approveRetailerOrder(Order $order)
+    {
+        // Verify the order belongs to this distributor
+        if ($order->distributor_id !== auth()->id()) {
+            abort(403, 'Unauthorized');
+        }
+        
+        $order->update(['status' => 'approved']);
+        return redirect()->back()->with('success', 'Order approved successfully!');
+    }
+
+    /**
+     * Reject a retailer order.
+     */
+    public function rejectRetailerOrder(Order $order)
+    {
+        // Verify the order belongs to this distributor
+        if ($order->distributor_id !== auth()->id()) {
+            abort(403, 'Unauthorized');
+        }
+        
         $order->update(['status' => 'rejected']);
         return redirect()->back()->with('success', 'Order rejected.');
     }

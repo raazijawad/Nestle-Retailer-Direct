@@ -24,6 +24,7 @@ class OrderController extends Controller
             'items.*.product_image' => 'nullable|string',
             'items.*.quantity' => 'required|integer|min:1',
             'items.*.price' => 'required|numeric|min:0',
+            'distributor_id' => 'nullable|integer|exists:users,id',
         ], [
             'items.required' => 'Please select at least one item to order.',
             'items.min' => 'Please select at least one item to order.',
@@ -38,6 +39,7 @@ class OrderController extends Controller
 
         $order = Order::create([
             'user_id' => Auth::id(),
+            'distributor_id' => $validated['distributor_id'] ?? null,
             'status' => 'pending',
             'total_amount' => $totalAmount,
         ]);

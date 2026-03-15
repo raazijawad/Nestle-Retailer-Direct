@@ -88,6 +88,7 @@ export default function QuickReorder({ products, distributors }: Props) {
         }
 
         const orderData = {
+            distributor_id: selectedDistributor?.id || null,
             items: itemsToOrder.map((item) => ({
                 product_id: item.id,
                 product_name: item.name,
@@ -109,6 +110,7 @@ export default function QuickReorder({ products, distributors }: Props) {
                 });
                 // Reset quantities to 0
                 setOrderItems((prev) => prev.map(item => ({ ...item, quantity: 0 })));
+                setSelectedDistributor(null);
                 setIsSubmitting(false);
             },
             onError: (errors) => {

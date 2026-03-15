@@ -15,14 +15,14 @@ const distributorSections = [
     {
         area: 'Retailer Orders',
         icon: ClipboardList,
-        href: '/distributor/orders',
+        href: '/distributor/incoming-orders',
         description: 'View incoming orders',
         color: 'from-blue-500 to-blue-600',
     },
     {
         area: 'Approve/Reject',
         icon: CheckCircle,
-        href: '/distributor/orders?tab=pending',
+        href: '/distributor/incoming-orders?status=pending',
         description: 'Manage order status',
         color: 'from-emerald-500 to-emerald-600',
     },

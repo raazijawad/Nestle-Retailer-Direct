@@ -27,8 +27,14 @@ Route::get('/', function () {
 Route::middleware(['auth', 'verified', 'distributor'])->group(function () {
     Route::get('/distributor/home', [DistributorController::class, 'home'])->name('distributor.home');
     Route::get('/distributor/orders', [DistributorController::class, 'orders'])->name('distributor.orders');
+    Route::get('/distributor/retailer-orders', [DistributorController::class, 'retailerOrders'])->name('distributor.retailer-orders');
+    Route::get('/distributor/incoming-orders', [DistributorController::class, 'incomingOrders'])->name('distributor.incoming-orders');
     Route::post('/distributor/orders/{order}/approve', [DistributorController::class, 'approveOrder'])->name('distributor.orders.approve');
     Route::post('/distributor/orders/{order}/reject', [DistributorController::class, 'rejectOrder'])->name('distributor.orders.reject');
+    Route::post('/distributor/retailer-orders/{order}/approve', [DistributorController::class, 'approveRetailerOrder'])->name('distributor.retailer-orders.approve');
+    Route::post('/distributor/retailer-orders/{order}/reject', [DistributorController::class, 'rejectRetailerOrder'])->name('distributor.retailer-orders.reject');
+    Route::post('/distributor/incoming-orders/{order}/approve', [DistributorController::class, 'approveIncomingOrder'])->name('distributor.incoming-orders.approve');
+    Route::post('/distributor/incoming-orders/{order}/reject', [DistributorController::class, 'rejectIncomingOrder'])->name('distributor.incoming-orders.reject');
     Route::post('/distributor/orders/{order}/status', [DistributorController::class, 'updateOrderStatus'])->name('distributor.orders.status');
     Route::get('/distributor/delivery', [DistributorController::class, 'delivery'])->name('distributor.delivery');
     Route::get('/distributor/statistics', [DistributorController::class, 'statistics'])->name('distributor.statistics');

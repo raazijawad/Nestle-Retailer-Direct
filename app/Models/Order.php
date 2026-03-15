@@ -10,6 +10,7 @@ class Order extends Model
 {
     protected $fillable = [
         'user_id',
+        'distributor_id',
         'status',
         'total_amount',
         'notes',
@@ -18,6 +19,11 @@ class Order extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function distributor(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'distributor_id');
     }
 
     public function items(): HasMany
