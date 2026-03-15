@@ -1,7 +1,6 @@
 import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
-import { Package, Clock, CheckCircle, XCircle, User, AlertCircle } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Package, Clock, CheckCircle, XCircle, AlertCircle, ArrowRight, Sparkles } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -99,225 +98,376 @@ export default function IncomingOrders({ orders, stats }: Props) {
     const otherOrders = filteredOrders.filter(o => o.status !== 'pending');
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 flex items-start justify-center py-4 px-3 md:py-8">
             <Head title="Incoming Orders" />
 
-            {/* Header */}
-            <header className="bg-white border-b shadow-sm sticky top-0 z-50">
-                <div className="container py-4">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h1 className="text-2xl font-bold text-gray-900">Incoming Orders</h1>
-                            <p className="text-sm text-gray-500 mt-1">Review and manage retailer orders</p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <Badge variant="outline" className="text-sm">
-                                <Clock className="h-3 w-3 mr-1" />
-                                {stats.pending_orders} Pending
-                            </Badge>
+            {/* Decorative Background Elements */}
+            <div className="fixed inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-0 left-1/4 w-64 h-64 md:w-96 md:h-96 bg-[#00447C]/5 rounded-full blur-3xl"></div>
+                <div className="absolute bottom-0 right-1/4 w-64 h-64 md:w-80 md:h-80 bg-blue-400/5 rounded-full blur-3xl"></div>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] md:w-[800px] md:h-[800px] bg-gradient-to-br from-[#00447C]/3 via-transparent to-transparent rounded-full blur-3xl"></div>
+            </div>
+
+            {/* Main Container */}
+            <div className="relative w-full max-w-5xl mx-auto">
+                {/* Header */}
+                <header className="relative bg-white/80 backdrop-blur-xl border-b border-slate-200/50 sticky top-0 z-50 rounded-t-2xl">
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#00447C]/5 via-transparent to-[#00447C]/5"></div>
+                    <div className="relative px-4 md:px-6 py-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <div className="flex items-center gap-3">
+                                <div className="relative flex-shrink-0">
+                                    <div className="absolute inset-0 bg-[#00447C]/20 rounded-xl blur-md"></div>
+                                    <div className="relative w-10 h-10 md:w-11 md:h-11 rounded-xl bg-gradient-to-br from-[#00447C] to-[#003d6f] flex items-center justify-center shadow-lg">
+                                        <Package className="h-4 w-4 md:h-5 md:w-5 text-white" />
+                                    </div>
+                                </div>
+                                <div className="min-w-0">
+                                    <h1 className="text-lg md:text-xl font-bold text-slate-900 tracking-tight truncate">Incoming Orders</h1>
+                                    <p className="text-xs text-slate-500 font-medium hidden sm:block">Review and manage retailer orders</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+                                <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 md:px-3 py-1.5 rounded-full bg-amber-50 border border-amber-200">
+                                    <Clock className="h-3.5 w-3.5 text-amber-600" />
+                                    <span className="text-xs sm:text-sm font-semibold text-amber-700 whitespace-nowrap">{stats.pending_orders} Pending</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </header>
+                </header>
 
-            <main className="container py-6 pb-24">
-                <div className="flex flex-col gap-6">
+                {/* Content */}
+                <main className="relative bg-white/60 backdrop-blur-sm border-x border-slate-200/50 px-4 md:px-6 py-6 md:py-8 pb-40">
+                    <div className="flex flex-col gap-6 md:gap-8">
                     {/* Stats Cards */}
-                    <div className="grid gap-4 md:grid-cols-4">
-                        <Card className="border-l-4 border-l-blue-500">
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium text-gray-600">Total Orders</CardTitle>
-                                <Package className="h-4 w-4 text-blue-500" />
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-3xl font-bold text-gray-900">{stats.total_orders}</div>
-                            </CardContent>
-                        </Card>
-                        <Card className="border-l-4 border-l-amber-500">
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium text-gray-600">Awaiting Review</CardTitle>
-                                <Clock className="h-4 w-4 text-amber-500" />
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-3xl font-bold text-amber-600">{stats.pending_orders}</div>
-                            </CardContent>
-                        </Card>
-                        <Card className="border-l-4 border-l-emerald-500">
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium text-gray-600">Approved</CardTitle>
-                                <CheckCircle className="h-4 w-4 text-emerald-500" />
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-3xl font-bold text-emerald-600">{stats.approved_orders}</div>
-                            </CardContent>
-                        </Card>
-                        <Card className="border-l-4 border-l-red-500">
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium text-gray-600">Rejected</CardTitle>
-                                <XCircle className="h-4 w-4 text-red-500" />
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-3xl font-bold text-red-600">{stats.rejected_orders}</div>
-                            </CardContent>
-                        </Card>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+                        <div className="group relative">
+                            <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl md:rounded-2xl blur-lg opacity-20 group-hover:opacity-30 transition-opacity"></div>
+                            <div className="relative bg-white rounded-xl md:rounded-2xl p-3 md:p-5 border border-slate-200/50 shadow-sm hover:shadow-md transition-shadow">
+                                <div className="flex items-center justify-between mb-2 md:mb-3">
+                                    <span className="text-[10px] md:text-xs font-semibold text-slate-500 uppercase tracking-wide">Total</span>
+                                    <div className="w-7 h-7 md:w-9 md:h-9 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                                        <Package className="h-3.5 w-3.5 md:h-4 md:w-4 text-white" />
+                                    </div>
+                                </div>
+                                <div className="text-2xl md:text-4xl font-bold bg-gradient-to-br from-slate-900 to-slate-600 bg-clip-text text-transparent">{stats.total_orders}</div>
+                            </div>
+                        </div>
+                        <div className="group relative">
+                            <div className="absolute inset-0 bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl md:rounded-2xl blur-lg opacity-20 group-hover:opacity-30 transition-opacity"></div>
+                            <div className="relative bg-white rounded-xl md:rounded-2xl p-3 md:p-5 border border-slate-200/50 shadow-sm hover:shadow-md transition-shadow">
+                                <div className="flex items-center justify-between mb-2 md:mb-3">
+                                    <span className="text-[10px] md:text-xs font-semibold text-slate-500 uppercase tracking-wide">Pending</span>
+                                    <div className="w-7 h-7 md:w-9 md:h-9 rounded-lg bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center">
+                                        <Clock className="h-3.5 w-3.5 md:h-4 md:w-4 text-white" />
+                                    </div>
+                                </div>
+                                <div className="text-2xl md:text-4xl font-bold bg-gradient-to-br from-amber-600 to-amber-500 bg-clip-text text-transparent">{stats.pending_orders}</div>
+                            </div>
+                        </div>
+                        <div className="group relative">
+                            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl md:rounded-2xl blur-lg opacity-20 group-hover:opacity-30 transition-opacity"></div>
+                            <div className="relative bg-white rounded-xl md:rounded-2xl p-3 md:p-5 border border-slate-200/50 shadow-sm hover:shadow-md transition-shadow">
+                                <div className="flex items-center justify-between mb-2 md:mb-3">
+                                    <span className="text-[10px] md:text-xs font-semibold text-slate-500 uppercase tracking-wide">Approved</span>
+                                    <div className="w-7 h-7 md:w-9 md:h-9 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center">
+                                        <CheckCircle className="h-3.5 w-3.5 md:h-4 md:w-4 text-white" />
+                                    </div>
+                                </div>
+                                <div className="text-2xl md:text-4xl font-bold bg-gradient-to-br from-emerald-600 to-emerald-500 bg-clip-text text-transparent">{stats.approved_orders}</div>
+                            </div>
+                        </div>
+                        <div className="group relative">
+                            <div className="absolute inset-0 bg-gradient-to-br from-red-500 to-red-600 rounded-xl md:rounded-2xl blur-lg opacity-20 group-hover:opacity-30 transition-opacity"></div>
+                            <div className="relative bg-white rounded-xl md:rounded-2xl p-3 md:p-5 border border-slate-200/50 shadow-sm hover:shadow-md transition-shadow">
+                                <div className="flex items-center justify-between mb-2 md:mb-3">
+                                    <span className="text-[10px] md:text-xs font-semibold text-slate-500 uppercase tracking-wide">Rejected</span>
+                                    <div className="w-7 h-7 md:w-9 md:h-9 rounded-lg bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center">
+                                        <XCircle className="h-3.5 w-3.5 md:h-4 md:w-4 text-white" />
+                                    </div>
+                                </div>
+                                <div className="text-2xl md:text-4xl font-bold bg-gradient-to-br from-red-600 to-red-500 bg-clip-text text-transparent">{stats.rejected_orders}</div>
+                            </div>
+                        </div>
                     </div>
 
-                    {/* Filter Tabs */}
-                    <div className="flex gap-2">
-                        {['all', 'pending', 'approved', 'rejected'].map((status) => (
-                            <Button
-                                key={status}
-                                variant={filter === status ? 'default' : 'outline'}
-                                size="sm"
-                                onClick={() => setFilter(status)}
-                                className={filter === status ? 'bg-[#00447C] hover:bg-[#003d6f]' : ''}
-                            >
-                                {status.charAt(0).toUpperCase() + status.slice(1)}
-                            </Button>
-                        ))}
+                    {/* Filter Tabs - Scrollable on mobile */}
+                    <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
+                        <div className="flex gap-2 p-1.5 bg-white rounded-xl border border-slate-200/50 shadow-sm w-fit min-w-max">
+                            {['all', 'pending', 'approved', 'rejected'].map((status) => (
+                                <button
+                                    key={status}
+                                    onClick={() => setFilter(status)}
+                                    className={`px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-medium transition-all duration-300 whitespace-nowrap ${
+                                        filter === status
+                                            ? 'bg-gradient-to-r from-[#00447C] to-[#003d6f] text-white shadow-md'
+                                            : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                                    }`}
+                                >
+                                    {status.charAt(0).toUpperCase() + status.slice(1)}
+                                </button>
+                            ))}
+                        </div>
                     </div>
 
                     {/* Pending Orders Section */}
-                    {pendingOrders.length > 0 && (
-                        <div>
-                            <div className="flex items-center gap-2 mb-4">
-                                <AlertCircle className="h-4 w-4 text-amber-500" />
-                                <h2 className="text-base font-semibold text-gray-900">Pending Approval</h2>
-                                <Badge className="bg-amber-500 text-xs">{pendingOrders.length}</Badge>
+                    {pendingOrders.length > 0 ? (
+                        <div className="relative">
+                            <div className="absolute -left-4 top-0 bottom-0 w-1 bg-gradient-to-b from-amber-400 to-amber-600 rounded-full hidden md:block"></div>
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-4 sm:mb-6 pl-0 sm:pl-4">
+                                <div className="relative flex-shrink-0">
+                                    <div className="absolute inset-0 bg-amber-400/30 rounded-full blur-md"></div>
+                                    <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center">
+                                        <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                                    </div>
+                                </div>
+                                <div className="flex-1">
+                                    <h2 className="text-base sm:text-lg font-bold text-slate-900">Pending Approval</h2>
+                                    <p className="text-xs text-slate-500 font-medium">Requires your attention</p>
+                                </div>
+                                <Badge className="bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-md self-start sm:self-center">
+                                    <Sparkles className="h-3 w-3 mr-1" />
+                                    {pendingOrders.length}
+                                </Badge>
                             </div>
-                            <div className="grid gap-3">
-                                {pendingOrders.map((order) => (
-                                    <Card key={order.id} className="border-amber-200 bg-amber-50/50">
-                                        <CardContent className="p-4">
-                                            <div className="flex items-start justify-between mb-3">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white font-bold text-base">
-                                                        {order.user.name.charAt(0).toUpperCase()}
+                            <div className="grid gap-3 md:gap-4">
+                                {pendingOrders.map((order, index) => (
+                                    <div
+                                        key={order.id}
+                                        className="group relative"
+                                        style={{ animationDelay: `${index * 100}ms` }}
+                                    >
+                                        <div className="absolute inset-0 bg-gradient-to-r from-amber-500/10 to-amber-600/5 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                                        <div className="relative bg-white rounded-2xl border border-amber-200/50 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
+                                            {/* Top accent bar */}
+                                            <div className="h-1 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600"></div>
+                                            
+                                            <div className="p-4 md:p-5">
+                                                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-3 md:mb-4">
+                                                    <div className="flex items-center gap-3 md:gap-4 flex-1">
+                                                        <div className="relative flex-shrink-0">
+                                                            <div className="absolute inset-0 bg-gradient-to-br from-amber-400 to-amber-600 rounded-xl blur-md opacity-50"></div>
+                                                            <div className="relative h-12 w-12 md:h-14 md:w-14 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white font-bold text-lg md:text-xl shadow-lg">
+                                                                {order.user.name.charAt(0).toUpperCase()}
+                                                            </div>
+                                                        </div>
+                                                        <div className="min-w-0 flex-1">
+                                                            <div className="font-bold text-base md:text-lg text-slate-900 truncate">{order.user.name}</div>
+                                                            <div className="text-xs sm:text-sm text-slate-600 font-medium truncate">
+                                                                {order.user.shop_name || order.user.email}
+                                                            </div>
+                                                            <div className="text-xs text-slate-500 mt-1 flex items-center gap-1">
+                                                                <Clock className="h-3 w-3" />
+                                                                {order.created_at}
+                                                            </div>
+                                                        </div>
                                                     </div>
+                                                    <Badge className={getStatusBadgeClass(order.status)} variant="outline">
+                                                        {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                                                    </Badge>
+                                                </div>
+
+                                                {/* Order Items */}
+                                                <div className="bg-gradient-to-br from-slate-50 to-slate-100/50 rounded-xl p-3 md:p-4 mb-3 md:mb-4 border border-slate-200/50">
+                                                    <div className="text-xs font-semibold text-slate-700 mb-2 md:mb-3 flex items-center gap-2">
+                                                        <Package className="h-3.5 w-3.5" />
+                                                        Order Items
+                                                    </div>
+                                                    <div className="space-y-1.5 md:space-y-2">
+                                                        {order.items.map((item, itemIndex) => (
+                                                            <div
+                                                                key={itemIndex}
+                                                                className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 text-xs p-2 rounded-lg bg-white/50 border border-slate-200/50"
+                                                            >
+                                                                <span className="font-medium text-slate-700 break-words">{item.product_name}</span>
+                                                                <div className="text-right flex-shrink-0">
+                                                                    <span className="text-slate-600">
+                                                                        {item.quantity} × ${item.price.toFixed(2)}
+                                                                    </span>
+                                                                    <span className="font-bold text-slate-900 ml-2">
+                                                                        = ${item.subtotal.toFixed(2)}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+
+                                                {/* Total and Actions */}
+                                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-3 md:pt-4 border-t border-slate-200/50">
                                                     <div>
-                                                        <div className="font-semibold text-base text-gray-900">{order.user.name}</div>
-                                                        <div className="text-xs text-gray-600">
-                                                            {order.user.shop_name || order.user.email}
+                                                        <div className="text-xs text-slate-500 font-medium mb-0.5">Total Amount</div>
+                                                        <div className="text-xl md:text-2xl font-bold bg-gradient-to-br from-slate-900 to-slate-700 bg-clip-text text-transparent">
+                                                            ${order.total_amount.toFixed(2)}
                                                         </div>
-                                                        <div className="text-xs text-gray-500 mt-0.5">{order.created_at}</div>
+                                                    </div>
+                                                    <div className="flex gap-2 flex-shrink-0">
+                                                        <Button
+                                                            onClick={() => handleReject(order.id)}
+                                                            variant="outline"
+                                                            size="sm"
+                                                            className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-300 transition-all duration-300 flex-1 sm:flex-none"
+                                                        >
+                                                            <XCircle className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                                                            <span className="ml-1 md:ml-1.5">Reject</span>
+                                                        </Button>
+                                                        <Button
+                                                            onClick={() => handleApprove(order.id)}
+                                                            size="sm"
+                                                            className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-md hover:shadow-lg transition-all duration-300 flex-1 sm:flex-none"
+                                                        >
+                                                            <CheckCircle className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                                                            <span className="ml-1 md:ml-1.5 hidden sm:inline">Approve</span>
+                                                            <span className="ml-1 md:ml-1.5 sm:hidden">OK</span>
+                                                        </Button>
                                                     </div>
                                                 </div>
-                                                <Badge className={getStatusBadgeClass(order.status)} variant="outline">
-                                                    {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                                                </Badge>
                                             </div>
-
-                                            {/* Order Items */}
-                                            <div className="bg-white rounded-md p-3 mb-3">
-                                                <div className="text-xs font-medium text-gray-700 mb-2">Order Items:</div>
-                                                <div className="space-y-1.5">
-                                                    {order.items.map((item, index) => (
-                                                        <div key={index} className="flex items-center justify-between text-xs">
-                                                            <span className="text-gray-700">{item.product_name}</span>
-                                                            <span className="text-gray-600">
-                                                                {item.quantity} × ${item.price.toFixed(2)} = 
-                                                                <span className="font-semibold text-gray-900 ml-1">
-                                                                    ${item.subtotal.toFixed(2)}
-                                                                </span>
-                                                            </span>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </div>
-
-                                            {/* Total and Actions */}
-                                            <div className="flex items-center justify-between pt-3 border-t border-amber-200">
-                                                <div className="text-lg font-bold text-gray-900">
-                                                    ${order.total_amount.toFixed(2)}
-                                                </div>
-                                                <div className="flex gap-2">
-                                                    <Button
-                                                        onClick={() => handleReject(order.id)}
-                                                        variant="outline"
-                                                        size="sm"
-                                                        className="border-red-300 text-red-600 hover:bg-red-50 hover:text-red-700 h-8"
-                                                    >
-                                                        <XCircle className="h-3 w-3 mr-1" />
-                                                        Reject
-                                                    </Button>
-                                                    <Button
-                                                        onClick={() => handleApprove(order.id)}
-                                                        size="sm"
-                                                        className="bg-emerald-600 hover:bg-emerald-700 h-8"
-                                                    >
-                                                        <CheckCircle className="h-3 w-3 mr-1" />
-                                                        Approve
-                                                    </Button>
-                                                </div>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
+                                        </div>
+                                    </div>
                                 ))}
                             </div>
                         </div>
-                    )}
+                    ) : filter === 'pending' ? (
+                        <div className="relative bg-white rounded-2xl border border-slate-200/50 shadow-sm overflow-hidden">
+                            <div className="absolute inset-0 bg-gradient-to-br from-amber-50/30 to-transparent"></div>
+                            <div className="relative flex flex-col items-center justify-center py-16 text-center px-6">
+                                <div className="relative mb-6">
+                                    <div className="absolute inset-0 bg-amber-400/20 rounded-full blur-xl"></div>
+                                    <div className="relative w-20 h-20 rounded-full bg-gradient-to-br from-amber-100 to-amber-200 flex items-center justify-center">
+                                        <AlertCircle className="h-10 w-10 text-amber-400" />
+                                    </div>
+                                </div>
+                                <h3 className="text-xl font-bold text-slate-900 mb-2">No pending orders</h3>
+                                <p className="text-slate-500 max-w-sm">
+                                    There are no orders awaiting your approval at the moment.
+                                </p>
+                            </div>
+                        </div>
+                    ) : null}
 
                     {/* Other Orders Section */}
-                    {otherOrders.length > 0 && (
-                        <div className="mt-8">
-                            <div className="flex items-center gap-2 mb-4">
-                                <Package className="h-5 w-5 text-gray-500" />
-                                <h2 className="text-lg font-semibold text-gray-900">Processed Orders</h2>
-                                <Badge variant="outline">{otherOrders.length}</Badge>
+                    {otherOrders.length > 0 ? (
+                        <div className="mt-4">
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+                                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-slate-400 to-slate-600 flex items-center justify-center flex-shrink-0">
+                                    <Package className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                                </div>
+                                <div className="flex-1">
+                                    <h2 className="text-base sm:text-lg font-bold text-slate-900">Processed Orders</h2>
+                                    <p className="text-xs text-slate-500 font-medium">Completed decisions</p>
+                                </div>
+                                <Badge variant="outline" className="self-start sm:self-center flex-shrink-0">
+                                    {otherOrders.length}
+                                </Badge>
                             </div>
-                            <div className="grid gap-4">
+                            <div className="grid gap-3">
                                 {otherOrders.map((order) => (
-                                    <Card key={order.id} className={order.status === 'approved' ? 'border-emerald-200 bg-emerald-50/30' : 'border-red-200 bg-red-50/30'}>
-                                        <CardContent className="p-6">
-                                            <div className="flex items-start justify-between">
-                                                <div className="flex items-center gap-4">
-                                                    <div className={`h-12 w-12 rounded-full flex items-center justify-center text-white font-bold text-lg ${
-                                                        order.status === 'approved' 
-                                                            ? 'bg-gradient-to-br from-emerald-400 to-emerald-600' 
+                                    <div
+                                        key={order.id}
+                                        className={`group relative rounded-xl border shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden ${
+                                            order.status === 'approved'
+                                                ? 'bg-gradient-to-br from-emerald-50/50 to-emerald-100/30 border-emerald-200/50'
+                                                : 'bg-gradient-to-br from-red-50/50 to-red-100/30 border-red-200/50'
+                                        }`}
+                                    >
+                                        <div className={`h-0.5 bg-gradient-to-r ${
+                                            order.status === 'approved'
+                                                ? 'from-emerald-400 via-emerald-500 to-emerald-600'
+                                                : 'from-red-400 via-red-500 to-red-600'
+                                        }`}></div>
+                                        <div className="p-4">
+                                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                                                <div className="flex items-center gap-3 flex-1">
+                                                    <div className={`h-10 w-10 sm:h-11 sm:w-11 rounded-lg flex items-center justify-center text-white font-bold flex-shrink-0 ${
+                                                        order.status === 'approved'
+                                                            ? 'bg-gradient-to-br from-emerald-400 to-emerald-600'
                                                             : 'bg-gradient-to-br from-red-400 to-red-600'
                                                     }`}>
                                                         {order.user.name.charAt(0).toUpperCase()}
                                                     </div>
-                                                    <div>
-                                                        <div className="font-semibold text-gray-900">{order.user.name}</div>
-                                                        <div className="text-sm text-gray-600">
+                                                    <div className="min-w-0 flex-1">
+                                                        <div className="font-semibold text-slate-900 truncate">{order.user.name}</div>
+                                                        <div className="text-xs text-slate-600 truncate">
                                                             {order.user.shop_name || order.user.email}
                                                         </div>
-                                                        <div className="text-xs text-gray-500 mt-1">{order.created_at}</div>
                                                     </div>
                                                 </div>
-                                                <Badge className={getStatusBadgeClass(order.status)}>
-                                                    {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                                                </Badge>
-                                            </div>
-                                            
-                                            <div className="mt-4 pt-4 border-t flex items-center justify-between">
-                                                <div className="text-sm text-gray-600">
-                                                    {order.items.length} items
-                                                </div>
-                                                <div className="text-lg font-bold text-gray-900">
-                                                    ${order.total_amount.toFixed(2)}
+                                                <div className="flex items-center gap-3 flex-shrink-0">
+                                                    <Badge className={getStatusBadgeClass(order.status)}>
+                                                        {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                                                    </Badge>
+                                                    <div className="text-right">
+                                                        <div className="text-sm font-bold text-slate-900">${order.total_amount.toFixed(2)}</div>
+                                                        <div className="text-xs text-slate-500">{order.items.length} items</div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </CardContent>
-                                    </Card>
+                                        </div>
+                                    </div>
                                 ))}
                             </div>
                         </div>
-                    )}
+                    ) : (filter === 'approved' || filter === 'rejected') ? (
+                        <div className="relative bg-white rounded-2xl border border-slate-200/50 shadow-sm overflow-hidden mt-4">
+                            <div className={`absolute inset-0 bg-gradient-to-br to-transparent ${
+                                filter === 'approved' ? 'from-emerald-50/30' : 'from-red-50/30'
+                            }`}></div>
+                            <div className="relative flex flex-col items-center justify-center py-12 md:py-16 text-center px-6">
+                                <div className="relative mb-4 md:mb-6">
+                                    <div className={`absolute inset-0 rounded-full blur-xl ${
+                                        filter === 'approved' ? 'bg-emerald-400/20' : 'bg-red-400/20'
+                                    }`}></div>
+                                    <div className={`relative w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center ${
+                                        filter === 'approved'
+                                            ? 'bg-gradient-to-br from-emerald-100 to-emerald-200'
+                                            : 'bg-gradient-to-br from-red-100 to-red-200'
+                                    }`}>
+                                        {filter === 'approved' ? (
+                                            <CheckCircle className="h-8 w-8 md:h-10 md:w-10 text-emerald-400" />
+                                        ) : (
+                                            <XCircle className="h-8 w-8 md:h-10 md:w-10 text-red-400" />
+                                        )}
+                                    </div>
+                                </div>
+                                <h3 className="text-lg md:text-xl font-bold text-slate-900 mb-2">
+                                    No {filter} orders
+                                </h3>
+                                <p className="text-sm md:text-base text-slate-500 max-w-sm px-4">
+                                    {filter === 'approved'
+                                        ? 'There are no approved orders yet.'
+                                        : 'There are no rejected orders yet.'
+                                    }
+                                </p>
+                            </div>
+                        </div>
+                    ) : null}
 
-                    {/* Empty State */}
-                    {filteredOrders.length === 0 && (
-                        <Card>
-                            <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-                                <Package className="h-16 w-16 text-gray-300 mb-4" />
-                                <h3 className="text-lg font-semibold text-gray-900">No orders found</h3>
-                                <p className="text-gray-500 mt-1">No orders match the selected filter</p>
-                            </CardContent>
-                        </Card>
+                    {/* Empty State for All Filter */}
+                    {filter === 'all' && filteredOrders.length === 0 && (
+                        <div className="relative bg-white rounded-2xl border border-slate-200/50 shadow-sm overflow-hidden">
+                            <div className="absolute inset-0 bg-gradient-to-br from-slate-50/50 to-transparent"></div>
+                            <div className="relative flex flex-col items-center justify-center py-12 md:py-16 text-center px-6">
+                                <div className="relative mb-4 md:mb-6">
+                                    <div className="absolute inset-0 bg-slate-400/20 rounded-full blur-xl"></div>
+                                    <div className="relative w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-slate-200 to-slate-300 flex items-center justify-center">
+                                        <Package className="h-8 w-8 md:h-10 md:w-10 text-slate-400" />
+                                    </div>
+                                </div>
+                                <h3 className="text-lg md:text-xl font-bold text-slate-900 mb-2">No orders yet</h3>
+                                <p className="text-sm md:text-base text-slate-500 max-w-sm px-4">
+                                    There are no orders in the system yet. Orders from retailers will appear here.
+                                </p>
+                            </div>
+                        </div>
                     )}
                 </div>
-            </main>
+                </main>
+
+                {/* Footer border */}
+                <div className="relative bg-white/80 backdrop-blur-xl border-t border-slate-200/50 rounded-b-2xl h-2"></div>
+            </div>
         </div>
     );
 }
