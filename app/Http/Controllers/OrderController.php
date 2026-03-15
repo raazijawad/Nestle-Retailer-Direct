@@ -99,4 +99,24 @@ class OrderController extends Controller
             'stats' => $stats,
         ]);
     }
+
+    /**
+     * Approve an order.
+     */
+    public function approve(Order $order)
+    {
+        $order->update(['status' => 'approved']);
+
+        return redirect()->back()->with('success', 'Order approved successfully!');
+    }
+
+    /**
+     * Reject an order.
+     */
+    public function reject(Order $order)
+    {
+        $order->update(['status' => 'rejected']);
+
+        return redirect()->back()->with('success', 'Order rejected.');
+    }
 }

@@ -1,10 +1,12 @@
-import { Head } from '@inertiajs/react';
-import { ShoppingCart, Package, DollarSign, Clock, User, Mail } from 'lucide-react';
+import { Head, router } from '@inertiajs/react';
+import { ShoppingCart, Package, DollarSign, Clock, User, Mail, CheckCircle, XCircle } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { dashboard } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
+import { useToast } from '@/hooks/use-toast';
 
 interface OrderItem {
     product_name: string;
@@ -53,11 +55,11 @@ const breadcrumbs: BreadcrumbItem[] = [
 function getStatusBadgeVariant(status: string): 'default' | 'secondary' | 'destructive' | 'outline' {
     switch (status) {
         case 'pending':
-            return 'secondary';
+            return 'secondary'; // yellow/amber
         case 'approved':
-            return 'default';
+            return 'default'; // green
         case 'rejected':
-            return 'destructive';
+            return 'destructive'; // red
         case 'completed':
             return 'outline';
         default:
@@ -65,8 +67,60 @@ function getStatusBadgeVariant(status: string): 'default' | 'secondary' | 'destr
     }
 }
 
+function getStatusBadgeClass(status: string): string {
+    switch (status) {
+        case 'pending':
+            return 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200';
+        case 'approved':
+            return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200';
+        case 'rejected':
+            return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
+        default:
+            return '';
+    }
+}
+
 export default function Orders({ orders, stats }: Props) {
+    const { toast } = useToast();
     console.log('Orders page received:', { orders, stats });
+
+    const handleApprove = (orderId: number) => {
+        router.post(`/dashboard/orders/${orderId}/approve`, {}, {
+            preserveScroll: true,
+            onSuccess: () => {
+                toast({
+                    title: 'Order approved!',
+                    description: 'The order status has been updated to approved.',
+                });
+            },
+            onError: () => {
+                toast({
+                    title: 'Failed to approve',
+                    description: 'There was an error approving the order.',
+                    variant: 'destructive',
+                });
+            },
+        });
+    };
+
+    const handleReject = (orderId: number) => {
+        router.post(`/dashboard/orders/${orderId}/reject`, {}, {
+            preserveScroll: true,
+            onSuccess: () => {
+                toast({
+                    title: 'Order rejected',
+                    description: 'The order has been rejected.',
+                });
+            },
+            onError: () => {
+                toast({
+                    title: 'Failed to reject',
+                    description: 'There was an error rejecting the order.',
+                    variant: 'destructive',
+                });
+            },
+        });
+    };
     
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -146,7 +200,7 @@ export default function Orders({ orders, stats }: Props) {
                                                 </div>
                                             </div>
                                             <div className="flex items-center gap-4">
-                                                <Badge variant={getStatusBadgeVariant(order.status)}>
+                                                <Badge className={getStatusBadgeClass(order.status)}>
                                                     {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                                                 </Badge>
                                                 <div className="text-right">
@@ -182,6 +236,28 @@ export default function Orders({ orders, stats }: Props) {
                                                 ))}
                                             </div>
                                         </div>
+
+                                        {/* Action Buttons for Pending Orders */}
+                                        {order.status === 'pending' && (
+                                            <div className="border-t pt-3 mt-3 flex gap-2">
+                                                <Button
+                                                    size="sm"
+                                                    onClick={() => handleApprove(order.id)}
+                                                    className="bg-emerald-600 hover:bg-emerald-700"
+                                                >
+                                                    <CheckCircle className="h-4 w-4 mr-1" />
+                                                    Approve Order
+                                                </Button>
+                                                <Button
+                                                    size="sm"
+                                                    variant="destructive"
+                                                    onClick={() => handleReject(order.id)}
+                                                >
+                                                    <XCircle className="h-4 w-4 mr-1" />
+                                                    Reject Order
+                                                </Button>
+                                            </div>
+                                        )}
                                     </div>
                                 ))}
                             </div>

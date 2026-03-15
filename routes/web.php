@@ -32,6 +32,8 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     Route::inertia('dashboard', 'dashboard')->name('dashboard');
     Route::get('dashboard/accounts', [AccountsController::class, 'index'])->name('dashboard.accounts');
     Route::get('dashboard/orders', [OrderController::class, 'index'])->name('dashboard.orders');
+    Route::post('dashboard/orders/{order}/approve', [OrderController::class, 'approve'])->name('dashboard.orders.approve');
+    Route::post('dashboard/orders/{order}/reject', [OrderController::class, 'reject'])->name('dashboard.orders.reject');
 });
 
 Route::middleware(['auth'])->post('/orders', [OrderController::class, 'store'])->name('orders.store');
