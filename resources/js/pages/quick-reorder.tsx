@@ -1,8 +1,15 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { ChevronLeft, HelpCircle, Plus, Minus, ShoppingCart, CheckCircle } from 'lucide-react';
+import { ChevronLeft, HelpCircle, Plus, Minus, ShoppingCart, CheckCircle, Users, ChevronDown } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
 
 interface Product {
     id: number;
@@ -19,6 +26,12 @@ interface OrderItem extends Product {
     quantity: number;
 }
 
+interface Distributor {
+    id: number;
+    name: string;
+    company_name: string | null;
+}
+
 // Stock status based on quantity: >20 In Stock, <=20 Low Stock, =0 Out of Stock
 function getStockStatus(stockQuantity: number): { status: string; statusColor: string } {
     if (stockQuantity === 0) {
@@ -32,13 +45,15 @@ function getStockStatus(stockQuantity: number): { status: string; statusColor: s
 
 interface Props {
     products: Product[];
+    distributors: Distributor[];
 }
 
-export default function QuickReorder({ products }: Props) {
+export default function QuickReorder({ products, distributors }: Props) {
     const { toast } = useToast();
-    
+    const [selectedDistributor, setSelectedDistributor] = useState<Distributor | null>(null);
+
     // Initialize order items with products from database
-    const [orderItems, setOrderItems] = useState<OrderItem[]>(() => 
+    const [orderItems, setOrderItems] = useState<OrderItem[]>(() =>
         products.map(product => ({
             ...product,
             ...getStockStatus(product.stock_quantity),
@@ -46,6 +61,7 @@ export default function QuickReorder({ products }: Props) {
         }))
     );
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isDistributorOpen, setIsDistributorOpen] = useState(false);
 
     const handleQuantityChange = (id: number, delta: number) => {
         setOrderItems((prev) =>
@@ -156,6 +172,47 @@ export default function QuickReorder({ products }: Props) {
 
             {/* Main Content */}
             <main className="container md:py-6 pb-32">
+                {/* Distributors Dropdown */}
+                {distributors.length > 0 && (
+                    <Card className="max-w-2xl mx-auto border-0 shadow-lg mb-6 bg-white/90 backdrop-blur-sm">
+                        <CardContent className="p-4">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <Users className="h-5 w-5 text-[#00447C]" />
+                                    <h2 className="font-semibold text-gray-900 text-sm">Distributors</h2>
+                                </div>
+                                <DropdownMenu open={isDistributorOpen} onOpenChange={setIsDistributorOpen}>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant="outline" className="w-[200px] justify-between">
+                                            {selectedDistributor ? (
+                                                <span className="truncate">{selectedDistributor.company_name || selectedDistributor.name}</span>
+                                            ) : (
+                                                <span>Select Distributor</span>
+                                            )}
+                                            <ChevronDown className="h-4 w-4" />
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end" className="w-[200px]">
+                                        {distributors.map((distributor) => (
+                                            <DropdownMenuItem
+                                                key={distributor.id}
+                                                onClick={() => setSelectedDistributor(distributor)}
+                                            >
+                                                <div className="flex flex-col">
+                                                    <span className="font-medium">{distributor.company_name || distributor.name}</span>
+                                                    {distributor.company_name && (
+                                                        <span className="text-xs text-muted-foreground">{distributor.name}</span>
+                                                    )}
+                                                </div>
+                                            </DropdownMenuItem>
+                                        ))}
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            </div>
+                        </CardContent>
+                    </Card>
+                )}
+
                 {/* Frequent Orders Card */}
                 <Card className="max-w-2xl mx-auto border-0 shadow-xl bg-white/90 backdrop-blur-sm">
                     <CardContent className="p-0">
