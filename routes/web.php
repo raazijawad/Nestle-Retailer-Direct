@@ -39,8 +39,9 @@ Route::middleware(['auth', 'verified', 'distributor'])->group(function () {
 
 Route::inertia('/quick-reorder', 'quick-reorder')->name('quick-reorder')->middleware(['auth']);
 
-// Stock/Inventory route (not related to dashboard)
+// Stock/Inventory routes (not related to dashboard)
 Route::middleware(['auth'])->get('/stock', [StockController::class, 'index'])->name('stock.index');
+Route::middleware(['auth'])->put('/stock/{product}', [StockController::class, 'update'])->name('stock.update');
 
 // Logout route (GET for link, POST for form)
 Route::get('/logout', function () {
