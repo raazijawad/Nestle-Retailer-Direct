@@ -6,6 +6,8 @@ use Laravel\Fortify\Features;
 use App\Http\Controllers\Dashboard\AccountsController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\DistributorController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\StockController;
 
 // Home route - redirects based on user role
 Route::get('/', function () {
@@ -13,7 +15,7 @@ Route::get('/', function () {
         if (Auth::user()->isDistributor()) {
             return redirect()->route('distributor.home');
         }
-        // Add retailer redirect here if needed
+        // Retailers and other users stay on the home page (nestle-system-analysis)
     }
     return inertia('nestle-system-analysis', [
         'canRegister' => Features::enabled(Features::registration()),
@@ -37,6 +39,9 @@ Route::middleware(['auth', 'verified', 'distributor'])->group(function () {
 
 Route::inertia('/quick-reorder', 'quick-reorder')->name('quick-reorder')->middleware(['auth']);
 
+// Stock/Inventory route (not related to dashboard)
+Route::middleware(['auth'])->get('/stock', [StockController::class, 'index'])->name('stock.index');
+
 // Logout route (GET for link, POST for form)
 Route::get('/logout', function () {
     Auth::logout();
@@ -59,6 +64,9 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     Route::get('dashboard/orders', [OrderController::class, 'index'])->name('dashboard.orders');
     Route::post('dashboard/orders/{order}/approve', [OrderController::class, 'approve'])->name('dashboard.orders.approve');
     Route::post('dashboard/orders/{order}/reject', [OrderController::class, 'reject'])->name('dashboard.orders.reject');
+    
+    // Products routes
+    Route::get('products', [ProductController::class, 'index'])->name('products.index');
 });
 
 Route::middleware(['auth'])->post('/orders', [OrderController::class, 'store'])->name('orders.store');

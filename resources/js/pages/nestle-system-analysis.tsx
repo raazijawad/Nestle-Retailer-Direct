@@ -15,7 +15,7 @@ const layoutSections = [
     {
         area: 'Inventory Snapshots',
         icon: Package,
-        href: '/dashboard/inventory',
+        href: '/stock',
     },
     {
         area: 'My Orders',

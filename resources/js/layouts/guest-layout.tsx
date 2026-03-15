@@ -13,9 +13,9 @@ import {
 
 const navLinks = [
     { name: 'Home', icon: Home, href: '/' },
-    { name: 'Orders', icon: ShoppingCart, href: '/dashboard' },
-    { name: 'Inventory', icon: Package, href: '/dashboard' },
-    { name: 'Profile', icon: Settings, href: '/dashboard' },
+    { name: 'Orders', icon: ShoppingCart, href: '/dashboard/orders' },
+    { name: 'Inventory', icon: Package, href: '/stock' },
+    { name: 'Profile', icon: Settings, href: '/settings/profile' },
 ];
 
 export default function GuestLayout({
