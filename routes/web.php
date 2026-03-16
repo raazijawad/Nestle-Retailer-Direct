@@ -42,6 +42,7 @@ Route::middleware(['auth', 'verified', 'distributor'])->group(function () {
     Route::get('/distributor/retailers', [DistributorController::class, 'retailers'])->name('distributor.retailers');
     Route::get('/distributor/dashboard', [DistributorController::class, 'dashboard'])->name('distributor.dashboard');
     Route::get('/distributor/notifications', [DistributorController::class, 'notifications'])->name('distributor.notifications');
+    Route::get('/distributor/warehouse-inventory', [DistributorController::class, 'warehouseInventory'])->name('distributor.warehouse-inventory');
 });
 
 Route::middleware(['auth'])->get('/quick-reorder', [QuickReorderController::class, 'index'])->name('quick-reorder');

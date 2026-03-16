@@ -2,7 +2,7 @@ import { Head, Link } from '@inertiajs/react';
 import GuestLayout from '@/layouts/guest-layout';
 import {
     ClipboardList,
-    CheckCircle,
+    Warehouse,
     Truck,
     BarChart3,
     MapPin,
@@ -20,10 +20,10 @@ const distributorSections = [
         color: 'from-blue-500 to-blue-600',
     },
     {
-        area: 'Approve/Reject',
-        icon: CheckCircle,
-        href: '/distributor/incoming-orders?status=pending',
-        description: 'Manage order status',
+        area: 'Warehouse Inventory',
+        icon: Warehouse,
+        href: '/distributor/warehouse-inventory',
+        description: 'Manage stock levels',
         color: 'from-emerald-500 to-emerald-600',
     },
     {

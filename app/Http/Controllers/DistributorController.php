@@ -403,4 +403,34 @@ class DistributorController extends Controller
     {
         return inertia('distributor/notifications');
     }
+
+    /**
+     * Display warehouse inventory.
+     */
+    public function warehouseInventory()
+    {
+        $products = Product::all()->map(function ($product) {
+            return [
+                'id' => $product->id,
+                'name' => $product->name,
+                'description' => $product->description,
+                'price' => (float) $product->price,
+                'image' => $product->image_url ?? '/images/placeholder-product.png',
+                'stock_status' => $product->stock_quantity > 20 ? 'in_stock' : ($product->stock_quantity > 0 ? 'low_stock' : 'out_of_stock'),
+                'stock_quantity' => $product->stock_quantity ?? 0,
+            ];
+        });
+
+        $stats = [
+            'total_products' => Product::count(),
+            'in_stock' => Product::where('stock_quantity', '>', 20)->count(),
+            'low_stock' => Product::where('stock_quantity', '>', 0)->where('stock_quantity', '<=', 20)->count(),
+            'out_of_stock' => Product::where('stock_quantity', 0)->count(),
+        ];
+
+        return inertia('distributor/warehouse-inventory', [
+            'products' => $products,
+            'stats' => $stats,
+        ]);
+    }
 }
