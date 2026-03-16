@@ -6,13 +6,16 @@ use App\Models\Product;
 use App\Models\RetailerInventory;
 use Illuminate\Http\Request;
 
-class StockController extends Controller
+class RetailerInventoryController extends Controller
 {
+    /**
+     * Display retailer's inventory.
+     */
     public function index()
     {
         $retailerId = auth()->id();
 
-        // Get retailer's personal inventory quantities
+        // Get all products with retailer's inventory quantities
         $products = Product::all()->map(function ($product) use ($retailerId) {
             $retailerInventory = RetailerInventory::where('user_id', $retailerId)
                 ->where('product_id', $product->id)
@@ -31,37 +34,16 @@ class StockController extends Controller
             ];
         });
 
-        return inertia('stock/index', [
+        $stats = [
+            'total_products' => $products->count(),
+            'in_stock' => $products->filter(fn($p) => $p['stock_status'] === 'in_stock')->count(),
+            'low_stock' => $products->filter(fn($p) => $p['stock_status'] === 'low_stock')->count(),
+            'out_of_stock' => $products->filter(fn($p) => $p['stock_status'] === 'out_of_stock')->count(),
+        ];
+
+        return inertia('retailer/inventory', [
             'products' => $products,
-            'categories' => [],
+            'stats' => $stats,
         ]);
-    }
-
-    public function update(Request $request, Product $product)
-    {
-        $retailerId = auth()->id();
-
-        $validated = $request->validate([
-            'stock_quantity' => 'required|integer|min:0',
-        ]);
-
-        // Update retailer's inventory
-        $retailerInventory = RetailerInventory::where('user_id', $retailerId)
-            ->where('product_id', $product->id)
-            ->first();
-
-        if ($retailerInventory) {
-            $retailerInventory->update([
-                'stock_quantity' => $validated['stock_quantity'],
-            ]);
-        } else {
-            RetailerInventory::create([
-                'user_id' => $retailerId,
-                'product_id' => $product->id,
-                'stock_quantity' => $validated['stock_quantity'],
-            ]);
-        }
-
-        return back()->with('success', 'Stock quantity updated successfully.');
     }
 }

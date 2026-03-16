@@ -12,6 +12,7 @@ use Illuminate\Notifications\Notifiable;
 use App\Models\DistributorProfile;
 use App\Models\ShopProfile;
 use App\Models\Order;
+use App\Models\RetailerInventory;
 
 class User extends Authenticatable
 {
@@ -75,6 +76,14 @@ class User extends Authenticatable
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class);
+    }
+
+    /**
+     * Get retailer inventory for this user.
+     */
+    public function retailerInventory(): HasMany
+    {
+        return $this->hasMany(RetailerInventory::class);
     }
 
     /**

@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
+use App\Models\RetailerInventory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
@@ -115,13 +117,34 @@ class OrderController extends Controller
 
         $order->update(['status' => 'approved']);
 
-        // Increase stock quantity for the retailer's inventory
+        // Get the retailer (user who placed the order)
+        $retailerId = $order->user_id;
+
+        // Process each order item
         foreach ($order->items as $item) {
             if (!empty($item->product_id)) {
+                // Decrease stock from distributor warehouse
                 $product = Product::find($item->product_id);
                 if ($product) {
-                    $newQuantity = $product->stock_quantity + $item->quantity;
-                    $product->update(['stock_quantity' => $newQuantity]);
+                    $newWarehouseQuantity = $product->stock_quantity - $item->quantity;
+                    $product->update(['stock_quantity' => max(0, $newWarehouseQuantity)]);
+                }
+
+                // Increase stock in retailer inventory
+                $retailerInventory = RetailerInventory::where('user_id', $retailerId)
+                    ->where('product_id', $item->product_id)
+                    ->first();
+
+                if ($retailerInventory) {
+                    // Update existing inventory
+                    $retailerInventory->increment('stock_quantity', $item->quantity);
+                } else {
+                    // Create new inventory record
+                    RetailerInventory::create([
+                        'user_id' => $retailerId,
+                        'product_id' => $item->product_id,
+                        'stock_quantity' => $item->quantity,
+                    ]);
                 }
             }
         }

@@ -9,6 +9,7 @@ use App\Http\Controllers\DistributorController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\QuickReorderController;
+use App\Http\Controllers\RetailerInventoryController;
 
 // Home route - redirects based on user role
 Route::get('/', function () {
@@ -43,6 +44,11 @@ Route::middleware(['auth', 'verified', 'distributor'])->group(function () {
     Route::get('/distributor/dashboard', [DistributorController::class, 'dashboard'])->name('distributor.dashboard');
     Route::get('/distributor/notifications', [DistributorController::class, 'notifications'])->name('distributor.notifications');
     Route::get('/distributor/warehouse-inventory', [DistributorController::class, 'warehouseInventory'])->name('distributor.warehouse-inventory');
+});
+
+// Retailer inventory routes
+Route::middleware(['auth', 'verified', 'retailer'])->group(function () {
+    Route::get('/retailer/inventory', [RetailerInventoryController::class, 'index'])->name('retailer.inventory');
 });
 
 Route::middleware(['auth'])->get('/quick-reorder', [QuickReorderController::class, 'index'])->name('quick-reorder');
