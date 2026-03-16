@@ -26,11 +26,24 @@ class OrderController extends Controller
             'items.*.product_image' => 'nullable|string',
             'items.*.quantity' => 'required|integer|min:1',
             'items.*.price' => 'required|numeric|min:0',
-            'distributor_id' => 'nullable|integer|exists:users,id',
+            'distributor_id' => 'required|integer|exists:users,id',
         ], [
             'items.required' => 'Please select at least one item to order.',
             'items.min' => 'Please select at least one item to order.',
+            'distributor_id.required' => 'Please select a distributor to place your order.',
         ]);
+
+        // Validate that order quantity doesn't exceed distributor warehouse stock
+        foreach ($validated['items'] as $item) {
+            if (!empty($item['product_id'])) {
+                $product = Product::find($item['product_id']);
+                if ($product && $item['quantity'] > $product->stock_quantity) {
+                    return back()->withErrors([
+                        'items' => "Only {$product->stock_quantity} units of {$product->name} available in warehouse.",
+                    ])->withInput();
+                }
+            }
+        }
 
         \Log::info('Validated data:', $validated);
 
@@ -41,7 +54,7 @@ class OrderController extends Controller
 
         $order = Order::create([
             'user_id' => Auth::id(),
-            'distributor_id' => $validated['distributor_id'] ?? null,
+            'distributor_id' => $validated['distributor_id'],
             'status' => 'pending',
             'total_amount' => $totalAmount,
         ]);

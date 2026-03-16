@@ -18,6 +18,7 @@ interface Product {
     price: number;
     image: string;
     stock_quantity: number;
+    warehouse_quantity: number;
 }
 
 interface OrderItem extends Product {
@@ -68,6 +69,17 @@ export default function QuickReorder({ products, distributors }: Props) {
             prev.map((order) => {
                 if (order.id === id) {
                     const newQuantity = Math.max(0, order.quantity + delta);
+                    
+                    // Check if quantity exceeds warehouse stock when distributor is selected
+                    if (selectedDistributor && newQuantity > order.warehouse_quantity) {
+                        toast({
+                            title: 'Insufficient warehouse stock',
+                            description: `Only ${order.warehouse_quantity} units of ${order.name} available from ${selectedDistributor.name}.`,
+                            variant: 'destructive',
+                        });
+                        return { ...order, quantity: order.warehouse_quantity };
+                    }
+                    
                     return { ...order, quantity: newQuantity };
                 }
                 return order;
@@ -87,8 +99,18 @@ export default function QuickReorder({ products, distributors }: Props) {
             return;
         }
 
+        if (!selectedDistributor) {
+            toast({
+                title: 'No distributor selected',
+                description: 'Please select a distributor to place your order.',
+                variant: 'destructive',
+            });
+            setIsDistributorOpen(true);
+            return;
+        }
+
         const orderData = {
-            distributor_id: selectedDistributor?.id || null,
+            distributor_id: selectedDistributor.id,
             items: itemsToOrder.map((item) => ({
                 product_id: item.id,
                 product_name: item.name,
@@ -240,8 +262,13 @@ export default function QuickReorder({ products, distributors }: Props) {
                                     <div className="flex-1 min-w-0">
                                         <h3 className="font-semibold text-gray-900 text-xs md:text-sm truncate">{order.name}</h3>
                                         <p className={`text-xs font-medium mt-0.5 ${order.statusColor}`}>
-                                            {order.status} {order.stock_quantity > 0 && `(${order.stock_quantity} available)`}
+                                            Your Stock: {order.stock_quantity} units
                                         </p>
+                                        {selectedDistributor && (
+                                            <p className="text-xs text-[#00447C] font-medium">
+                                                Warehouse: {order.warehouse_quantity} units available
+                                            </p>
+                                        )}
                                         <p className="text-xs text-gray-500 mt-0.5">
                                             ${order.price.toFixed(2)} each
                                             {order.quantity > 0 && (

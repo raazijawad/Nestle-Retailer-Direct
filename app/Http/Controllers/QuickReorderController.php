@@ -13,6 +13,18 @@ class QuickReorderController extends Controller
     {
         $retailerId = auth()->id();
 
+        // Get distributors with their stock quantities
+        $distributors = User::where('role', 'distributor')
+            ->with('distributorProfile')
+            ->get()
+            ->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'company_name' => $user->distributorProfile?->company_name ?? null,
+                ];
+            });
+
         $products = Product::all()->map(function ($product) use ($retailerId) {
             // Get retailer's personal inventory quantity
             $retailerInventory = RetailerInventory::where('user_id', $retailerId)
@@ -28,20 +40,9 @@ class QuickReorderController extends Controller
                 'price' => (float) $product->price,
                 'image' => $product->image_url ?? '/images/placeholder-product.png',
                 'stock_quantity' => $retailerQuantity,
+                'warehouse_quantity' => $product->stock_quantity ?? 0,
             ];
         });
-
-        // Get distributors (users with distributor role)
-        $distributors = User::where('role', 'distributor')
-            ->with('distributorProfile')
-            ->get()
-            ->map(function ($user) {
-                return [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'company_name' => $user->distributorProfile?->company_name ?? null,
-                ];
-            });
 
         return inertia('quick-reorder', [
             'products' => $products,
