@@ -54,15 +54,6 @@ class OrderController extends Controller
                 'price' => $item['price'],
                 'subtotal' => $item['quantity'] * $item['price'],
             ]);
-
-            // Increase stock quantity for the product (adding to inventory)
-            if (!empty($item['product_id'])) {
-                $product = Product::find($item['product_id']);
-                if ($product) {
-                    $newQuantity = $product->stock_quantity + $item['quantity'];
-                    $product->update(['stock_quantity' => $newQuantity]);
-                }
-            }
         }
 
         return redirect()->back()->with('success', 'Order placed successfully!');
@@ -119,7 +110,21 @@ class OrderController extends Controller
      */
     public function approve(Order $order)
     {
+        // Load order items
+        $order->load('items');
+
         $order->update(['status' => 'approved']);
+
+        // Increase stock quantity for the retailer's inventory
+        foreach ($order->items as $item) {
+            if (!empty($item->product_id)) {
+                $product = Product::find($item->product_id);
+                if ($product) {
+                    $newQuantity = $product->stock_quantity + $item->quantity;
+                    $product->update(['stock_quantity' => $newQuantity]);
+                }
+            }
+        }
 
         return redirect()->back()->with('success', 'Order approved successfully!');
     }

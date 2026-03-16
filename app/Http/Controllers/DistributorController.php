@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Models\Product;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -184,8 +185,23 @@ class DistributorController extends Controller
         if ($order->distributor_id !== auth()->id()) {
             abort(403, 'Unauthorized');
         }
-        
+
+        // Load order items
+        $order->load('items');
+
         $order->update(['status' => 'approved']);
+
+        // Increase stock quantity for the retailer's inventory
+        foreach ($order->items as $item) {
+            if (!empty($item->product_id)) {
+                $product = Product::find($item->product_id);
+                if ($product) {
+                    $newQuantity = $product->stock_quantity + $item->quantity;
+                    $product->update(['stock_quantity' => $newQuantity]);
+                }
+            }
+        }
+
         return redirect()->back()->with('success', 'Order approved successfully!');
     }
 
@@ -208,7 +224,22 @@ class DistributorController extends Controller
      */
     public function approveOrder(Order $order)
     {
+        // Load order items
+        $order->load('items');
+
         $order->update(['status' => 'approved']);
+
+        // Increase stock quantity for the retailer's inventory
+        foreach ($order->items as $item) {
+            if (!empty($item->product_id)) {
+                $product = Product::find($item->product_id);
+                if ($product) {
+                    $newQuantity = $product->stock_quantity + $item->quantity;
+                    $product->update(['stock_quantity' => $newQuantity]);
+                }
+            }
+        }
+
         return redirect()->back()->with('success', 'Order approved successfully!');
     }
 
@@ -230,8 +261,23 @@ class DistributorController extends Controller
         if ($order->distributor_id !== auth()->id()) {
             abort(403, 'Unauthorized');
         }
-        
+
+        // Load order items
+        $order->load('items');
+
         $order->update(['status' => 'approved']);
+
+        // Increase stock quantity for the retailer's inventory
+        foreach ($order->items as $item) {
+            if (!empty($item->product_id)) {
+                $product = Product::find($item->product_id);
+                if ($product) {
+                    $newQuantity = $product->stock_quantity + $item->quantity;
+                    $product->update(['stock_quantity' => $newQuantity]);
+                }
+            }
+        }
+
         return redirect()->back()->with('success', 'Order approved successfully!');
     }
 
