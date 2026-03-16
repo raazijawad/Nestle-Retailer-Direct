@@ -498,4 +498,19 @@ class DistributorController extends Controller
             'stats' => $stats,
         ]);
     }
+
+    /**
+     * Restock warehouse inventory.
+     */
+    public function restock(Request $request, Product $product)
+    {
+        $validated = $request->validate([
+            'quantity' => 'required|integer|min:1',
+        ]);
+
+        $newQuantity = $product->stock_quantity + $validated['quantity'];
+        $product->update(['stock_quantity' => $newQuantity]);
+
+        return redirect()->back()->with('success', 'Stock added successfully!');
+    }
 }

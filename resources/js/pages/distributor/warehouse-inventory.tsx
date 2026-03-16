@@ -1,10 +1,20 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
-import { Search, Package, AlertTriangle, Warehouse, TrendingUp, TrendingDown, Eye, EyeOff, ChevronLeft, HelpCircle, LayoutDashboard, Settings } from 'lucide-react';
+import { Search, Package, AlertTriangle, Warehouse, TrendingUp, TrendingDown, Eye, EyeOff, ChevronLeft, HelpCircle, LayoutDashboard, Settings, Plus } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
 
 interface Product {
     id: number;
@@ -55,9 +65,12 @@ function getStockStatusLabel(status: string): string {
 }
 
 export default function WarehouseInventory({ products, stats }: Props) {
+    const { toast } = useToast();
     const [searchQuery, setSearchQuery] = useState('');
     const [stockFilter, setStockFilter] = useState<string>('all');
     const [showOutOfStock, setShowOutOfStock] = useState(true);
+    const [restockProduct, setRestockProduct] = useState<Product | null>(null);
+    const [restockQuantity, setRestockQuantity] = useState<number>(0);
 
     const filteredProducts = products
         .filter((product) => {
@@ -67,6 +80,35 @@ export default function WarehouseInventory({ products, stats }: Props) {
             const shouldShowOutOfStock = showOutOfStock || product.stock_status !== 'out_of_stock';
             return matchesSearch && matchesStockFilter && shouldShowOutOfStock;
         });
+
+    const handleRestockClick = (product: Product) => {
+        setRestockProduct(product);
+        setRestockQuantity(0);
+    };
+
+    const handleRestockSubmit = () => {
+        if (restockProduct && restockQuantity > 0) {
+            router.post(`/distributor/warehouse-inventory/${restockProduct.id}/restock`, {
+                quantity: restockQuantity,
+            }, {
+                preserveScroll: true,
+                onSuccess: () => {
+                    toast({
+                        title: 'Stock added!',
+                        description: `${restockProduct.name} quantity increased by ${restockQuantity} units.`,
+                    });
+                    setRestockProduct(null);
+                },
+                onError: () => {
+                    toast({
+                        title: 'Failed to add stock',
+                        description: 'There was an error updating the stock quantity.',
+                        variant: 'destructive',
+                    });
+                },
+            });
+        }
+    };
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100">
@@ -244,6 +286,15 @@ export default function WarehouseInventory({ products, stats }: Props) {
                                                 style={{ width: `${Math.min(100, (product.stock_quantity / 100) * 100)}%` }}
                                             />
                                         </div>
+                                        <Button
+                                            onClick={() => handleRestockClick(product)}
+                                            className="w-full"
+                                            variant="outline"
+                                            size="sm"
+                                        >
+                                            <Plus className="h-4 w-4 mr-1" />
+                                            Add Stock
+                                        </Button>
                                     </CardContent>
                                 </Card>
                             ))}
@@ -251,6 +302,45 @@ export default function WarehouseInventory({ products, stats }: Props) {
                     )}
                 </div>
             </main>
+
+            {/* Restock Dialog */}
+            <Dialog open={!!restockProduct} onOpenChange={() => setRestockProduct(null)}>
+                <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                        <DialogTitle>Add Stock to Warehouse</DialogTitle>
+                        <DialogDescription>
+                            {restockProduct && `Add inventory quantity for ${restockProduct.name}`}
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                        <div className="grid gap-2">
+                            <Label htmlFor="quantity">Quantity to Add</Label>
+                            <Input
+                                id="quantity"
+                                type="number"
+                                min="1"
+                                value={restockQuantity}
+                                onChange={(e) => setRestockQuantity(parseInt(e.target.value) || 0)}
+                                className="w-full"
+                                placeholder="Enter quantity"
+                            />
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                            <p>Current stock: <Badge>{restockProduct?.stock_quantity || 0} units</Badge></p>
+                            <p className="mt-1">New stock: <Badge>{(restockProduct?.stock_quantity || 0) + restockQuantity} units</Badge></p>
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setRestockProduct(null)}>
+                            Cancel
+                        </Button>
+                        <Button onClick={handleRestockSubmit}>
+                            <Plus className="h-4 w-4 mr-2" />
+                            Add Stock
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
 
             {/* Spacer */}
             <div className="h-20"></div>
