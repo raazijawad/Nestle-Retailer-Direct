@@ -155,31 +155,21 @@ export default function MyOrderRecords({ orders, stats }: Props) {
                                             key={order.id}
                                             className="rounded-lg border border-border p-2.5 hover:bg-muted/30 transition-colors"
                                         >
-                                            {/* Order Header */}
-                                            <div className="flex items-center justify-between mb-2">
-                                                <div className="flex items-center gap-2">
-                                                    <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#00447C] to-[#003d6f] flex items-center justify-center text-white font-semibold text-xs">
-                                                        #{order.id}
-                                                    </div>
-                                                    <div>
-                                                        <div className="text-xs font-medium">Order #{order.id}</div>
-                                                        <div className="text-[10px] text-muted-foreground flex items-center gap-1">
-                                                            <Calendar className="h-2.5 w-2.5" />
-                                                            {order.created_date}
-                                                        </div>
+                                            <div className="flex items-center gap-2">
+                                                {/* Order Info */}
+                                                <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#00447C] to-[#003d6f] flex items-center justify-center text-white font-semibold text-xs flex-shrink-0">
+                                                    #{order.id}
+                                                </div>
+                                                <div>
+                                                    <div className="text-xs font-medium">Order #{order.id}</div>
+                                                    <div className="text-[10px] text-muted-foreground flex items-center gap-1">
+                                                        <Calendar className="h-2.5 w-2.5" />
+                                                        {order.created_date}
                                                     </div>
                                                 </div>
-                                                <div className="text-right">
-                                                    <Badge className={getStatusBadgeClass(order.status)} variant={getStatusBadgeVariant(order.status)}>
-                                                        {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                                                    </Badge>
-                                                    <div className="text-xs font-semibold mt-0.5">${order.total_amount.toFixed(2)}</div>
-                                                </div>
-                                            </div>
-
-                                            {/* Order Items */}
-                                            <div className="border-t pt-2">
-                                                <div className="flex flex-wrap gap-1.5">
+                                                
+                                                {/* Order Items */}
+                                                <div className="flex items-center gap-1.5 flex-1">
                                                     {order.items.map((item, index) => (
                                                         <div
                                                             key={index}
@@ -200,6 +190,14 @@ export default function MyOrderRecords({ orders, stats }: Props) {
                                                             </div>
                                                         </div>
                                                     ))}
+                                                </div>
+
+                                                {/* Status & Total */}
+                                                <div className="text-right flex-shrink-0">
+                                                    <Badge className={getStatusBadgeClass(order.status)} variant={getStatusBadgeVariant(order.status)}>
+                                                        {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                                                    </Badge>
+                                                    <div className="text-xs font-semibold mt-0.5">${order.total_amount.toFixed(2)}</div>
                                                 </div>
                                             </div>
                                         </div>
