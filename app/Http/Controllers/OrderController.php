@@ -181,4 +181,45 @@ class OrderController extends Controller
 
         return redirect()->back()->with('success', 'Order rejected.');
     }
+
+    /**
+     * Display all orders for the authenticated user.
+     */
+    public function myOrders()
+    {
+        $orders = Order::with(['items'])
+            ->where('user_id', Auth::id())
+            ->latest()
+            ->get()
+            ->map(function ($order) {
+                return [
+                    'id' => $order->id,
+                    'status' => $order->status,
+                    'total_amount' => (float) $order->total_amount,
+                    'created_at' => $order->created_at->diffForHumans(),
+                    'created_date' => $order->created_at->format('M d, Y'),
+                    'items' => $order->items->map(function ($item) {
+                        return [
+                            'product_name' => $item->product_name,
+                            'product_image' => $item->product_image,
+                            'quantity' => (int) $item->quantity,
+                            'price' => (float) $item->price,
+                            'subtotal' => (float) $item->subtotal,
+                        ];
+                    })->toArray(),
+                ];
+            })->toArray();
+
+        $stats = [
+            'total_orders' => (int) Order::where('user_id', Auth::id())->count(),
+            'pending_orders' => (int) Order::where('user_id', Auth::id())->where('status', 'pending')->count(),
+            'completed_orders' => (int) Order::where('user_id', Auth::id())->where('status', 'completed')->count(),
+            'total_spent' => (float) Order::where('user_id', Auth::id())->sum('total_amount'),
+        ];
+
+        return inertia('myorderrecords', [
+            'orders' => $orders,
+            'stats' => $stats,
+        ]);
+    }
 }

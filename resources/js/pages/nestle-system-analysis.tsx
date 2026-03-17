@@ -20,7 +20,7 @@ const layoutSections = [
     {
         area: 'My Orders',
         icon: Clock,
-        href: '/dashboard/orders',
+        href: '/my-orders',
     },
 ];
 
