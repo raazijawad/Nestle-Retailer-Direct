@@ -97,45 +97,41 @@ export default function MyOrderRecords({ orders, stats }: Props) {
 
             <div className="flex-1 container overflow-y-auto pb-24 pt-4 md:pt-6">
                     {/* Stats Cards */}
-                    <div className="grid gap-3 md:gap-4 grid-cols-2 md:grid-cols-4 mb-4 md:mb-6">
+                    <div className="grid gap-2 grid-cols-4 mb-4">
                         <Card className="bg-white/90 dark:bg-white/10 border-white/50 backdrop-blur-sm">
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-xs md:text-sm font-medium">Total Orders</CardTitle>
-                                <Package className="h-4 w-4 text-muted-foreground" />
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 py-1.5">
+                                <CardTitle className="text-[9px] md:text-[10px] font-medium">Total</CardTitle>
+                                <Package className="h-3 w-3 text-muted-foreground" />
                             </CardHeader>
-                            <CardContent>
-                                <div className="text-xl md:text-2xl font-bold">{stats.total_orders}</div>
-                                <p className="text-xs text-muted-foreground">All time orders</p>
+                            <CardContent className="py-0">
+                                <div className="text-base md:text-lg font-bold">{stats.total_orders}</div>
                             </CardContent>
                         </Card>
                         <Card className="bg-white/90 dark:bg-white/10 border-white/50 backdrop-blur-sm">
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-xs md:text-sm font-medium">Pending</CardTitle>
-                                <Clock className="h-4 w-4 text-muted-foreground" />
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 py-1.5">
+                                <CardTitle className="text-[9px] md:text-[10px] font-medium">Pending</CardTitle>
+                                <Clock className="h-3 w-3 text-muted-foreground" />
                             </CardHeader>
-                            <CardContent>
-                                <div className="text-xl md:text-2xl font-bold">{stats.pending_orders}</div>
-                                <p className="text-xs text-muted-foreground">Awaiting review</p>
+                            <CardContent className="py-0">
+                                <div className="text-base md:text-lg font-bold">{stats.pending_orders}</div>
                             </CardContent>
                         </Card>
                         <Card className="bg-white/90 dark:bg-white/10 border-white/50 backdrop-blur-sm">
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-xs md:text-sm font-medium">Completed</CardTitle>
-                                <Calendar className="h-4 w-4 text-muted-foreground" />
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 py-1.5">
+                                <CardTitle className="text-[9px] md:text-[10px] font-medium">Done</CardTitle>
+                                <Calendar className="h-3 w-3 text-muted-foreground" />
                             </CardHeader>
-                            <CardContent>
-                                <div className="text-xl md:text-2xl font-bold">{stats.completed_orders}</div>
-                                <p className="text-xs text-muted-foreground">Delivered orders</p>
+                            <CardContent className="py-0">
+                                <div className="text-base md:text-lg font-bold">{stats.completed_orders}</div>
                             </CardContent>
                         </Card>
                         <Card className="bg-white/90 dark:bg-white/10 border-white/50 backdrop-blur-sm">
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-xs md:text-sm font-medium">Total Spent</CardTitle>
-                                <DollarSign className="h-4 w-4 text-muted-foreground" />
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 py-1.5">
+                                <CardTitle className="text-[9px] md:text-[10px] font-medium">Spent</CardTitle>
+                                <DollarSign className="h-3 w-3 text-muted-foreground" />
                             </CardHeader>
-                            <CardContent>
-                                <div className="text-xl md:text-2xl font-bold">${stats.total_spent.toFixed(2)}</div>
-                                <p className="text-xs text-muted-foreground">All time spending</p>
+                            <CardContent className="py-0">
+                                <div className="text-base md:text-lg font-bold">${stats.total_spent.toFixed(2)}</div>
                             </CardContent>
                         </Card>
                     </div>
@@ -153,22 +149,22 @@ export default function MyOrderRecords({ orders, stats }: Props) {
                                     <p className="text-muted-foreground">Your order history will appear here</p>
                                 </div>
                             ) : (
-                                <div className="space-y-3 md:space-y-4">
+                                <div className="space-y-2">
                                     {orders.map((order) => (
                                         <div
                                             key={order.id}
-                                            className="rounded-lg border border-border p-3 md:p-4 hover:bg-muted/30 transition-colors"
+                                            className="rounded-lg border border-border p-2.5 hover:bg-muted/30 transition-colors"
                                         >
                                             {/* Order Header */}
-                                            <div className="flex items-center justify-between mb-3">
-                                                <div className="flex items-center gap-2 md:gap-3">
-                                                    <div className="h-8 w-8 md:h-10 md:w-10 rounded-full bg-gradient-to-br from-[#00447C] to-[#003d6f] flex items-center justify-center text-white font-semibold text-xs md:text-base">
+                                            <div className="flex items-center justify-between mb-2">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#00447C] to-[#003d6f] flex items-center justify-center text-white font-semibold text-xs">
                                                         #{order.id}
                                                     </div>
                                                     <div>
-                                                        <div className="text-xs md:text-sm font-medium">Order #{order.id}</div>
-                                                        <div className="text-xs text-muted-foreground flex items-center gap-1">
-                                                            <Calendar className="h-3 w-3" />
+                                                        <div className="text-xs font-medium">Order #{order.id}</div>
+                                                        <div className="text-[10px] text-muted-foreground flex items-center gap-1">
+                                                            <Calendar className="h-2.5 w-2.5" />
                                                             {order.created_date}
                                                         </div>
                                                     </div>
@@ -177,24 +173,23 @@ export default function MyOrderRecords({ orders, stats }: Props) {
                                                     <Badge className={getStatusBadgeClass(order.status)} variant={getStatusBadgeVariant(order.status)}>
                                                         {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                                                     </Badge>
-                                                    <div className="text-sm md:text-base font-semibold mt-1">${order.total_amount.toFixed(2)}</div>
+                                                    <div className="text-xs font-semibold mt-0.5">${order.total_amount.toFixed(2)}</div>
                                                 </div>
                                             </div>
 
                                             {/* Order Items */}
-                                            <div className="border-t pt-3">
-                                                <div className="text-xs font-medium text-muted-foreground mb-2">Order Items:</div>
-                                                <div className="flex flex-wrap gap-2">
+                                            <div className="border-t pt-2">
+                                                <div className="flex flex-wrap gap-1.5">
                                                     {order.items.map((item, index) => (
                                                         <div
                                                             key={index}
-                                                            className="flex items-center gap-2 bg-muted/50 rounded-md px-2 py-1.5"
+                                                            className="flex items-center gap-1.5 bg-muted/50 rounded-md px-2 py-1"
                                                         >
                                                             {item.product_image && (
                                                                 <img
                                                                     src={item.product_image}
                                                                     alt={item.product_name}
-                                                                    className="h-6 w-6 rounded object-cover"
+                                                                    className="h-5 w-5 rounded object-cover"
                                                                 />
                                                             )}
                                                             <div>
@@ -205,17 +200,6 @@ export default function MyOrderRecords({ orders, stats }: Props) {
                                                             </div>
                                                         </div>
                                                     ))}
-                                                </div>
-                                            </div>
-
-                                            {/* Order Footer */}
-                                            <div className="border-t mt-3 pt-2 flex items-center justify-between">
-                                                <div className="text-xs text-muted-foreground flex items-center gap-1">
-                                                    <Clock className="h-3 w-3" />
-                                                    Placed {order.created_at}
-                                                </div>
-                                                <div className="text-xs text-muted-foreground">
-                                                    {order.items.length} item{order.items.length > 1 ? 's' : ''}
                                                 </div>
                                             </div>
                                         </div>
