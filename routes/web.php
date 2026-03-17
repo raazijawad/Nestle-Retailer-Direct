@@ -53,6 +53,7 @@ Route::middleware(['auth', 'verified', 'retailer'])->group(function () {
 });
 
 Route::middleware(['auth'])->get('/quick-reorder', [QuickReorderController::class, 'index'])->name('quick-reorder');
+Route::middleware(['auth'])->get('/api/distributor/{distributorId}/inventory', [QuickReorderController::class, 'getDistributorInventory']);
 
 // Stock/Inventory routes (not related to dashboard)
 Route::middleware(['auth'])->get('/stock', [StockController::class, 'index'])->name('stock.index');

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DistributorInventory;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
@@ -35,11 +36,17 @@ class OrderController extends Controller
 
         // Validate that order quantity doesn't exceed distributor warehouse stock
         foreach ($validated['items'] as $item) {
-            if (!empty($item['product_id'])) {
-                $product = Product::find($item['product_id']);
-                if ($product && $item['quantity'] > $product->stock_quantity) {
+            if (!empty($item['product_id']) && !empty($validated['distributor_id'])) {
+                $distributorInventory = DistributorInventory::where('user_id', $validated['distributor_id'])
+                    ->where('product_id', $item['product_id'])
+                    ->first();
+
+                $availableQuantity = $distributorInventory ? $distributorInventory->stock_quantity : 0;
+
+                if ($item['quantity'] > $availableQuantity) {
+                    $product = Product::find($item['product_id']);
                     return back()->withErrors([
-                        'items' => "Only {$product->stock_quantity} units of {$product->name} available in warehouse.",
+                        'items' => "Only {$availableQuantity} units of {$product->name} available in warehouse.",
                     ])->withInput();
                 }
             }

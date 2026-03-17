@@ -1,8 +1,8 @@
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { ChevronLeft, HelpCircle, Plus, Minus, ShoppingCart, CheckCircle, Users, ChevronDown } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -52,6 +52,7 @@ interface Props {
 export default function QuickReorder({ products, distributors }: Props) {
     const { toast } = useToast();
     const [selectedDistributor, setSelectedDistributor] = useState<Distributor | null>(null);
+    const [warehouseStock, setWarehouseStock] = useState<Record<number, number>>({});
 
     // Initialize order items with products from database
     const [orderItems, setOrderItems] = useState<OrderItem[]>(() =>
@@ -63,6 +64,34 @@ export default function QuickReorder({ products, distributors }: Props) {
     );
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isDistributorOpen, setIsDistributorOpen] = useState(false);
+
+    // Fetch distributor warehouse stock when distributor is selected
+    useEffect(() => {
+        if (selectedDistributor) {
+            // Fetch warehouse stock for this distributor
+            fetch(`/api/distributor/${selectedDistributor.id}/inventory`)
+                .then(res => res.json())
+                .then(data => {
+                    const stockMap: Record<number, number> = {};
+                    data.forEach((item: { product_id: number; stock_quantity: number }) => {
+                        stockMap[item.product_id] = item.stock_quantity;
+                    });
+                    setWarehouseStock(stockMap);
+                    // Update order items with warehouse quantities
+                    setOrderItems(prev => prev.map(item => ({
+                        ...item,
+                        warehouse_quantity: stockMap[item.id] || 0
+                    })));
+                })
+                .catch(() => {
+                    // If fetch fails, set all to 0
+                    setOrderItems(prev => prev.map(item => ({
+                        ...item,
+                        warehouse_quantity: 0
+                    })));
+                });
+        }
+    }, [selectedDistributor]);
 
     const handleQuantityChange = (id: number, delta: number) => {
         setOrderItems((prev) =>

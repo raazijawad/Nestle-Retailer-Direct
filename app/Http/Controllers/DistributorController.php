@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DistributorInventory;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\RetailerInventory;
@@ -195,15 +196,19 @@ class DistributorController extends Controller
 
         // Get the retailer (user who placed the order)
         $retailerId = $order->user_id;
+        // Get the distributor who approved (current user)
+        $distributorId = auth()->id();
 
         // Process each order item
         foreach ($order->items as $item) {
             if (!empty($item->product_id)) {
                 // Decrease stock from distributor warehouse
-                $product = Product::find($item->product_id);
-                if ($product) {
-                    $newWarehouseQuantity = $product->stock_quantity - $item->quantity;
-                    $product->update(['stock_quantity' => max(0, $newWarehouseQuantity)]);
+                $distributorInventory = DistributorInventory::where('user_id', $distributorId)
+                    ->where('product_id', $item->product_id)
+                    ->first();
+
+                if ($distributorInventory) {
+                    $distributorInventory->decrement('stock_quantity', $item->quantity);
                 }
 
                 // Increase stock in retailer inventory
@@ -254,15 +259,19 @@ class DistributorController extends Controller
 
         // Get the retailer (user who placed the order)
         $retailerId = $order->user_id;
+        // Get the distributor who approved (current user)
+        $distributorId = auth()->id();
 
         // Process each order item
         foreach ($order->items as $item) {
             if (!empty($item->product_id)) {
                 // Decrease stock from distributor warehouse
-                $product = Product::find($item->product_id);
-                if ($product) {
-                    $newWarehouseQuantity = $product->stock_quantity - $item->quantity;
-                    $product->update(['stock_quantity' => max(0, $newWarehouseQuantity)]);
+                $distributorInventory = DistributorInventory::where('user_id', $distributorId)
+                    ->where('product_id', $item->product_id)
+                    ->first();
+
+                if ($distributorInventory) {
+                    $distributorInventory->decrement('stock_quantity', $item->quantity);
                 }
 
                 // Increase stock in retailer inventory
@@ -313,15 +322,19 @@ class DistributorController extends Controller
 
         // Get the retailer (user who placed the order)
         $retailerId = $order->user_id;
+        // Get the distributor who approved (current user)
+        $distributorId = auth()->id();
 
         // Process each order item
         foreach ($order->items as $item) {
             if (!empty($item->product_id)) {
                 // Decrease stock from distributor warehouse
-                $product = Product::find($item->product_id);
-                if ($product) {
-                    $newWarehouseQuantity = $product->stock_quantity - $item->quantity;
-                    $product->update(['stock_quantity' => max(0, $newWarehouseQuantity)]);
+                $distributorInventory = DistributorInventory::where('user_id', $distributorId)
+                    ->where('product_id', $item->product_id)
+                    ->first();
+
+                if ($distributorInventory) {
+                    $distributorInventory->decrement('stock_quantity', $item->quantity);
                 }
 
                 // Increase stock in retailer inventory
@@ -474,23 +487,32 @@ class DistributorController extends Controller
      */
     public function warehouseInventory()
     {
-        $products = Product::all()->map(function ($product) {
+        $distributorId = auth()->id();
+
+        // Get distributor's inventory for all products
+        $products = Product::all()->map(function ($product) use ($distributorId) {
+            $distributorInventory = DistributorInventory::where('user_id', $distributorId)
+                ->where('product_id', $product->id)
+                ->first();
+
+            $quantity = $distributorInventory ? $distributorInventory->stock_quantity : 0;
+
             return [
                 'id' => $product->id,
                 'name' => $product->name,
                 'description' => $product->description,
                 'price' => (float) $product->price,
                 'image' => $product->image_url ?? '/images/placeholder-product.png',
-                'stock_status' => $product->stock_quantity > 20 ? 'in_stock' : ($product->stock_quantity > 0 ? 'low_stock' : 'out_of_stock'),
-                'stock_quantity' => $product->stock_quantity ?? 0,
+                'stock_status' => $quantity > 20 ? 'in_stock' : ($quantity > 0 ? 'low_stock' : 'out_of_stock'),
+                'stock_quantity' => $quantity,
             ];
         });
 
         $stats = [
-            'total_products' => Product::count(),
-            'in_stock' => Product::where('stock_quantity', '>', 20)->count(),
-            'low_stock' => Product::where('stock_quantity', '>', 0)->where('stock_quantity', '<=', 20)->count(),
-            'out_of_stock' => Product::where('stock_quantity', 0)->count(),
+            'total_products' => $products->count(),
+            'in_stock' => $products->filter(fn($p) => $p['stock_status'] === 'in_stock')->count(),
+            'low_stock' => $products->filter(fn($p) => $p['stock_status'] === 'low_stock')->count(),
+            'out_of_stock' => $products->filter(fn($p) => $p['stock_status'] === 'out_of_stock')->count(),
         ];
 
         return inertia('distributor/warehouse-inventory', [
@@ -504,12 +526,25 @@ class DistributorController extends Controller
      */
     public function restock(Request $request, Product $product)
     {
+        $distributorId = auth()->id();
         $validated = $request->validate([
             'quantity' => 'required|integer|min:1',
         ]);
 
-        $newQuantity = $product->stock_quantity + $validated['quantity'];
-        $product->update(['stock_quantity' => $newQuantity]);
+        // Update distributor's inventory
+        $distributorInventory = DistributorInventory::where('user_id', $distributorId)
+            ->where('product_id', $product->id)
+            ->first();
+
+        if ($distributorInventory) {
+            $distributorInventory->increment('stock_quantity', $validated['quantity']);
+        } else {
+            DistributorInventory::create([
+                'user_id' => $distributorId,
+                'product_id' => $product->id,
+                'stock_quantity' => $validated['quantity'],
+            ]);
+        }
 
         return redirect()->back()->with('success', 'Stock added successfully!');
     }

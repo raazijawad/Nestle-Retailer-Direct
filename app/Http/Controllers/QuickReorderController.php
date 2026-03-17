@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DistributorInventory;
 use App\Models\Product;
 use App\Models\RetailerInventory;
 use App\Models\User;
@@ -40,7 +41,7 @@ class QuickReorderController extends Controller
                 'price' => (float) $product->price,
                 'image' => $product->image_url ?? '/images/placeholder-product.png',
                 'stock_quantity' => $retailerQuantity,
-                'warehouse_quantity' => $product->stock_quantity ?? 0,
+                'warehouse_quantity' => 0, // Will be updated based on selected distributor
             ];
         });
 
@@ -48,5 +49,23 @@ class QuickReorderController extends Controller
             'products' => $products,
             'distributors' => $distributors,
         ]);
+    }
+
+    /**
+     * Get distributor inventory for API.
+     */
+    public function getDistributorInventory($distributorId)
+    {
+        $inventory = DistributorInventory::where('user_id', $distributorId)
+            ->with('product')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'product_id' => $item->product_id,
+                    'stock_quantity' => $item->stock_quantity,
+                ];
+            });
+
+        return response()->json($inventory);
     }
 }
