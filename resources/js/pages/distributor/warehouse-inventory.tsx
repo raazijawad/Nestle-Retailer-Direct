@@ -252,7 +252,7 @@ export default function WarehouseInventory({ products, stats }: Props) {
                             </CardContent>
                         </Card>
                     ) : (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-5 gap-3">
                             {filteredProducts.map((product) => (
                                 <Card key={product.id} className="group border-0 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden">
                                     <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
@@ -261,20 +261,20 @@ export default function WarehouseInventory({ products, stats }: Props) {
                                             alt={product.name}
                                             className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-300"
                                         />
-                                        <Badge className={`absolute top-2 right-2 ${getStockStatusBadge(product.stock_status)}`}>
+                                        <Badge className={`absolute top-1 right-1 text-[10px] px-1.5 py-0.5 ${getStockStatusBadge(product.stock_status)}`}>
                                             {getStockStatusLabel(product.stock_status)}
                                         </Badge>
                                     </div>
-                                    <CardContent className="p-4 space-y-3">
+                                    <CardContent className="p-2 space-y-2">
                                         <div>
-                                            <h3 className="font-semibold text-slate-900 truncate">{product.name}</h3>
-                                            <p className="text-xs text-slate-500 line-clamp-2 mt-1">{product.description}</p>
+                                            <h3 className="font-semibold text-slate-900 text-sm truncate">{product.name}</h3>
+                                            <p className="text-[10px] text-slate-500 line-clamp-2 mt-0.5">{product.description}</p>
                                         </div>
                                         <div className="flex items-center justify-between">
-                                            <span className="text-lg font-bold text-[#00447C]">${product.price.toFixed(2)}</span>
-                                            <span className="text-sm text-slate-600 font-medium">{product.stock_quantity} units</span>
+                                            <span className="text-base font-bold text-[#00447C]">${product.price.toFixed(2)}</span>
+                                            <span className="text-xs text-slate-600 font-medium">{product.stock_quantity} units</span>
                                         </div>
-                                        <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                                        <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
                                             <div
                                                 className={`h-full rounded-full transition-all duration-300 ${
                                                     product.stock_status === 'in_stock'
@@ -288,11 +288,11 @@ export default function WarehouseInventory({ products, stats }: Props) {
                                         </div>
                                         <Button
                                             onClick={() => handleRestockClick(product)}
-                                            className="w-full"
+                                            className="w-full text-xs h-8"
                                             variant="outline"
                                             size="sm"
                                         >
-                                            <Plus className="h-4 w-4 mr-1" />
+                                            <Plus className="h-3 w-3 mr-1" />
                                             Add Stock
                                         </Button>
                                     </CardContent>
