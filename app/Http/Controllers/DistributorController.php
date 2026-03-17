@@ -548,4 +548,22 @@ class DistributorController extends Controller
 
         return redirect()->back()->with('success', 'Stock added successfully!');
     }
+
+    /**
+     * Delete multiple approved orders.
+     */
+    public function deleteApprovedOrders(Request $request)
+    {
+        $validated = $request->validate([
+            'order_ids' => 'required|array|min:1',
+            'order_ids.*' => 'required|integer|exists:orders,id',
+        ]);
+
+        // Delete only approved orders
+        Order::whereIn('id', $validated['order_ids'])
+            ->where('status', 'approved')
+            ->delete();
+
+        return redirect()->back()->with('success', 'Orders deleted successfully!');
+    }
 }

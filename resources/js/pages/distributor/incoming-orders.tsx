@@ -1,6 +1,6 @@
 import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
-import { Package, Clock, CheckCircle, XCircle, AlertCircle, ArrowRight, Sparkles } from 'lucide-react';
+import { Package, Clock, CheckCircle, XCircle, AlertCircle, ArrowRight, Sparkles, Trash2, Checkbox } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -54,6 +54,7 @@ function getStatusBadgeClass(status: string): string {
 export default function IncomingOrders({ orders, stats }: Props) {
     const { toast } = useToast();
     const [filter, setFilter] = useState('all');
+    const [selectedOrders, setSelectedOrders] = useState<number[]>([]);
 
     const handleApprove = (orderId: number) => {
         router.post(`/distributor/incoming-orders/${orderId}/approve`, {}, {
@@ -91,6 +92,50 @@ export default function IncomingOrders({ orders, stats }: Props) {
                 });
             },
         });
+    };
+
+    const handleDeleteApprovedOrders = () => {
+        if (selectedOrders.length === 0) return;
+
+        router.post('/distributor/incoming-orders/delete-approved', {
+            order_ids: selectedOrders,
+        }, {
+            preserveScroll: true,
+            onSuccess: () => {
+                toast({
+                    title: 'Orders deleted!',
+                    description: `${selectedOrders.length} approved order(s) have been deleted.`,
+                });
+                setSelectedOrders([]);
+            },
+            onError: () => {
+                toast({
+                    title: 'Failed to delete',
+                    description: 'There was an error deleting the orders.',
+                    variant: 'destructive',
+                });
+            },
+        });
+    };
+
+    const toggleOrderSelection = (orderId: number) => {
+        setSelectedOrders(prev =>
+            prev.includes(orderId)
+                ? prev.filter(id => id !== orderId)
+                : [...prev, orderId]
+        );
+    };
+
+    const toggleSelectAllApproved = () => {
+        const approvedOrderIds = otherOrders
+            .filter(o => o.status === 'approved')
+            .map(o => o.id);
+
+        if (selectedOrders.length === approvedOrderIds.length) {
+            setSelectedOrders([]);
+        } else {
+            setSelectedOrders(approvedOrderIds);
+        }
     };
 
     const filteredOrders = filter === 'all' ? orders : orders.filter(o => o.status === filter);
@@ -362,6 +407,61 @@ export default function IncomingOrders({ orders, stats }: Props) {
                                     {otherOrders.length}
                                 </Badge>
                             </div>
+
+                            {/* Bulk Delete Action Bar */}
+                            {selectedOrders.length > 0 && (
+                                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl flex items-center justify-between gap-3">
+                                    <div className="flex items-center gap-2">
+                                        <CheckCircle className="h-4 w-4 text-red-600" />
+                                        <span className="text-sm font-medium text-red-700">
+                                            {selectedOrders.length} approved order(s) selected
+                                        </span>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => setSelectedOrders([])}
+                                            className="text-red-600 hover:bg-red-100"
+                                        >
+                                            Cancel
+                                        </Button>
+                                        <Button
+                                            variant="default"
+                                            size="sm"
+                                            onClick={handleDeleteApprovedOrders}
+                                            className="bg-red-600 hover:bg-red-700 text-white"
+                                        >
+                                            <Trash2 className="h-4 w-4 mr-1" />
+                                            Delete
+                                        </Button>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Select All Header */}
+                            {otherOrders.some(o => o.status === 'approved') && (
+                                <div className="flex items-center gap-3 mb-2 px-1">
+                                    <button
+                                        onClick={toggleSelectAllApproved}
+                                        className="flex-shrink-0"
+                                    >
+                                        <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
+                                            selectedOrders.length === otherOrders.filter(o => o.status === 'approved').length && selectedOrders.length > 0
+                                                ? 'bg-red-600 border-red-600'
+                                                : 'bg-white border-slate-300 hover:border-red-400'
+                                        }`}>
+                                            {(selectedOrders.length === otherOrders.filter(o => o.status === 'approved').length && selectedOrders.length > 0) && (
+                                                <CheckCircle className="w-3.5 h-3.5 text-white" />
+                                            )}
+                                        </div>
+                                    </button>
+                                    <span className="text-sm text-slate-600">
+                                        Select all approved orders
+                                    </span>
+                                </div>
+                            )}
+
                             <div className="grid gap-3">
                                 {otherOrders.map((order) => (
                                     <div
@@ -380,6 +480,22 @@ export default function IncomingOrders({ orders, stats }: Props) {
                                         <div className="p-4">
                                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                                                 <div className="flex items-center gap-3 flex-1">
+                                                    {order.status === 'approved' && (
+                                                        <button
+                                                            onClick={() => toggleOrderSelection(order.id)}
+                                                            className="flex-shrink-0 mt-1 sm:mt-0"
+                                                        >
+                                                            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
+                                                                selectedOrders.includes(order.id)
+                                                                    ? 'bg-red-600 border-red-600'
+                                                                    : 'bg-white border-slate-300 hover:border-red-400'
+                                                            }`}>
+                                                                {selectedOrders.includes(order.id) && (
+                                                                    <CheckCircle className="w-3.5 h-3.5 text-white" />
+                                                                )}
+                                                            </div>
+                                                        </button>
+                                                    )}
                                                     <div className={`h-10 w-10 sm:h-11 sm:w-11 rounded-lg flex items-center justify-center text-white font-bold flex-shrink-0 ${
                                                         order.status === 'approved'
                                                             ? 'bg-gradient-to-br from-emerald-400 to-emerald-600'

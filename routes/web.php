@@ -36,6 +36,7 @@ Route::middleware(['auth', 'verified', 'distributor'])->group(function () {
     Route::post('/distributor/retailer-orders/{order}/reject', [DistributorController::class, 'rejectRetailerOrder'])->name('distributor.retailer-orders.reject');
     Route::post('/distributor/incoming-orders/{order}/approve', [DistributorController::class, 'approveIncomingOrder'])->name('distributor.incoming-orders.approve');
     Route::post('/distributor/incoming-orders/{order}/reject', [DistributorController::class, 'rejectIncomingOrder'])->name('distributor.incoming-orders.reject');
+    Route::post('/distributor/incoming-orders/delete-approved', [DistributorController::class, 'deleteApprovedOrders'])->name('distributor.incoming-orders.delete-approved');
     Route::post('/distributor/orders/{order}/status', [DistributorController::class, 'updateOrderStatus'])->name('distributor.orders.status');
     Route::get('/distributor/delivery', [DistributorController::class, 'delivery'])->name('distributor.delivery');
     Route::get('/distributor/statistics', [DistributorController::class, 'statistics'])->name('distributor.statistics');
