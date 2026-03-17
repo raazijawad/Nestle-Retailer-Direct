@@ -82,7 +82,7 @@ export default function MyOrderRecords({ orders, stats }: Props) {
         <div className="flex h-screen flex-col bg-gradient-to-br from-blue-50 via-white to-blue-100 dark:from-blue-950 dark:via-slate-900 dark:to-blue-900">
             <Head title="My Orders" />
             {/* Header with back button only */}
-            <div className="sticky top-0 z-40 bg-gradient-to-r from-[#00447C] via-[#003d6f] to-[#00284a] px-4 py-4 md:py-6">
+            <div className="sticky top-0 z-40 bg-gradient-to-r from-[#00447C] via-[#003d6f] to-[#00284a] px-4 py-4 md:py-2">
                 <div className="container">
                     <div className="flex items-center gap-2 text-white/70 text-sm mb-3">
                         <a href="/" className="hover:text-white transition-colors flex items-center gap-1">
@@ -137,6 +137,7 @@ export default function MyOrderRecords({ orders, stats }: Props) {
                     </div>
 
                     {/* Orders List */}
+                    <div className="container max-w-4xl mx-auto">
                     <Card className="bg-white/90 dark:bg-white/10 border-white/50 backdrop-blur-sm">
                         <CardHeader>
                             <CardTitle className="text-base md:text-lg">Recent Orders</CardTitle>
@@ -206,6 +207,7 @@ export default function MyOrderRecords({ orders, stats }: Props) {
                             )}
                         </CardContent>
                     </Card>
+                    </div>
                 </div>
 
                 {/* Footer Navigation */}
