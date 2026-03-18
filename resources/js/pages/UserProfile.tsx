@@ -1,11 +1,12 @@
 import { Head, useForm, usePage } from '@inertiajs/react';
-import { User, Mail, Phone, MapPin, Calendar, Save, ArrowLeft, Camera } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Calendar, Save, ArrowLeft, Camera, Lock, Eye, EyeOff } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Link } from '@inertiajs/react';
+import { useState, useRef, useEffect } from 'react';
 
 interface Props {
     user: {
@@ -22,18 +23,36 @@ export default function UserProfile({ user }: Props) {
     const { toast } = useToast();
     const page = usePage();
     const authUser = (page.props.auth as any)?.user;
+    const [showPasswordForm, setShowPasswordForm] = useState(false);
+    const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const passwordSectionRef = useRef<HTMLDivElement>(null);
 
-    const form = useForm({
+    // Scroll to password section when it becomes visible
+    useEffect(() => {
+        if (showPasswordForm && passwordSectionRef.current) {
+            passwordSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }, [showPasswordForm]);
+
+    const profileForm = useForm({
         name: user.name || '',
         email: user.email || '',
         phone: user.phone || '',
         address: user.address || '',
     });
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const passwordForm = useForm({
+        current_password: '',
+        new_password: '',
+        new_password_confirmation: '',
+    });
+
+    const handleProfileSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         
-        form.put('/user/profile-information', {
+        profileForm.put('/user/profile-information', {
             onSuccess: () => {
                 toast({
                     title: 'Profile updated',
@@ -44,6 +63,28 @@ export default function UserProfile({ user }: Props) {
                 toast({
                     title: 'Update failed',
                     description: Object.values(errors)[0] || 'There was an error updating your profile.',
+                    variant: 'destructive',
+                });
+            },
+        });
+    };
+
+    const handlePasswordSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        
+        passwordForm.put('/user/password', {
+            onSuccess: () => {
+                toast({
+                    title: 'Password updated',
+                    description: 'Your password has been changed successfully.',
+                });
+                passwordForm.reset();
+                setShowPasswordForm(false);
+            },
+            onError: (errors) => {
+                toast({
+                    title: 'Update failed',
+                    description: Object.values(errors)[0] || 'There was an error changing your password.',
                     variant: 'destructive',
                 });
             },
@@ -105,12 +146,23 @@ export default function UserProfile({ user }: Props) {
 
                     {/* Edit Profile Form */}
                     <Card className="bg-white/90 dark:bg-white/10 border-white/50 backdrop-blur-sm">
-                        <CardHeader>
-                            <CardTitle className="text-lg">Profile Information</CardTitle>
-                            <CardDescription>Update your personal details and contact information</CardDescription>
+                        <CardHeader className="flex flex-row items-center justify-between">
+                            <div>
+                                <CardTitle className="text-lg">Profile Information</CardTitle>
+                                <CardDescription>Update your personal details and contact information</CardDescription>
+                            </div>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => setShowPasswordForm(!showPasswordForm)}
+                                className="border-gray-300"
+                            >
+                                <Lock className="h-4 w-4 mr-2" />
+                                {showPasswordForm ? 'Cancel' : 'Change Password'}
+                            </Button>
                         </CardHeader>
                         <CardContent>
-                            <form onSubmit={handleSubmit} className="space-y-6">
+                            <form onSubmit={handleProfileSubmit} className="space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     {/* Name */}
                                     <div className="space-y-2">
@@ -120,12 +172,12 @@ export default function UserProfile({ user }: Props) {
                                         </Label>
                                         <Input
                                             id="name"
-                                            value={form.data.name}
-                                            onChange={(e) => form.setData('name', e.target.value)}
+                                            value={profileForm.data.name}
+                                            onChange={(e) => profileForm.setData('name', e.target.value)}
                                             className="bg-white/50 dark:bg-white/5"
                                         />
-                                        {form.errors.name && (
-                                            <p className="text-sm text-red-500">{form.errors.name}</p>
+                                        {profileForm.errors.name && (
+                                            <p className="text-sm text-red-500">{profileForm.errors.name}</p>
                                         )}
                                     </div>
 
@@ -138,12 +190,12 @@ export default function UserProfile({ user }: Props) {
                                         <Input
                                             id="email"
                                             type="email"
-                                            value={form.data.email}
-                                            onChange={(e) => form.setData('email', e.target.value)}
+                                            value={profileForm.data.email}
+                                            onChange={(e) => profileForm.setData('email', e.target.value)}
                                             className="bg-white/50 dark:bg-white/5"
                                         />
-                                        {form.errors.email && (
-                                            <p className="text-sm text-red-500">{form.errors.email}</p>
+                                        {profileForm.errors.email && (
+                                            <p className="text-sm text-red-500">{profileForm.errors.email}</p>
                                         )}
                                     </div>
 
@@ -155,13 +207,13 @@ export default function UserProfile({ user }: Props) {
                                         </Label>
                                         <Input
                                             id="phone"
-                                            value={form.data.phone || ''}
-                                            onChange={(e) => form.setData('phone', e.target.value)}
+                                            value={profileForm.data.phone || ''}
+                                            onChange={(e) => profileForm.setData('phone', e.target.value)}
                                             placeholder="Enter your phone number"
                                             className="bg-white/50 dark:bg-white/5"
                                         />
-                                        {form.errors.phone && (
-                                            <p className="text-sm text-red-500">{form.errors.phone}</p>
+                                        {profileForm.errors.phone && (
+                                            <p className="text-sm text-red-500">{profileForm.errors.phone}</p>
                                         )}
                                     </div>
 
@@ -173,13 +225,13 @@ export default function UserProfile({ user }: Props) {
                                         </Label>
                                         <Input
                                             id="address"
-                                            value={form.data.address || ''}
-                                            onChange={(e) => form.setData('address', e.target.value)}
+                                            value={profileForm.data.address || ''}
+                                            onChange={(e) => profileForm.setData('address', e.target.value)}
                                             placeholder="Enter your address"
                                             className="bg-white/50 dark:bg-white/5"
                                         />
-                                        {form.errors.address && (
-                                            <p className="text-sm text-red-500">{form.errors.address}</p>
+                                        {profileForm.errors.address && (
+                                            <p className="text-sm text-red-500">{profileForm.errors.address}</p>
                                         )}
                                     </div>
                                 </div>
@@ -189,22 +241,156 @@ export default function UserProfile({ user }: Props) {
                                     <Button
                                         type="button"
                                         variant="outline"
-                                        onClick={() => form.reset()}
-                                        disabled={form.processing}
+                                        onClick={() => profileForm.reset()}
+                                        disabled={profileForm.processing}
                                         className="border-gray-300"
                                     >
                                         Cancel
                                     </Button>
                                     <Button
                                         type="submit"
-                                        disabled={form.processing}
+                                        disabled={profileForm.processing}
                                         className="bg-gradient-to-r from-[#00447C] to-[#003d6f] hover:from-[#003d6f] hover:to-[#00284a]"
                                     >
                                         <Save className="h-4 w-4 mr-2" />
-                                        {form.processing ? 'Saving...' : 'Save Changes'}
+                                        {profileForm.processing ? 'Saving...' : 'Save Changes'}
                                     </Button>
                                 </div>
                             </form>
+
+                            {/* Change Password Form */}
+                            {showPasswordForm && (
+                                <div ref={passwordSectionRef}>
+                                    <div className="border-t my-6"></div>
+                                    <div className="space-y-2 mb-4">
+                                        <h3 className="text-base font-semibold flex items-center gap-2">
+                                            <Lock className="h-4 w-4" />
+                                            Change Password
+                                        </h3>
+                                        <p className="text-sm text-muted-foreground">Update your password to keep your account secure</p>
+                                    </div>
+                                    <form onSubmit={handlePasswordSubmit} className="space-y-4">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            {/* Current Password */}
+                                            <div className="space-y-2">
+                                                <Label htmlFor="current_password">Current Password</Label>
+                                                <div className="relative">
+                                                    <Input
+                                                        id="current_password"
+                                                        type={showCurrentPassword ? 'text' : 'password'}
+                                                        value={passwordForm.data.current_password}
+                                                        onChange={(e) => passwordForm.setData('current_password', e.target.value)}
+                                                        placeholder="Enter current password"
+                                                        className="bg-white/50 dark:bg-white/5 pr-10"
+                                                    />
+                                                    <Button
+                                                        type="button"
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                                                        onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                                                    >
+                                                        {showCurrentPassword ? (
+                                                            <EyeOff className="h-4 w-4 text-muted-foreground" />
+                                                        ) : (
+                                                            <Eye className="h-4 w-4 text-muted-foreground" />
+                                                        )}
+                                                    </Button>
+                                                </div>
+                                                {passwordForm.errors.current_password && (
+                                                    <p className="text-sm text-red-500">{passwordForm.errors.current_password}</p>
+                                                )}
+                                            </div>
+
+                                            {/* New Password */}
+                                            <div className="space-y-2">
+                                                <Label htmlFor="new_password">New Password</Label>
+                                                <div className="relative">
+                                                    <Input
+                                                        id="new_password"
+                                                        type={showNewPassword ? 'text' : 'password'}
+                                                        value={passwordForm.data.new_password}
+                                                        onChange={(e) => passwordForm.setData('new_password', e.target.value)}
+                                                        placeholder="Enter new password"
+                                                        className="bg-white/50 dark:bg-white/5 pr-10"
+                                                    />
+                                                    <Button
+                                                        type="button"
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                                                        onClick={() => setShowNewPassword(!showNewPassword)}
+                                                    >
+                                                        {showNewPassword ? (
+                                                            <EyeOff className="h-4 w-4 text-muted-foreground" />
+                                                        ) : (
+                                                            <Eye className="h-4 w-4 text-muted-foreground" />
+                                                        )}
+                                                    </Button>
+                                                </div>
+                                                {passwordForm.errors.new_password && (
+                                                    <p className="text-sm text-red-500">{passwordForm.errors.new_password}</p>
+                                                )}
+                                            </div>
+
+                                            {/* Confirm Password */}
+                                            <div className="space-y-2 md:col-span-2">
+                                                <Label htmlFor="new_password_confirmation">Confirm New Password</Label>
+                                                <div className="relative">
+                                                    <Input
+                                                        id="new_password_confirmation"
+                                                        type={showConfirmPassword ? 'text' : 'password'}
+                                                        value={passwordForm.data.new_password_confirmation}
+                                                        onChange={(e) => passwordForm.setData('new_password_confirmation', e.target.value)}
+                                                        placeholder="Confirm new password"
+                                                        className="bg-white/50 dark:bg-white/5 pr-10"
+                                                    />
+                                                    <Button
+                                                        type="button"
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                                                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                                    >
+                                                        {showConfirmPassword ? (
+                                                            <EyeOff className="h-4 w-4 text-muted-foreground" />
+                                                        ) : (
+                                                            <Eye className="h-4 w-4 text-muted-foreground" />
+                                                        )}
+                                                    </Button>
+                                                </div>
+                                                {passwordForm.errors.new_password_confirmation && (
+                                                    <p className="text-sm text-red-500">{passwordForm.errors.new_password_confirmation}</p>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        {/* Password Submit Button */}
+                                        <div className="flex justify-end gap-3 pt-4 border-t">
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                onClick={() => {
+                                                    passwordForm.reset();
+                                                    setShowPasswordForm(false);
+                                                }}
+                                                disabled={passwordForm.processing}
+                                                className="border-gray-300"
+                                            >
+                                                Cancel
+                                            </Button>
+                                            <Button
+                                                type="submit"
+                                                disabled={passwordForm.processing}
+                                                className="bg-gradient-to-r from-[#00447C] to-[#003d6f] hover:from-[#003d6f] hover:to-[#00284a]"
+                                            >
+                                                <Lock className="h-4 w-4 mr-2" />
+                                                {passwordForm.processing ? 'Updating...' : 'Update Password'}
+                                            </Button>
+                                        </div>
+                                    </form>
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
 
