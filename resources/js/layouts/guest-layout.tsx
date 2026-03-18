@@ -15,7 +15,7 @@ const navLinks = [
     { name: 'Home', icon: Home, href: '/' },
     { name: 'Orders', icon: ShoppingCart, href: '/dashboard/orders' },
     { name: 'Inventory', icon: Package, href: '/stock' },
-    { name: 'Profile', icon: Settings, href: '/settings/profile' },
+    { name: 'Profile', icon: User, href: '/user/profile' },
 ];
 
 export default function GuestLayout({

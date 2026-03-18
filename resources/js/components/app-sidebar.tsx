@@ -35,9 +35,9 @@ const mainNavItems: NavItem[] = [
         isGroup: true,
     },
     {
-        title: 'Settings',
-        href: '/settings/profile',
-        icon: Settings,
+        title: 'Profile',
+        href: '/user/profile',
+        icon: UserCog,
     },
     {
         title: 'Payments',

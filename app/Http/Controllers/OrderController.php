@@ -245,4 +245,23 @@ class OrderController extends Controller
             'stats' => $stats,
         ]);
     }
+
+    /**
+     * Display user profile page.
+     */
+    public function userProfile()
+    {
+        $user = Auth::user();
+        
+        return inertia('UserProfile', [
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'phone' => $user->phone ?? null,
+                'address' => $user->address ?? null,
+                'created_at' => $user->created_at,
+            ],
+        ]);
+    }
 }

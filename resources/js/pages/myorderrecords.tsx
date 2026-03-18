@@ -227,7 +227,7 @@ export default function MyOrderRecords({ orders, stats }: Props) {
                 <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
                 <div className="relative container px-4 py-3">
                     <div className="flex items-center justify-center">
-                        <div className="grid grid-cols-4 gap-2 md:gap-4">
+                        <div className="grid grid-cols-5 gap-2 md:gap-4">
                             <a href="/" className="group relative flex flex-col items-center gap-1.5 p-2">
                                 <div className="relative">
                                     <div className="absolute inset-0 bg-gradient-to-br from-blue-400/40 to-cyan-400/40 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -250,6 +250,14 @@ export default function MyOrderRecords({ orders, stats }: Props) {
                                     <User className="relative h-5 w-5 text-white/60 group-hover:text-white transition-all duration-500 group-hover:scale-110 group-hover:-translate-y-0.5" />
                                 </div>
                                 <span className="text-[10px] text-white/50 font-medium tracking-wider uppercase group-hover:text-white/80 transition-colors duration-500">Inventory</span>
+                                <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-0 h-px bg-gradient-to-r from-transparent via-blue-400 to-transparent group-hover:w-8 transition-all duration-500"></div>
+                            </a>
+                            <a href="/user/profile" className="group relative flex flex-col items-center gap-1.5 p-2">
+                                <div className="relative">
+                                    <div className="absolute inset-0 bg-gradient-to-br from-blue-400/40 to-cyan-400/40 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                                    <User className="relative h-5 w-5 text-white/60 group-hover:text-white transition-all duration-500 group-hover:scale-110 group-hover:-translate-y-0.5" />
+                                </div>
+                                <span className="text-[10px] text-white/50 font-medium tracking-wider uppercase group-hover:text-white/80 transition-colors duration-500">Profile</span>
                                 <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-0 h-px bg-gradient-to-r from-transparent via-blue-400 to-transparent group-hover:w-8 transition-all duration-500"></div>
                             </a>
                             {isLoggedIn ? (

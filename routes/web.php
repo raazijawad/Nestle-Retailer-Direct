@@ -90,6 +90,7 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
 
 Route::middleware(['auth'])->post('/orders', [OrderController::class, 'store'])->name('orders.store');
 Route::middleware(['auth'])->get('/my-orders', [OrderController::class, 'myOrders'])->name('my-orders');
+Route::middleware(['auth'])->get('/user/profile', [OrderController::class, 'userProfile'])->name('user.profile');
 
 // PayPal payment routes
 Route::middleware(['auth'])->group(function () {

@@ -394,5 +394,5 @@ const navLinks = [
     { name: 'Home', icon: LayoutDashboard, href: '/distributor/home' },
     { name: 'Orders', icon: Package, href: '/distributor/incoming-orders' },
     { name: 'Inventory', icon: Warehouse, href: '/distributor/warehouse-inventory' },
-    { name: 'Profile', icon: Settings, href: '/settings/profile' },
+    { name: 'Profile', icon: User, href: '/user/profile' },
 ];

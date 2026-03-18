@@ -304,5 +304,5 @@ const navLinks = [
     { name: 'Home', icon: LayoutDashboard, href: '/' },
     { name: 'Reorder', icon: Package, href: '/quick-reorder' },
     { name: 'Inventory', icon: Warehouse, href: '/retailer/inventory' },
-    { name: 'Profile', icon: Settings, href: '/settings/profile' },
+    { name: 'Profile', icon: User, href: '/user/profile' },
 ];
