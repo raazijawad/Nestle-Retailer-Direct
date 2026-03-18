@@ -223,31 +223,31 @@ export default function QuickReorder({ products, distributors }: Props) {
                 {/* Distributors Dropdown */}
                 {safeDistributors.length > 0 && (
                     <Card className="max-w-2xl mx-auto border-0 shadow-lg mb-6 bg-white/90 backdrop-blur-sm">
-                        <CardContent className="p-4">
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                    <Users className="h-5 w-5 text-[#00447C]" />
-                                    <h2 className="font-semibold text-gray-900 text-sm">Distributors</h2>
+                        <CardContent className="p-3 md:p-4">
+                            <div className="flex items-center justify-between gap-2">
+                                <div className="flex items-center gap-1.5 md:gap-2 min-w-0">
+                                    <Users className="h-4 w-4 md:h-5 md:w-5 text-[#00447C] flex-shrink-0" />
+                                    <h2 className="font-semibold text-gray-900 text-xs md:text-sm whitespace-nowrap">Distributors</h2>
                                 </div>
                                 <DropdownMenu open={isDistributorOpen} onOpenChange={setIsDistributorOpen}>
                                     <DropdownMenuTrigger asChild>
-                                        <Button variant="outline" className="w-[200px] justify-between">
+                                        <Button variant="outline" className="h-8 md:h-10 w-[140px] md:w-[200px] justify-between text-xs md:text-sm">
                                             {selectedDistributor ? (
                                                 <span className="truncate">{selectedDistributor.company_name || selectedDistributor.name}</span>
                                             ) : (
-                                                <span>Select Distributor</span>
+                                                <span className="truncate">Select Distributor</span>
                                             )}
-                                            <ChevronDown className="h-4 w-4" />
+                                            <ChevronDown className="h-3 w-3 md:h-4 md:w-4 flex-shrink-0" />
                                         </Button>
                                     </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end" className="w-[200px]">
+                                    <DropdownMenuContent align="end" className="w-[140px] md:w-[200px]">
                                         {safeDistributors.filter(d => d && d.id).map((distributor) => (
                                             <DropdownMenuItem
                                                 key={distributor.id}
                                                 onClick={() => setSelectedDistributor(distributor)}
                                             >
                                                 <div className="flex flex-col">
-                                                    <span className="font-medium">{distributor.company_name || distributor.name}</span>
+                                                    <span className="font-medium text-xs md:text-sm">{distributor.company_name || distributor.name}</span>
                                                 </div>
                                             </DropdownMenuItem>
                                         ))}
@@ -311,76 +311,76 @@ export default function QuickReorder({ products, distributors }: Props) {
 
             {/* Payment Modal */}
             {showPaymentModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                    <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full">
-                        <div className="bg-gradient-to-r from-[#00447C] to-[#00284a] px-6 py-4">
-                            <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                                <CreditCard className="h-5 w-5" />
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-3 md:p-4 bg-black/50 backdrop-blur-sm">
+                    <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+                        <div className="bg-gradient-to-r from-[#00447C] to-[#00284a] px-4 md:px-6 py-3 md:py-4">
+                            <h3 className="text-base md:text-lg font-bold text-white flex items-center gap-2">
+                                <CreditCard className="h-4 w-4 md:h-5 md:w-5" />
                                 Select Payment Method
                             </h3>
                         </div>
 
-                        <div className="p-6 space-y-4">
-                            <div className="bg-gray-50 rounded-lg p-4">
+                        <div className="p-4 md:p-6 space-y-4">
+                            <div className="bg-gray-50 rounded-lg p-3 md:p-4">
                                 <div className="flex justify-between items-center mb-2">
-                                    <span className="text-sm text-gray-600">Total Items</span>
-                                    <span className="font-semibold">{totalItems}</span>
+                                    <span className="text-xs md:text-sm text-gray-600">Total Items</span>
+                                    <span className="font-semibold text-sm md:text-base">{totalItems}</span>
                                 </div>
                                 <div className="flex justify-between items-center">
-                                    <span className="text-sm text-gray-600">Total Amount</span>
-                                    <span className="font-bold text-[#00447C] text-lg">${totalAmount.toFixed(2)}</span>
+                                    <span className="text-xs md:text-sm text-gray-600">Total Amount</span>
+                                    <span className="font-bold text-[#00447C] text-lg md:text-xl">${totalAmount.toFixed(2)}</span>
                                 </div>
                             </div>
 
-                            <div className="space-y-3">
+                            <div className="space-y-2 md:space-y-3">
                                 <button
                                     onClick={() => setSelectedPaymentMethod('paypal')}
-                                    className={`w-full p-4 rounded-xl border-2 flex items-center gap-4 ${
+                                    className={`w-full p-3 md:p-4 rounded-xl border-2 flex items-center gap-2 md:gap-4 ${
                                         selectedPaymentMethod === 'paypal'
                                             ? 'border-[#00447C] bg-blue-50'
                                             : 'border-gray-200'
                                     }`}
                                 >
-                                    <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center">
-                                        <CreditCard className="h-6 w-6 text-white" />
+                                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
+                                        <CreditCard className="h-5 w-5 md:h-6 md:w-6 text-white" />
                                     </div>
-                                    <div className="flex-1 text-left">
-                                        <div className="font-semibold">PayPal</div>
+                                    <div className="flex-1 text-left min-w-0">
+                                        <div className="font-semibold text-sm md:text-base">PayPal</div>
                                         <div className="text-xs text-gray-500">Pay securely online</div>
                                     </div>
                                 </button>
 
                                 <button
                                     onClick={() => setSelectedPaymentMethod('cod')}
-                                    className={`w-full p-4 rounded-xl border-2 flex items-center gap-4 ${
+                                    className={`w-full p-3 md:p-4 rounded-xl border-2 flex items-center gap-2 md:gap-4 ${
                                         selectedPaymentMethod === 'cod'
                                             ? 'border-[#00447C] bg-blue-50'
                                             : 'border-gray-200'
                                     }`}
                                 >
-                                    <div className="w-12 h-12 rounded-full bg-emerald-600 flex items-center justify-center">
-                                        <DollarSign className="h-6 w-6 text-white" />
+                                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-emerald-600 flex items-center justify-center flex-shrink-0">
+                                        <DollarSign className="h-5 w-5 md:h-6 md:w-6 text-white" />
                                     </div>
-                                    <div className="flex-1 text-left">
-                                        <div className="font-semibold">Cash on Delivery</div>
+                                    <div className="flex-1 text-left min-w-0">
+                                        <div className="font-semibold text-sm md:text-base">Cash on Delivery</div>
                                         <div className="text-xs text-gray-500">Pay when you receive</div>
                                     </div>
                                 </button>
                             </div>
                         </div>
 
-                        <div className="flex gap-3 p-6 pt-0">
+                        <div className="flex gap-2 md:gap-3 p-4 md:p-6 pt-0">
                             <button
                                 onClick={() => setShowPaymentModal(false)}
                                 disabled={isSubmitting}
-                                className="flex-1 px-4 py-3 rounded-xl border border-gray-300 font-semibold hover:bg-gray-50"
+                                className="flex-1 px-3 md:px-4 py-2.5 md:py-3 rounded-xl border border-gray-300 font-semibold text-sm md:text-base hover:bg-gray-50"
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={handlePaymentConfirm}
                                 disabled={isSubmitting}
-                                className="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-[#00447C] to-[#003d6f] text-white font-semibold"
+                                className="flex-1 px-3 md:px-4 py-2.5 md:py-3 rounded-xl bg-gradient-to-r from-[#00447C] to-[#003d6f] text-white font-semibold text-sm md:text-base"
                             >
                                 {isSubmitting ? 'Processing...' : (selectedPaymentMethod === 'paypal' ? 'Pay with PayPal' : 'Place Order')}
                             </button>
