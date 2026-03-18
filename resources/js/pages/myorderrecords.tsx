@@ -96,7 +96,7 @@ export default function MyOrderRecords({ orders, stats }: Props) {
                 </div>
             </div>
 
-            <div className="flex-1 container overflow-y-auto pb-24 pt-4 md:pt-6">
+            <div className="flex-1 container overflow-y-auto pb-24 pt-3 md:pt-6 px-3 md:px-4">
                     {/* Stats Cards */}
                     <div className="grid gap-2 grid-cols-4 mb-4">
                         <Card className="bg-white/90 dark:bg-white/10 border-white/50 backdrop-blur-sm">
@@ -140,10 +140,10 @@ export default function MyOrderRecords({ orders, stats }: Props) {
                     {/* Orders List */}
                     <div className="container max-w-4xl mx-auto">
                     <Card className="bg-white/90 dark:bg-white/10 border-white/50 backdrop-blur-sm">
-                        <CardHeader>
-                            <CardTitle className="text-base md:text-lg">Recent Orders</CardTitle>
+                        <CardHeader className="px-3 py-2 md:px-6 md:py-4">
+                            <CardTitle className="text-sm md:text-lg">Recent Orders</CardTitle>
                         </CardHeader>
-                        <CardContent>
+                        <CardContent className="px-2 md:px-6">
                             {orders.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center py-12 text-center">
                                     <Package className="h-12 w-12 text-muted-foreground mb-4" />
@@ -155,38 +155,38 @@ export default function MyOrderRecords({ orders, stats }: Props) {
                                     {orders.map((order) => (
                                         <div
                                             key={order.id}
-                                            className="rounded-lg border border-border p-2.5 hover:bg-muted/30 transition-colors"
+                                            className="rounded-lg border border-border p-2 md:p-2.5 hover:bg-muted/30 transition-colors"
                                         >
-                                            <div className="flex items-center gap-2">
+                                            <div className="flex items-center gap-1.5 md:gap-2">
                                                 {/* Order Info */}
-                                                <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#00447C] to-[#003d6f] flex items-center justify-center text-white font-semibold text-xs flex-shrink-0">
+                                                <div className="h-7 w-7 md:h-8 md:w-8 rounded-full bg-gradient-to-br from-[#00447C] to-[#003d6f] flex items-center justify-center text-white font-semibold text-[10px] md:text-xs flex-shrink-0">
                                                     #{order.id}
                                                 </div>
-                                                <div>
-                                                    <div className="text-xs font-medium">Order #{order.id}</div>
-                                                    <div className="text-[10px] text-muted-foreground flex items-center gap-1">
-                                                        <Calendar className="h-2.5 w-2.5" />
-                                                        {order.created_date}
+                                                <div className="min-w-0">
+                                                    <div className="text-[10px] md:text-xs font-medium truncate">Order #{order.id}</div>
+                                                    <div className="text-[9px] md:text-[10px] text-muted-foreground flex items-center gap-0.5 md:gap-1">
+                                                        <Calendar className="h-2 w-2 md:h-2.5 md:w-2.5" />
+                                                        <span className="truncate">{order.created_date}</span>
                                                     </div>
                                                 </div>
-                                                
+
                                                 {/* Order Items */}
-                                                <div className="flex items-center gap-1.5 flex-1">
+                                                <div className="flex items-center gap-1 flex-1 min-w-0 overflow-x-auto">
                                                     {order.items.map((item, index) => (
                                                         <div
                                                             key={index}
-                                                            className="flex items-center gap-1.5 bg-muted/50 rounded-md px-2 py-1"
+                                                            className="flex items-center gap-1 md:gap-1.5 bg-muted/50 rounded-md px-1.5 md:px-2 py-1 flex-shrink-0"
                                                         >
                                                             {item.product_image && (
                                                                 <img
                                                                     src={item.product_image}
                                                                     alt={item.product_name}
-                                                                    className="h-5 w-5 rounded object-cover"
+                                                                    className="h-4 w-4 md:h-5 md:w-5 rounded object-cover flex-shrink-0"
                                                                 />
                                                             )}
-                                                            <div>
-                                                                <div className="text-xs font-medium">{item.product_name}</div>
-                                                                <div className="text-[10px] text-muted-foreground">
+                                                            <div className="min-w-0">
+                                                                <div className="text-[9px] md:text-xs font-medium truncate">{item.product_name}</div>
+                                                                <div className="text-[8px] md:text-[10px] text-muted-foreground whitespace-nowrap">
                                                                     Qty: {item.quantity} × ${item.price.toFixed(2)}
                                                                 </div>
                                                             </div>
@@ -196,13 +196,13 @@ export default function MyOrderRecords({ orders, stats }: Props) {
 
                                                 {/* Status & Total */}
                                                 <div className="text-right flex-shrink-0">
-                                                    <Badge className={getStatusBadgeClass(order.status)} variant={getStatusBadgeVariant(order.status)}>
+                                                    <Badge className={`${getStatusBadgeClass(order.status)} text-[8px] md:text-xs px-1.5 py-0 md:px-2 md:py-0.5`}>
                                                         {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                                                     </Badge>
-                                                    <div className="text-[10px] text-muted-foreground mt-0.5">
+                                                    <div className="text-[8px] md:text-[10px] text-muted-foreground mt-0.5 truncate max-w-[80px] md:max-w-none">
                                                         Dist: {order.distributor_name}
                                                     </div>
-                                                    <div className="text-xs font-semibold mt-0.5">${order.total_amount.toFixed(2)}</div>
+                                                    <div className="text-[10px] md:text-xs font-semibold mt-0.5">${order.total_amount.toFixed(2)}</div>
                                                 </div>
                                             </div>
                                         </div>
