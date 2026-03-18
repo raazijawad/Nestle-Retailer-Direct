@@ -209,7 +209,7 @@ class OrderController extends Controller
      */
     public function myOrders()
     {
-        $orders = Order::with(['items'])
+        $orders = Order::with(['items', 'distributor'])
             ->where('user_id', Auth::id())
             ->latest()
             ->get()
@@ -220,6 +220,7 @@ class OrderController extends Controller
                     'total_amount' => (float) $order->total_amount,
                     'created_at' => $order->created_at->diffForHumans(),
                     'created_date' => $order->created_at->format('M d, Y'),
+                    'distributor_name' => $order->distributor->name ?? 'N/A',
                     'items' => $order->items->map(function ($item) {
                         return [
                             'product_name' => $item->product_name,

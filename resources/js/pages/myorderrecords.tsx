@@ -20,6 +20,7 @@ interface Order {
     total_amount: number;
     created_at: string;
     created_date: string;
+    distributor_name: string;
     items: OrderItem[];
 }
 
@@ -198,6 +199,9 @@ export default function MyOrderRecords({ orders, stats }: Props) {
                                                     <Badge className={getStatusBadgeClass(order.status)} variant={getStatusBadgeVariant(order.status)}>
                                                         {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                                                     </Badge>
+                                                    <div className="text-[10px] text-muted-foreground mt-0.5">
+                                                        Dist: {order.distributor_name}
+                                                    </div>
                                                     <div className="text-xs font-semibold mt-0.5">${order.total_amount.toFixed(2)}</div>
                                                 </div>
                                             </div>
