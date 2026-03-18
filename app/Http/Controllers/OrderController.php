@@ -10,6 +10,7 @@ use App\Models\RetailerInventory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class OrderController extends Controller
 {
@@ -28,6 +29,7 @@ class OrderController extends Controller
             'items.*.quantity' => 'required|integer|min:1',
             'items.*.price' => 'required|numeric|min:0',
             'distributor_id' => 'required|integer|exists:users,id',
+            'payment_method' => 'nullable|in:cod,paypal',
         ], [
             'items.required' => 'Please select at least one item to order.',
             'items.min' => 'Please select at least one item to order.',
@@ -45,6 +47,15 @@ class OrderController extends Controller
 
                 if ($item['quantity'] > $availableQuantity) {
                     $product = Product::find($item['product_id']);
+                    
+                    // Return JSON error for AJAX requests
+                    if ($request->expectsJson() || $request->header('X-Inertia')) {
+                        return response()->json([
+                            'success' => false,
+                            'errors' => ['items' => "Only {$availableQuantity} units of {$product->name} available in warehouse."],
+                        ], 422);
+                    }
+                    
                     return back()->withErrors([
                         'items' => "Only {$availableQuantity} units of {$product->name} available in warehouse.",
                     ])->withInput();
@@ -64,6 +75,8 @@ class OrderController extends Controller
             'distributor_id' => $validated['distributor_id'],
             'status' => 'pending',
             'total_amount' => $totalAmount,
+            'payment_method' => $validated['payment_method'] ?? 'cod',
+            'payment_status' => 'pending',
         ]);
 
         foreach ($validated['items'] as $item) {
@@ -78,7 +91,16 @@ class OrderController extends Controller
             ]);
         }
 
-        return redirect()->back()->with('success', 'Order placed successfully!');
+        // For PayPal payment, return JSON with redirect URL
+        if ($validated['payment_method'] === 'paypal') {
+            return response()->json([
+                'success' => true,
+                'redirectUrl' => route('paypal.process', ['order_id' => $order->id]),
+            ]);
+        }
+
+        // For COD, redirect to my-orders
+        return redirect()->route('my-orders')->with('success', 'Order placed successfully!');
     }
 
     /**

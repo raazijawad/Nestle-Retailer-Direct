@@ -14,6 +14,9 @@ class Order extends Model
         'status',
         'total_amount',
         'notes',
+        'payment_method',
+        'payment_status',
+        'paypal_transaction_id',
     ];
 
     public function user(): BelongsTo

@@ -10,6 +10,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\QuickReorderController;
 use App\Http\Controllers\RetailerInventoryController;
+use App\Http\Controllers\PayPalController;
 
 // Home route - redirects based on user role
 Route::get('/', function () {
@@ -89,5 +90,13 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
 
 Route::middleware(['auth'])->post('/orders', [OrderController::class, 'store'])->name('orders.store');
 Route::middleware(['auth'])->get('/my-orders', [OrderController::class, 'myOrders'])->name('my-orders');
+
+// PayPal payment routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/paypal/process/{order_id}', [PayPalController::class, 'processPayment'])->name('paypal.process');
+    Route::get('/paypal/success/{order_id}', [PayPalController::class, 'success'])->name('paypal.success');
+    Route::get('/paypal/cancel/{order_id}', [PayPalController::class, 'cancel'])->name('paypal.cancel');
+    Route::post('/paypal/notify', [PayPalController::class, 'notify'])->name('paypal.notify');
+});
 
 require __DIR__.'/settings.php';

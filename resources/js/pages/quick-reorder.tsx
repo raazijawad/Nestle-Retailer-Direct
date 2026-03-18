@@ -1,8 +1,8 @@
-import { Head, Link, router, usePage } from '@inertiajs/react';
-import { ChevronLeft, HelpCircle, Plus, Minus, ShoppingCart, CheckCircle, Users, ChevronDown } from 'lucide-react';
+import { Head, Link, router } from '@inertiajs/react';
+import { ChevronLeft, Plus, Minus, ShoppingCart, Users, ChevronDown, CreditCard, DollarSign } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -33,82 +33,49 @@ interface Distributor {
     company_name: string | null;
 }
 
-// Stock status based on quantity: >20 In Stock, <=20 Low Stock, =0 Out of Stock
-function getStockStatus(stockQuantity: number): { status: string; statusColor: string } {
-    if (stockQuantity === 0) {
+function getStockStatus(stockQuantity: number | undefined): { status: string; statusColor: string } {
+    const quantity = stockQuantity || 0;
+    if (quantity === 0) {
         return { status: 'Out of Stock', statusColor: 'text-red-600' };
     }
-    if (stockQuantity <= 20) {
+    if (quantity <= 20) {
         return { status: 'Low Stock', statusColor: 'text-amber-600' };
     }
     return { status: 'In Stock', statusColor: 'text-emerald-600' };
 }
 
 interface Props {
-    products: Product[];
-    distributors: Distributor[];
+    products?: Product[] | null;
+    distributors?: Distributor[] | null;
 }
 
 export default function QuickReorder({ products, distributors }: Props) {
     const { toast } = useToast();
-    const [selectedDistributor, setSelectedDistributor] = useState<Distributor | null>(null);
-    const [warehouseStock, setWarehouseStock] = useState<Record<number, number>>({});
 
-    // Initialize order items with products from database
-    const [orderItems, setOrderItems] = useState<OrderItem[]>(() =>
-        products.map(product => ({
-            ...product,
-            ...getStockStatus(product.stock_quantity),
-            quantity: 0
-        }))
+    // Safe array conversion
+    const safeProducts = Array.isArray(products) ? products : [];
+    const safeDistributors = Array.isArray(distributors) ? distributors : [];
+    
+    const [selectedDistributor, setSelectedDistributor] = useState<Distributor | null>(null);
+    const [orderItems, setOrderItems] = useState<OrderItem[]>(
+        safeProducts
+            .filter(p => p && p.id)
+            .map(product => ({
+                ...product,
+                ...getStockStatus(product.stock_quantity),
+                quantity: 0
+            }))
     );
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isDistributorOpen, setIsDistributorOpen] = useState(false);
-
-    // Fetch distributor warehouse stock when distributor is selected
-    useEffect(() => {
-        if (selectedDistributor) {
-            // Fetch warehouse stock for this distributor
-            fetch(`/api/distributor/${selectedDistributor.id}/inventory`)
-                .then(res => res.json())
-                .then(data => {
-                    const stockMap: Record<number, number> = {};
-                    data.forEach((item: { product_id: number; stock_quantity: number }) => {
-                        stockMap[item.product_id] = item.stock_quantity;
-                    });
-                    setWarehouseStock(stockMap);
-                    // Update order items with warehouse quantities
-                    setOrderItems(prev => prev.map(item => ({
-                        ...item,
-                        warehouse_quantity: stockMap[item.id] || 0
-                    })));
-                })
-                .catch(() => {
-                    // If fetch fails, set all to 0
-                    setOrderItems(prev => prev.map(item => ({
-                        ...item,
-                        warehouse_quantity: 0
-                    })));
-                });
-        }
-    }, [selectedDistributor]);
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<'cod' | 'paypal'>('cod');
 
     const handleQuantityChange = (id: number, delta: number) => {
         setOrderItems((prev) =>
             prev.map((order) => {
-                if (order.id === id) {
+                if (order && order.id === id) {
                     const newQuantity = Math.max(0, order.quantity + delta);
-                    
-                    // Check if quantity exceeds warehouse stock when distributor is selected
-                    if (selectedDistributor && newQuantity > order.warehouse_quantity) {
-                        toast({
-                            title: 'Insufficient warehouse stock',
-                            description: `Only ${order.warehouse_quantity} units of ${order.name} available from ${selectedDistributor.name}.`,
-                            variant: 'destructive',
-                        });
-                        return { ...order, quantity: order.warehouse_quantity };
-                    }
-                    
                     return { ...order, quantity: newQuantity };
                 }
                 return order;
@@ -117,7 +84,7 @@ export default function QuickReorder({ products, distributors }: Props) {
     };
 
     const handleReorder = () => {
-        const itemsToOrder = orderItems.filter((item) => item.quantity > 0);
+        const itemsToOrder = orderItems.filter((item) => item && item.quantity > 0);
 
         if (itemsToOrder.length === 0) {
             toast({
@@ -138,8 +105,24 @@ export default function QuickReorder({ products, distributors }: Props) {
             return;
         }
 
+        setShowPaymentModal(true);
+    };
+
+    const handlePaymentConfirm = () => {
+        const itemsToOrder = orderItems.filter((item) => item && item.quantity > 0);
+
+        if (!selectedDistributor) {
+            toast({
+                title: 'Error',
+                description: 'Please select a distributor',
+                variant: 'destructive',
+            });
+            return;
+        }
+
         const orderData = {
             distributor_id: selectedDistributor.id,
+            payment_method: selectedPaymentMethod,
             items: itemsToOrder.map((item) => ({
                 product_id: item.id,
                 product_name: item.name,
@@ -149,84 +132,96 @@ export default function QuickReorder({ products, distributors }: Props) {
             })),
         };
 
-        console.log('Submitting order:', orderData);
         setIsSubmitting(true);
 
-        router.post('/orders', orderData, {
-            preserveScroll: true,
-            onSuccess: () => {
-                toast({
-                    title: 'Order placed successfully!',
-                    description: 'Your order has been submitted for review.',
-                });
-                // Reset quantities to 0
-                setOrderItems((prev) => prev.map(item => ({ ...item, quantity: 0 })));
-                setSelectedDistributor(null);
+        if (selectedPaymentMethod === 'paypal') {
+            // Use fetch for PayPal to get JSON response and redirect manually
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+            
+            fetch('/orders', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json',
+                    'X-Inertia': 'false',
+                },
+                body: JSON.stringify(orderData),
+                credentials: 'same-origin',
+            })
+            .then(res => res.json())
+            .then(data => {
                 setIsSubmitting(false);
-            },
-            onError: (errors) => {
-                console.error('Order errors:', errors);
+                if (data.success && data.redirectUrl) {
+                    toast({
+                        title: 'Order placed successfully!',
+                        description: 'Redirecting to PayPal...',
+                    });
+                    // Full page redirect bypassing Inertia
+                    window.location.assign(data.redirectUrl);
+                } else {
+                    throw new Error('Invalid response from server');
+                }
+            })
+            .catch(err => {
                 setIsSubmitting(false);
-                const errorMessages = Object.values(errors).join(' ');
                 toast({
                     title: 'Order failed',
-                    description: errorMessages || 'There was an error placing your order. Please try again.',
+                    description: err.message || 'There was an error placing your order.',
                     variant: 'destructive',
                 });
-            },
-        });
+            });
+        } else {
+            router.post('/orders', orderData, {
+                preserveScroll: true,
+                onSuccess: () => {
+                    toast({
+                        title: 'Order placed successfully!',
+                        description: 'Your order has been submitted.',
+                    });
+                    window.location.href = '/my-orders';
+                },
+                onError: (errors) => {
+                    setIsSubmitting(false);
+                    const errorMessages = Object.values(errors).join(' ');
+                    toast({
+                        title: 'Order failed',
+                        description: errorMessages || 'There was an error placing your order.',
+                        variant: 'destructive',
+                    });
+                },
+            });
+        }
     };
 
-    const totalItems = orderItems.reduce((acc, item) => acc + item.quantity, 0);
-    const totalAmount = orderItems.reduce((acc, item) => acc + (item.quantity * item.price), 0);
+    // Safe reduce with null checks
+    const totalItems = orderItems
+        .filter(item => item != null)
+        .reduce((acc, item) => acc + (item?.quantity || 0), 0);
+    
+    const totalAmount = orderItems
+        .filter(item => item != null)
+        .reduce((acc, item) => acc + ((item?.quantity || 0) * (item?.price || 0)), 0);
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-[#f5f7fa] to-[#e8ecf1]">
             <Head title="Quick Reorder" />
 
-            {/* SKILL.md Designed Header */}
-            <header className="sticky top-0 z-50">
-                {/* Deep navy gradient base */}
-                <div className="absolute inset-0 bg-gradient-to-r from-[#00447C] via-[#003d6f] to-[#00284a]"></div>
-
-                {/* Subtle noise texture */}
-                <div className="absolute inset-0 opacity-[0.02]" style={{
-                    backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`
-                }}></div>
-
-                {/* Animated glow orbs */}
-                <div className="absolute inset-0 overflow-hidden">
-                    <div className="absolute top-0 left-1/4 w-32 h-32 bg-blue-400/10 rounded-full blur-2xl"></div>
-                    <div className="absolute top-0 right-1/4 w-24 h-24 bg-cyan-400/10 rounded-full blur-2xl"></div>
-                </div>
-
-                {/* Content */}
-                <div className="relative container flex h-16 items-center justify-between px-4">
-                    {/* Back button */}
-                    <Link href="/" className="group flex items-center gap-2">
-                        <div className="relative">
-                            <div className="absolute inset-0 bg-white/20 rounded-lg blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                            <ChevronLeft className="relative h-6 w-6 text-white group-hover:scale-110 transition-transform duration-300" />
-                        </div>
+            {/* Header */}
+            <header className="sticky top-0 z-50 bg-gradient-to-r from-[#00447C] via-[#003d6f] to-[#00284a] shadow-lg">
+                <div className="container flex h-16 items-center justify-between px-4">
+                    <Link href="/" className="flex items-center gap-2">
+                        <ChevronLeft className="h-6 w-6 text-white" />
                     </Link>
-
-                    {/* Title */}
-                    <h1 className="text-base md:text-lg font-bold text-white tracking-widest uppercase">Quick Reorder</h1>
-
-                    {/* Help button */}
-                    <button className="group">
-                        <div className="relative">
-                            <div className="absolute inset-0 bg-white/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                            <HelpCircle className="relative h-6 w-6 text-white/80 group-hover:text-white group-hover:scale-110 transition-all duration-300" />
-                        </div>
-                    </button>
+                    <h1 className="text-base font-bold text-white tracking-widest uppercase">Quick Reorder</h1>
+                    <div className="w-6"></div>
                 </div>
             </header>
 
             {/* Main Content */}
             <main className="container md:py-6 pb-32">
                 {/* Distributors Dropdown */}
-                {distributors.length > 0 && (
+                {safeDistributors.length > 0 && (
                     <Card className="max-w-2xl mx-auto border-0 shadow-lg mb-6 bg-white/90 backdrop-blur-sm">
                         <CardContent className="p-4">
                             <div className="flex items-center justify-between">
@@ -246,16 +241,13 @@ export default function QuickReorder({ products, distributors }: Props) {
                                         </Button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="end" className="w-[200px]">
-                                        {distributors.map((distributor) => (
+                                        {safeDistributors.filter(d => d && d.id).map((distributor) => (
                                             <DropdownMenuItem
                                                 key={distributor.id}
                                                 onClick={() => setSelectedDistributor(distributor)}
                                             >
                                                 <div className="flex flex-col">
                                                     <span className="font-medium">{distributor.company_name || distributor.name}</span>
-                                                    {distributor.company_name && (
-                                                        <span className="text-xs text-muted-foreground">{distributor.name}</span>
-                                                    )}
                                                 </div>
                                             </DropdownMenuItem>
                                         ))}
@@ -266,10 +258,9 @@ export default function QuickReorder({ products, distributors }: Props) {
                     </Card>
                 )}
 
-                {/* Frequent Orders Card */}
+                {/* Products List */}
                 <Card className="max-w-2xl mx-auto border-0 shadow-xl bg-white/90 backdrop-blur-sm">
                     <CardContent className="p-0">
-                        {/* Card header */}
                         <div className="flex items-center justify-between p-4 border-b border-gray-100">
                             <div className="flex items-center gap-2">
                                 <ShoppingCart className="h-5 w-5 text-[#00447C]" />
@@ -278,51 +269,35 @@ export default function QuickReorder({ products, distributors }: Props) {
                             <span className="text-xs text-gray-500">{orderItems.length} items</span>
                         </div>
 
-                        {/* Order list */}
                         <div className="divide-y divide-gray-100">
-                            {orderItems.map((order) => (
-                                <div key={order.id} className="flex items-center gap-3 p-3 hover:bg-gray-50/80 transition-colors duration-200">
-                                    {/* Product thumbnail */}
-                                    <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-gradient-to-br from-gray-100 to-gray-50 border border-gray-200 flex items-center justify-center overflow-hidden shadow-sm">
+                            {orderItems.filter(item => item && item.id).map((order) => (
+                                <div key={order.id} className="flex items-center gap-3 p-3 hover:bg-gray-50/80 transition-colors">
+                                    <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-gray-100 border border-gray-200 overflow-hidden">
                                         <img src={order.image} alt={order.name} className="w-full h-full object-cover" />
                                     </div>
 
-                                    {/* Product info */}
                                     <div className="flex-1 min-w-0">
-                                        <h3 className="font-semibold text-gray-900 text-xs md:text-sm truncate">{order.name}</h3>
+                                        <h3 className="font-semibold text-gray-900 text-sm truncate">{order.name}</h3>
                                         <p className={`text-xs font-medium mt-0.5 ${order.statusColor}`}>
-                                            Your Stock: {order.stock_quantity} units
+                                            Stock: {order.stock_quantity} units
                                         </p>
-                                        {selectedDistributor && (
-                                            <p className="text-xs text-[#00447C] font-medium">
-                                                Warehouse: {order.warehouse_quantity} units available
-                                            </p>
-                                        )}
                                         <p className="text-xs text-gray-500 mt-0.5">
-                                            ${order.price.toFixed(2)} each
-                                            {order.quantity > 0 && (
-                                                <span className="ml-2 font-semibold text-[#00447C]">
-                                                    = ${(order.quantity * order.price).toFixed(2)}
-                                                </span>
-                                            )}
+                                            ${order.price?.toFixed(2) || '0.00'} each
                                         </p>
                                     </div>
 
-                                    {/* Quantity controls */}
                                     <div className="flex items-center gap-2">
                                         <button
                                             onClick={() => handleQuantityChange(order.id, -1)}
                                             disabled={order.quantity === 0}
-                                            className="group p-1.5 rounded-md border border-gray-200 hover:border-[#00447C] hover:bg-[#00447C]/5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                            className="p-1.5 rounded-md border border-gray-200 hover:border-[#00447C] disabled:opacity-50"
                                         >
-                                            <Minus className="h-3.5 w-3.5 text-gray-600 group-hover:text-[#00447C]" />
+                                            <Minus className="h-3.5 w-3.5 text-gray-600" />
                                         </button>
-
-                                        <span className="w-8 text-center text-sm font-semibold text-gray-900">{order.quantity}</span>
-
+                                        <span className="w-8 text-center text-sm font-semibold">{order.quantity}</span>
                                         <button
                                             onClick={() => handleQuantityChange(order.id, 1)}
-                                            className="group p-1.5 rounded-md bg-[#00447C] border border-[#00447C] hover:bg-[#003d6f] transition-all duration-200 shadow-sm"
+                                            className="p-1.5 rounded-md bg-[#00447C] border border-[#00447C]"
                                         >
                                             <Plus className="h-3.5 w-3.5 text-white" />
                                         </button>
@@ -332,60 +307,98 @@ export default function QuickReorder({ products, distributors }: Props) {
                         </div>
                     </CardContent>
                 </Card>
-
-                {/* Estimated delivery */}
-                <div className="flex items-center justify-center gap-2 mt-6 text-center">
-                    <CheckCircle className="h-4 w-4 text-emerald-600" />
-                    <p className="text-xs text-gray-500 font-medium">Estimated Delivery: <span className="text-gray-700">March 18-20, 2026</span></p>
-                </div>
             </main>
 
-            {/* SKILL.md Designed Footer with CTA */}
-            <footer className="fixed bottom-0 left-0 right-0 z-50">
-                {/* Deep navy gradient base */}
-                <div className="absolute inset-0 bg-gradient-to-r from-[#00447C] via-[#003d6f] to-[#00284a]"></div>
+            {/* Payment Modal */}
+            {showPaymentModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                    <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full">
+                        <div className="bg-gradient-to-r from-[#00447C] to-[#00284a] px-6 py-4">
+                            <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                                <CreditCard className="h-5 w-5" />
+                                Select Payment Method
+                            </h3>
+                        </div>
 
-                {/* Subtle noise texture */}
-                <div className="absolute inset-0 opacity-[0.02]" style={{
-                    backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`
-                }}></div>
-
-                {/* Animated glow */}
-                <div className="absolute inset-0 overflow-hidden">
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-40 bg-blue-400/10 rounded-full blur-2xl animate-pulse"></div>
-                </div>
-
-                {/* Top accent line */}
-                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
-
-                {/* Content */}
-                <div className="relative container px-4 py-4">
-                    {/* Reorder button */}
-                    <div className="flex justify-center">
-                        <button
-                            onClick={handleReorder}
-                            disabled={isSubmitting || totalItems === 0}
-                            className="group relative w-full max-w-xs h-11 rounded-xl bg-gradient-to-r from-white/20 to-white/10 hover:from-white/30 hover:to-white/20 border border-white/20 hover:border-white/40 transition-all duration-300 backdrop-blur-sm shadow-lg hover:shadow-xl overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            {/* Shine effect */}
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-
-                            {/* Content */}
-                            <div className="relative flex items-center justify-center gap-2">
-                                <ShoppingCart className="h-4 w-4 text-white group-hover:scale-110 transition-transform duration-300" />
-                                <span className="text-xs font-bold text-white tracking-wide">REORDER NOW</span>
-                                <span className="text-[10px] text-white/70">({totalItems} items) - ${totalAmount.toFixed(2)}</span>
+                        <div className="p-6 space-y-4">
+                            <div className="bg-gray-50 rounded-lg p-4">
+                                <div className="flex justify-between items-center mb-2">
+                                    <span className="text-sm text-gray-600">Total Items</span>
+                                    <span className="font-semibold">{totalItems}</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-sm text-gray-600">Total Amount</span>
+                                    <span className="font-bold text-[#00447C] text-lg">${totalAmount.toFixed(2)}</span>
+                                </div>
                             </div>
-                        </button>
-                    </div>
 
-                    {/* Decorative pulse dot */}
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                        <div className="relative w-1.5 h-1.5">
-                            <div className="absolute inset-0 w-1.5 h-1.5 rounded-full bg-blue-400/40 animate-ping"></div>
-                            <div className="relative w-1.5 h-1.5 rounded-full bg-blue-400/60"></div>
+                            <div className="space-y-3">
+                                <button
+                                    onClick={() => setSelectedPaymentMethod('paypal')}
+                                    className={`w-full p-4 rounded-xl border-2 flex items-center gap-4 ${
+                                        selectedPaymentMethod === 'paypal'
+                                            ? 'border-[#00447C] bg-blue-50'
+                                            : 'border-gray-200'
+                                    }`}
+                                >
+                                    <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center">
+                                        <CreditCard className="h-6 w-6 text-white" />
+                                    </div>
+                                    <div className="flex-1 text-left">
+                                        <div className="font-semibold">PayPal</div>
+                                        <div className="text-xs text-gray-500">Pay securely online</div>
+                                    </div>
+                                </button>
+
+                                <button
+                                    onClick={() => setSelectedPaymentMethod('cod')}
+                                    className={`w-full p-4 rounded-xl border-2 flex items-center gap-4 ${
+                                        selectedPaymentMethod === 'cod'
+                                            ? 'border-[#00447C] bg-blue-50'
+                                            : 'border-gray-200'
+                                    }`}
+                                >
+                                    <div className="w-12 h-12 rounded-full bg-emerald-600 flex items-center justify-center">
+                                        <DollarSign className="h-6 w-6 text-white" />
+                                    </div>
+                                    <div className="flex-1 text-left">
+                                        <div className="font-semibold">Cash on Delivery</div>
+                                        <div className="text-xs text-gray-500">Pay when you receive</div>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="flex gap-3 p-6 pt-0">
+                            <button
+                                onClick={() => setShowPaymentModal(false)}
+                                disabled={isSubmitting}
+                                className="flex-1 px-4 py-3 rounded-xl border border-gray-300 font-semibold hover:bg-gray-50"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handlePaymentConfirm}
+                                disabled={isSubmitting}
+                                className="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-[#00447C] to-[#003d6f] text-white font-semibold"
+                            >
+                                {isSubmitting ? 'Processing...' : (selectedPaymentMethod === 'paypal' ? 'Pay with PayPal' : 'Place Order')}
+                            </button>
                         </div>
                     </div>
+                </div>
+            )}
+
+            {/* Footer */}
+            <footer className="fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-r from-[#00447C] via-[#003d6f] to-[#00284a]">
+                <div className="container px-4 py-4">
+                    <button
+                        onClick={handleReorder}
+                        disabled={isSubmitting || totalItems === 0}
+                        className="w-full max-w-xs mx-auto block px-6 py-3 rounded-xl bg-white text-[#00447C] font-bold hover:bg-gray-100 disabled:opacity-50"
+                    >
+                        REORDER NOW ({totalItems} items) - ${totalAmount.toFixed(2)}
+                    </button>
                 </div>
             </footer>
         </div>
