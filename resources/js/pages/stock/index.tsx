@@ -1,6 +1,6 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
-import { Search, Filter, ChevronDown, Package, AlertTriangle, TrendingUp, TrendingDown, Eye, EyeOff, ChevronLeft, HelpCircle, LayoutDashboard, Settings, Edit2, Save, X } from 'lucide-react';
+import { Search, Filter, ChevronDown, Package, AlertTriangle, TrendingUp, TrendingDown, Eye, EyeOff, ChevronLeft, HelpCircle, LayoutDashboard, Settings, Edit2, Save, X, User } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
