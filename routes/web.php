@@ -64,12 +64,12 @@ Route::middleware(['auth'])->put('/stock/{product}', [StockController::class, 'u
 // Logout route (GET for link, POST for form)
 Route::get('/logout', function () {
     Auth::logout();
-    return redirect('/');
+    return redirect()->route('home');
 })->name('logout');
 
 Route::post('/logout', function () {
     Auth::logout();
-    return redirect('/');
+    return redirect()->route('home');
 });
 
 // Re-login page for non-admin users

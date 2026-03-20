@@ -22,6 +22,7 @@ export function UserMenuContent({ user }: Props) {
     const handleLogout = () => {
         cleanup();
         router.flushAll();
+        router.post('/logout');
     };
 
     return (
@@ -58,16 +59,14 @@ export function UserMenuContent({ user }: Props) {
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-                <form action="/logout" method="POST" className="w-full">
-                    <button
-                        type="submit"
-                        className="flex w-full cursor-pointer items-center"
-                        onClick={handleLogout}
-                    >
-                        <LogOut className="mr-2" />
-                        Log out
-                    </button>
-                </form>
+                <button
+                    type="button"
+                    className="flex w-full cursor-pointer items-center"
+                    onClick={handleLogout}
+                >
+                    <LogOut className="mr-2" />
+                    Log out
+                </button>
             </DropdownMenuItem>
         </>
     );

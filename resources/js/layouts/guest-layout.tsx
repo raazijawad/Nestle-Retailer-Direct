@@ -1,4 +1,4 @@
-import { Link, usePage } from '@inertiajs/react';
+import { Link, usePage, router } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { LayoutDashboard, LogIn, UserPlus, Home, Package, ShoppingCart, Settings, User, LogOut } from 'lucide-react';
 import {
@@ -70,13 +70,6 @@ export default function GuestLayout({
                     
                     {/* Navigation buttons - Desktop */}
                     <nav className="hidden md:flex items-center gap-2">
-                        <Link href="/dashboard">
-                            <Button variant="ghost" className="text-white/70 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/20 transition-all duration-300">
-                                <LayoutDashboard className="mr-2 h-4 w-4" />
-                                Dashboard
-                            </Button>
-                        </Link>
-                        
                         {isLoggedIn ? (
                             <>
                                 {/* User profile button */}
@@ -86,11 +79,14 @@ export default function GuestLayout({
                                     </div>
                                     <span className="text-sm font-medium">{auth.user?.name || 'User'}</span>
                                 </Button>
-                                <Link href="/logout">
-                                    <Button variant="ghost" className="text-white/70 hover:text-red-300 hover:bg-red-500/10 border border-transparent hover:border-red-500/30 transition-all duration-300">
-                                        <LogOut className="h-4 w-4" />
-                                    </Button>
-                                </Link>
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    onClick={() => router.post('/logout')}
+                                    className="text-white/70 hover:text-red-300 hover:bg-red-500/10 border border-transparent hover:border-red-500/30 transition-all duration-300"
+                                >
+                                    <LogOut className="h-4 w-4" />
+                                </Button>
                             </>
                         ) : (
                             <>
@@ -147,12 +143,16 @@ export default function GuestLayout({
                                     </DropdownMenuGroup>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem asChild>
-                                        <form action="/logout" method="POST" className="w-full">
-                                            <button type="submit" className="flex w-full items-center gap-2 text-red-600">
-                                                <LogOut className="h-4 w-4" />
-                                                Log out
-                                            </button>
-                                        </form>
+                                        <button
+                                            type="button"
+                                            className="flex w-full items-center gap-2 text-red-600"
+                                            onClick={() => {
+                                                router.post('/logout');
+                                            }}
+                                        >
+                                            <LogOut className="h-4 w-4" />
+                                            Log out
+                                        </button>
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>

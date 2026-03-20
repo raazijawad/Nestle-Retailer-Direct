@@ -1,4 +1,4 @@
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, router } from '@inertiajs/react';
 import { Lock, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -64,15 +64,14 @@ export default function ReLogin() {
                         </form>
                         
                         <div className="mt-6 text-center">
-                            <form action="/logout" method="POST">
-                                <Button 
-                                    type="submit" 
-                                    variant="ghost" 
-                                    className="text-sm text-gray-600 hover:text-gray-900"
-                                >
-                                    Sign out instead
-                                </Button>
-                            </form>
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                onClick={() => router.post('/logout')}
+                                className="text-sm text-gray-600 hover:text-gray-900"
+                            >
+                                Sign out instead
+                            </Button>
                         </div>
                     </CardContent>
                 </Card>
