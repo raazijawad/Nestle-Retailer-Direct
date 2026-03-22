@@ -29,13 +29,21 @@ class QuickReorderController extends Controller
                 ];
             })->values();
 
-        $products = Product::all()->map(function ($product) use ($retailerId) {
+        // Get all distributor inventory data
+        $distributorInventory = DistributorInventory::with('product')->get();
+
+        $products = Product::all()->map(function ($product) use ($retailerId, $distributorInventory) {
             // Get retailer's personal inventory quantity
             $retailerInventory = RetailerInventory::where('user_id', $retailerId)
                 ->where('product_id', $product->id)
                 ->first();
 
             $retailerQuantity = $retailerInventory ? $retailerInventory->stock_quantity : 0;
+
+            // Get total warehouse quantity across all distributors
+            $warehouseQuantity = $distributorInventory
+                ->where('product_id', $product->id)
+                ->sum('stock_quantity');
 
             return [
                 'id' => $product->id,
@@ -44,7 +52,7 @@ class QuickReorderController extends Controller
                 'price' => (float) $product->price,
                 'image' => $product->image_url ?? '/images/placeholder-product.png',
                 'stock_quantity' => $retailerQuantity,
-                'warehouse_quantity' => 0, // Will be updated based on selected distributor
+                'warehouse_quantity' => $warehouseQuantity,
             ];
         })->values();
 

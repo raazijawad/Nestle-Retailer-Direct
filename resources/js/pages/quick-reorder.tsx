@@ -1,8 +1,8 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { ChevronLeft, Plus, Minus, ShoppingCart, Users, ChevronDown, CreditCard, DollarSign } from 'lucide-react';
+import { ChevronLeft, Plus, Minus, ShoppingCart, Users, ChevronDown, CreditCard, DollarSign, Warehouse } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -25,6 +25,8 @@ interface OrderItem extends Product {
     status: string;
     statusColor: string;
     quantity: number;
+    warehouse_status?: string;
+    warehouse_statusColor?: string;
 }
 
 interface Distributor {
@@ -33,7 +35,23 @@ interface Distributor {
     company_name: string | null;
 }
 
+interface DistributorInventory {
+    product_id: number;
+    stock_quantity: number;
+}
+
 function getStockStatus(stockQuantity: number | undefined): { status: string; statusColor: string } {
+    const quantity = stockQuantity || 0;
+    if (quantity === 0) {
+        return { status: 'Out of Stock', statusColor: 'text-red-600' };
+    }
+    if (quantity <= 20) {
+        return { status: 'Low Stock', statusColor: 'text-amber-600' };
+    }
+    return { status: 'In Stock', statusColor: 'text-emerald-600' };
+}
+
+function getWarehouseStockStatus(stockQuantity: number | undefined): { status: string; statusColor: string } {
     const quantity = stockQuantity || 0;
     if (quantity === 0) {
         return { status: 'Out of Stock', statusColor: 'text-red-600' };
@@ -55,8 +73,9 @@ export default function QuickReorder({ products, distributors }: Props) {
     // Safe array conversion
     const safeProducts = Array.isArray(products) ? products : [];
     const safeDistributors = Array.isArray(distributors) ? distributors : [];
-    
+
     const [selectedDistributor, setSelectedDistributor] = useState<Distributor | null>(null);
+    const [distributorInventory, setDistributorInventory] = useState<DistributorInventory[]>([]);
     const [orderItems, setOrderItems] = useState<OrderItem[]>(
         safeProducts
             .filter(p => p && p.id)
@@ -71,11 +90,55 @@ export default function QuickReorder({ products, distributors }: Props) {
     const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<'cod' | 'paypal'>('cod');
 
+    // Fetch distributor inventory when distributor is selected
+    useEffect(() => {
+        if (selectedDistributor) {
+            fetch(`/api/distributor/${selectedDistributor.id}/inventory`)
+                .then(res => res.json())
+                .then(data => {
+                    setDistributorInventory(data);
+                    // Update order items with distributor-specific warehouse quantities
+                    setOrderItems(prev => prev.map(item => {
+                        const inv = data.find((d: DistributorInventory) => d.product_id === item.id);
+                        const warehouseQty = inv ? inv.stock_quantity : 0;
+                        const warehouseStatus = getWarehouseStockStatus(warehouseQty);
+                        return {
+                            ...item,
+                            warehouse_quantity: warehouseQty,
+                            warehouse_status: warehouseStatus.status,
+                            warehouse_statusColor: warehouseStatus.statusColor,
+                        };
+                    }));
+                })
+                .catch(err => {
+                    console.error('Failed to fetch distributor inventory:', err);
+                    setDistributorInventory([]);
+                });
+        } else {
+            setDistributorInventory([]);
+        }
+    }, [selectedDistributor]);
+
     const handleQuantityChange = (id: number, delta: number) => {
         setOrderItems((prev) =>
             prev.map((order) => {
                 if (order && order.id === id) {
-                    const newQuantity = Math.max(0, order.quantity + delta);
+                    const maxQuantity = order.warehouse_quantity || 0;
+                    const newQuantity = Math.max(0, Math.min(maxQuantity, order.quantity + delta));
+                    return { ...order, quantity: newQuantity };
+                }
+                return order;
+            })
+        );
+    };
+
+    const handleDirectQuantityChange = (id: number, value: string) => {
+        const parsedValue = parseInt(value) || 0;
+        setOrderItems((prev) =>
+            prev.map((order) => {
+                if (order && order.id === id) {
+                    const maxQuantity = order.warehouse_quantity || 0;
+                    const newQuantity = Math.max(0, Math.min(maxQuantity, parsedValue));
                     return { ...order, quantity: newQuantity };
                 }
                 return order;
@@ -102,6 +165,17 @@ export default function QuickReorder({ products, distributors }: Props) {
                 variant: 'destructive',
             });
             setIsDistributorOpen(true);
+            return;
+        }
+
+        // Validate quantities against warehouse stock
+        const overStockItems = itemsToOrder.filter(item => item.quantity > item.warehouse_quantity);
+        if (overStockItems.length > 0) {
+            toast({
+                title: 'Insufficient warehouse stock',
+                description: 'Some items exceed available warehouse quantity.',
+                variant: 'destructive',
+            });
             return;
         }
 
@@ -279,28 +353,47 @@ export default function QuickReorder({ products, distributors }: Props) {
                                     <div className="flex-1 min-w-0">
                                         <h3 className="font-semibold text-gray-900 text-sm truncate">{order.name}</h3>
                                         <p className={`text-xs font-medium mt-0.5 ${order.statusColor}`}>
-                                            Stock: {order.stock_quantity} units
+                                            Your Stock: {order.stock_quantity} units
                                         </p>
+                                        <div className="flex items-center gap-1 mt-0.5">
+                                            <Warehouse className="h-3 w-3 text-[#00447C]" />
+                                            <p className={`text-xs font-medium ${order.warehouse_statusColor || 'text-gray-500'}`}>
+                                                Warehouse: {order.warehouse_quantity || 0} units
+                                            </p>
+                                        </div>
                                         <p className="text-xs text-gray-500 mt-0.5">
                                             ${order.price?.toFixed(2) || '0.00'} each
                                         </p>
                                     </div>
 
-                                    <div className="flex items-center gap-2">
-                                        <button
-                                            onClick={() => handleQuantityChange(order.id, -1)}
-                                            disabled={order.quantity === 0}
-                                            className="p-1.5 rounded-md border border-gray-200 hover:border-[#00447C] disabled:opacity-50"
-                                        >
-                                            <Minus className="h-3.5 w-3.5 text-gray-600" />
-                                        </button>
-                                        <span className="w-8 text-center text-sm font-semibold">{order.quantity}</span>
-                                        <button
-                                            onClick={() => handleQuantityChange(order.id, 1)}
-                                            className="p-1.5 rounded-md bg-[#00447C] border border-[#00447C]"
-                                        >
-                                            <Plus className="h-3.5 w-3.5 text-white" />
-                                        </button>
+                                    <div className="flex flex-col items-center gap-1">
+                                        <div className="flex items-center gap-2">
+                                            <button
+                                                onClick={() => handleQuantityChange(order.id, -1)}
+                                                disabled={order.quantity === 0}
+                                                className="p-1.5 rounded-md border border-gray-200 hover:border-[#00447C] disabled:opacity-50"
+                                            >
+                                                <Minus className="h-3.5 w-3.5 text-gray-600" />
+                                            </button>
+                                            <input
+                                                type="number"
+                                                min="0"
+                                                max={order.warehouse_quantity || 0}
+                                                value={order.quantity}
+                                                onChange={(e) => handleDirectQuantityChange(order.id, e.target.value)}
+                                                className="w-16 text-center text-sm font-semibold border border-gray-200 rounded-md py-1.5 focus:outline-none focus:border-[#00447C]"
+                                            />
+                                            <button
+                                                onClick={() => handleQuantityChange(order.id, 1)}
+                                                disabled={order.quantity >= (order.warehouse_quantity || 0)}
+                                                className="p-1.5 rounded-md bg-[#00447C] border border-[#00447C] disabled:opacity-50 disabled:cursor-not-allowed"
+                                            >
+                                                <Plus className="h-3.5 w-3.5 text-white" />
+                                            </button>
+                                        </div>
+                                        <span className="text-[10px] text-gray-400">
+                                            Max: {order.warehouse_quantity || 0}
+                                        </span>
                                     </div>
                                 </div>
                             ))}
