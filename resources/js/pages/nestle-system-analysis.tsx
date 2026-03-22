@@ -11,16 +11,19 @@ const layoutSections = [
         area: 'One-Tap Reorder',
         icon: ShoppingCart,
         href: '/quick-reorder',
+        isComingSoon: false,
     },
     {
         area: 'Inventory Snapshots',
         icon: Package,
         href: '/stock',
+        isComingSoon: true,
     },
     {
         area: 'My Orders',
         icon: Clock,
         href: '/my-orders',
+        isComingSoon: true,
     },
 ];
 
@@ -41,6 +44,16 @@ export default function NestleSystemAnalysis({
                         <div className="grid grid-cols-2 gap-7">
                             {layoutSections.slice(0, 2).map((section) => {
                                 const Icon = section.icon;
+                                if (section.isComingSoon) {
+                                    return (
+                                        <div
+                                            key={section.area}
+                                            className="flex h-30 w-full flex-col items-center justify-center rounded-xl bg-white/90 p-2 text-center shadow-lg backdrop-blur-sm border border-white/50 dark:bg-white/10 opacity-50"
+                                        >
+                                            <p className="font-medium text-[10px] text-muted-foreground">Coming Soon</p>
+                                        </div>
+                                    );
+                                }
                                 return (
                                     <a
                                         key={section.area}
@@ -68,6 +81,16 @@ export default function NestleSystemAnalysis({
                         <div className="grid grid-cols-2 gap-7">
                             {layoutSections.slice(2, 3).map((section) => {
                                 const Icon = section.icon;
+                                if (section.isComingSoon) {
+                                    return (
+                                        <div
+                                            key={section.area}
+                                            className="flex h-30 w-full flex-col items-center justify-center rounded-xl bg-white/90 p-2 text-center shadow-lg backdrop-blur-sm border border-white/50 dark:bg-white/10 opacity-50"
+                                        >
+                                            <p className="font-medium text-[10px] text-muted-foreground">Coming Soon</p>
+                                        </div>
+                                    );
+                                }
                                 return (
                                     <a
                                         key={section.area}
@@ -111,6 +134,16 @@ export default function NestleSystemAnalysis({
                         <div className="grid gap-10 md:grid-cols-3">
                             {layoutSections.map((section) => {
                                 const Icon = section.icon;
+                                if (section.isComingSoon) {
+                                    return (
+                                        <div
+                                            key={section.area}
+                                            className="flex h-56 w-72 flex-col items-center justify-center rounded-3xl bg-white/90 p-8 text-center shadow-2xl backdrop-blur-sm border border-white/50 dark:bg-white/10 opacity-50"
+                                        >
+                                            <p className="font-medium text-xl text-muted-foreground">Coming Soon</p>
+                                        </div>
+                                    );
+                                }
                                 return (
                                     <a
                                         key={section.area}
