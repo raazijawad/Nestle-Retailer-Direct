@@ -235,7 +235,7 @@ export default function MyOrderRecords({ orders, stats }: Props) {
                                 <span className="text-[10px] text-white/50 font-medium tracking-wider uppercase group-hover:text-white/80 transition-colors duration-500">Home</span>
                                 <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-0 h-px bg-gradient-to-r from-transparent via-blue-400 to-transparent group-hover:w-8 transition-all duration-500"></div>
                             </a>
-                            <a href="/quick-reorder" className="group relative flex flex-col items-center gap-1.5 p-2">
+                            <a href="/my-orders" className="group relative flex flex-col items-center gap-1.5 p-2">
                                 <div className="relative">
                                     <div className="absolute inset-0 bg-gradient-to-br from-blue-400/40 to-cyan-400/40 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                                     <ShoppingCart className="relative h-5 w-5 text-white/60 group-hover:text-white transition-all duration-500 group-hover:scale-110 group-hover:-translate-y-0.5" />

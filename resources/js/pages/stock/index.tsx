@@ -461,7 +461,7 @@ export default function Stock({ products, categories }: Props) {
 
 const navLinks = [
     { name: 'Home', icon: LayoutDashboard, href: '/' },
-    { name: 'Orders', icon: Package, href: '/dashboard/orders' },
+    { name: 'Orders', icon: Package, href: '/my-orders' },
     { name: 'Inventory', icon: Package, href: '/stock' },
     { name: 'Profile', icon: User, href: '/user/profile' },
 ];

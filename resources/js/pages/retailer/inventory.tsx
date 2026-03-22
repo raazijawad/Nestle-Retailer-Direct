@@ -1,6 +1,6 @@
 import { Head, Link } from '@inertiajs/react';
 import { useState } from 'react';
-import { Search, Package, AlertTriangle, Warehouse, TrendingUp, TrendingDown, Eye, EyeOff, ChevronLeft, HelpCircle, LayoutDashboard, Settings } from 'lucide-react';
+import { Search, Package, AlertTriangle, Warehouse, TrendingUp, TrendingDown, Eye, EyeOff, ChevronLeft, HelpCircle, LayoutDashboard, Settings, User } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -302,7 +302,7 @@ export default function RetailerInventory({ products, stats }: Props) {
 
 const navLinks = [
     { name: 'Home', icon: LayoutDashboard, href: '/' },
-    { name: 'Reorder', icon: Package, href: '/quick-reorder' },
+    { name: 'Orders', icon: Package, href: '/my-orders' },
     { name: 'Inventory', icon: Warehouse, href: '/retailer/inventory' },
     { name: 'Profile', icon: User, href: '/user/profile' },
 ];

@@ -13,7 +13,7 @@ import {
 
 const navLinks = [
     { name: 'Home', icon: Home, href: '/' },
-    { name: 'Orders', icon: ShoppingCart, href: '/dashboard/orders' },
+    { name: 'Orders', icon: ShoppingCart, href: '/my-orders' },
     { name: 'Inventory', icon: Package, href: '/stock' },
     { name: 'Profile', icon: User, href: '/user/profile' },
 ];
