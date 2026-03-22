@@ -82,7 +82,10 @@ export default function QuickReorder({ products, distributors }: Props) {
             .map(product => ({
                 ...product,
                 ...getStockStatus(product.stock_quantity),
-                quantity: 0
+                quantity: 0,
+                warehouse_quantity: 0, // Reset to 0 until distributor is selected
+                warehouse_status: 'Out of Stock',
+                warehouse_statusColor: 'text-gray-500',
             }))
     );
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -116,6 +119,13 @@ export default function QuickReorder({ products, distributors }: Props) {
                 });
         } else {
             setDistributorInventory([]);
+            // Reset warehouse quantities when no distributor is selected
+            setOrderItems(prev => prev.map(item => ({
+                ...item,
+                warehouse_quantity: 0,
+                warehouse_status: 'Out of Stock',
+                warehouse_statusColor: 'text-gray-500',
+            })));
         }
     }, [selectedDistributor]);
 
@@ -333,7 +343,7 @@ export default function QuickReorder({ products, distributors }: Props) {
                 )}
 
                 {/* Products List */}
-                <Card className="max-w-2xl mx-auto border-0 shadow-xl bg-white/90 backdrop-blur-sm">
+                <Card className="max-w-2xl mx-auto border-0 shadow-xl bg-white/90 backdrop-blur-sm mb-32">
                     <CardContent className="p-0">
                         <div className="flex items-center justify-between p-4 border-b border-gray-100">
                             <div className="flex items-center gap-2">
@@ -355,12 +365,19 @@ export default function QuickReorder({ products, distributors }: Props) {
                                         <p className={`text-xs font-medium mt-0.5 ${order.statusColor}`}>
                                             Your Stock: {order.stock_quantity} units
                                         </p>
-                                        <div className="flex items-center gap-1 mt-0.5">
-                                            <Warehouse className="h-3 w-3 text-[#00447C]" />
-                                            <p className={`text-xs font-medium ${order.warehouse_statusColor || 'text-gray-500'}`}>
-                                                Warehouse: {order.warehouse_quantity || 0} units
+                                        {selectedDistributor && (
+                                            <div className="flex items-center gap-1 mt-0.5">
+                                                <Warehouse className="h-3 w-3 text-[#00447C]" />
+                                                <p className={`text-xs font-medium ${order.warehouse_statusColor || 'text-gray-500'}`}>
+                                                    Warehouse: {order.warehouse_quantity || 0} units
+                                                </p>
+                                            </div>
+                                        )}
+                                        {!selectedDistributor && (
+                                            <p className="text-xs text-amber-600 mt-0.5 font-medium">
+                                                Select a distributor to see warehouse stock
                                             </p>
-                                        </div>
+                                        )}
                                         <p className="text-xs text-gray-500 mt-0.5">
                                             ${order.price?.toFixed(2) || '0.00'} each
                                         </p>
@@ -378,22 +395,25 @@ export default function QuickReorder({ products, distributors }: Props) {
                                             <input
                                                 type="number"
                                                 min="0"
-                                                max={order.warehouse_quantity || 0}
+                                                max={selectedDistributor ? (order.warehouse_quantity || 0) : 0}
                                                 value={order.quantity}
                                                 onChange={(e) => handleDirectQuantityChange(order.id, e.target.value)}
-                                                className="w-16 text-center text-sm font-semibold border border-gray-200 rounded-md py-1.5 focus:outline-none focus:border-[#00447C]"
+                                                disabled={!selectedDistributor}
+                                                className="w-16 text-center text-sm font-semibold border border-gray-200 rounded-md py-1.5 focus:outline-none focus:border-[#00447C] disabled:bg-gray-100 disabled:cursor-not-allowed"
                                             />
                                             <button
                                                 onClick={() => handleQuantityChange(order.id, 1)}
-                                                disabled={order.quantity >= (order.warehouse_quantity || 0)}
+                                                disabled={!selectedDistributor || order.quantity >= (order.warehouse_quantity || 0)}
                                                 className="p-1.5 rounded-md bg-[#00447C] border border-[#00447C] disabled:opacity-50 disabled:cursor-not-allowed"
                                             >
                                                 <Plus className="h-3.5 w-3.5 text-white" />
                                             </button>
                                         </div>
-                                        <span className="text-[10px] text-gray-400">
-                                            Max: {order.warehouse_quantity || 0}
-                                        </span>
+                                        {selectedDistributor && (
+                                            <span className="text-[10px] text-gray-400">
+                                                Max: {order.warehouse_quantity || 0}
+                                            </span>
+                                        )}
                                     </div>
                                 </div>
                             ))}
