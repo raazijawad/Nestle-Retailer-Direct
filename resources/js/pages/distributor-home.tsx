@@ -18,6 +18,7 @@ const distributorSections = [
         href: '/distributor/incoming-orders',
         description: 'View incoming orders',
         color: 'from-blue-500 to-blue-600',
+        isComingSoon: false,
     },
     {
         area: 'Warehouse Inventory',
@@ -25,6 +26,7 @@ const distributorSections = [
         href: '/distributor/warehouse-inventory',
         description: 'Manage stock levels',
         color: 'from-emerald-500 to-emerald-600',
+        isComingSoon: false,
     },
     {
         area: 'Delivery Tracking',
@@ -32,6 +34,7 @@ const distributorSections = [
         href: '/distributor/delivery',
         description: 'Track shipments',
         color: 'from-amber-500 to-amber-600',
+        isComingSoon: true,
     },
     {
         area: 'Order Statistics',
@@ -39,6 +42,7 @@ const distributorSections = [
         href: '/distributor/statistics',
         description: 'View performance',
         color: 'from-purple-500 to-purple-600',
+        isComingSoon: true,
     },
     {
         area: 'Delivery Schedule',
@@ -46,6 +50,7 @@ const distributorSections = [
         href: '/distributor/schedule',
         description: 'Manage schedules',
         color: 'from-pink-500 to-pink-600',
+        isComingSoon: true,
     },
     {
         area: 'Retailer Management',
@@ -53,6 +58,7 @@ const distributorSections = [
         href: '/distributor/retailers',
         description: 'Manage retailers',
         color: 'from-cyan-500 to-cyan-600',
+        isComingSoon: true,
     },
     {
         area: 'Tracking Dashboard',
@@ -60,6 +66,7 @@ const distributorSections = [
         href: '/distributor/dashboard',
         description: 'Full tracking view',
         color: 'from-indigo-500 to-indigo-600',
+        isComingSoon: true,
     },
     {
         area: 'Notifications',
@@ -67,6 +74,7 @@ const distributorSections = [
         href: '/distributor/notifications',
         description: 'View alerts',
         color: 'from-orange-500 to-orange-600',
+        isComingSoon: true,
     },
 ];
 
@@ -103,6 +111,16 @@ export default function DistributorHome({ name, companyName }: Props) {
                     <div className="grid grid-cols-2 gap-3 md:hidden">
                         {distributorSections.map((section) => {
                             const Icon = section.icon;
+                            if (section.isComingSoon) {
+                                return (
+                                    <div
+                                        key={section.area}
+                                        className="flex flex-col items-center justify-center rounded-xl bg-white/10 p-3 text-center shadow-lg backdrop-blur-sm border border-white/20 opacity-50"
+                                    >
+                                        <p className="font-medium text-xs text-white/60 text-center">Coming Soon</p>
+                                    </div>
+                                );
+                            }
                             return (
                                 <Link
                                     key={section.area}
@@ -122,6 +140,16 @@ export default function DistributorHome({ name, companyName }: Props) {
                     <div className="hidden md:grid grid-cols-4 gap-4">
                         {distributorSections.map((section) => {
                             const Icon = section.icon;
+                            if (section.isComingSoon) {
+                                return (
+                                    <div
+                                        key={section.area}
+                                        className="flex h-36 w-44 flex-col items-center justify-center rounded-2xl bg-white/10 p-5 text-center shadow-2xl backdrop-blur-sm border border-white/20 opacity-50"
+                                    >
+                                        <p className="font-medium text-sm text-white/60">Coming Soon</p>
+                                    </div>
+                                );
+                            }
                             return (
                                 <Link
                                     key={section.area}
