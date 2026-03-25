@@ -19,10 +19,12 @@ Route::get('/', function () {
             return redirect()->route('distributor.home');
         }
         // Retailers and other users stay on the home page (nestle-system-analysis)
+        return inertia('nestle-system-analysis', [
+            'canRegister' => Features::enabled(Features::registration()),
+        ]);
     }
-    return inertia('nestle-system-analysis', [
-        'canRegister' => Features::enabled(Features::registration()),
-    ]);
+    // Redirect to login for unauthenticated users
+    return redirect()->route('login');
 })->name('home');
 
 // Distributor routes
