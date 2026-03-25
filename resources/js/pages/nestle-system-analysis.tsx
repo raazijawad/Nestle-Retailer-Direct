@@ -35,9 +35,9 @@ export default function NestleSystemAnalysis({
     return (
         <GuestLayout canRegister={canRegister}>
             <Head title="Nestlé System Analysis" />
-            <div className="flex h-full flex-col items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-100 dark:from-blue-950 dark:via-slate-900 dark:to-blue-900">
+            <div className="flex min-h-screen w-full flex-col items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-100 dark:from-blue-950 dark:via-slate-900 dark:to-blue-900 overflow-x-hidden">
                 {/* Cards Container */}
-                <div className="flex h-full flex-col justify-center gap-2 md:gap-10 py-0 md:py-8">
+                <div className="flex flex-col justify-center gap-6 md:gap-10 w-full max-w-4xl mx-auto pb-28 md:pb-32 px-4">
                     {/* Mobile Layout - 3 rows x 2 cols */}
                     <div className="flex flex-col gap-6 md:hidden">
                         {/* Row 1 */}
