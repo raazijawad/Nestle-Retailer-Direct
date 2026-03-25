@@ -1,81 +1,86 @@
 @echo off
 echo ============================================
-echo  Nestle Retailer Direct - Setup Script
+echo  Nestle Retailer Direct - Full Setup
 echo ============================================
 echo.
-
-REM Check if running in correct directory
-if not exist "composer.json" (
-    echo ERROR: Please run this script from the project folder!
-    echo.
-    pause
-    exit /b 1
-)
-
-echo [1/6] Checking PHP installation...
-php --version >nul 2>&1
-if errorlevel 1 (
-    echo ERROR: PHP is not installed or not in PATH!
-    echo Please install XAMPP or PHP first.
-    pause
-    exit /b 1
-)
-echo PHP found!
+echo This will automatically:
+echo - Install Composer dependencies
+echo - Install NPM dependencies
+echo - Create .env file
+echo - Generate app key
+echo - Create MySQL database
+echo - Run migrations
 echo.
-
-echo [2/6] Checking Node.js installation...
-node --version >nul 2>&1
-if errorlevel 1 (
-    echo ERROR: Node.js is not installed or not in PATH!
-    echo Please install Node.js from https://nodejs.org/
-    pause
-    exit /b 1
-)
-echo Node.js found!
+echo BEFORE RUNNING: Make sure XAMPP/MySQL is installed and MySQL is running!
 echo.
+pause
 
-echo [3/6] Installing PHP dependencies (this may take a few minutes)...
-call composer install --no-interaction --quiet
+echo.
+echo [1/7] Installing Composer dependencies...
+call composer install --no-interaction --prefer-dist
 if errorlevel 1 (
     echo ERROR: Composer install failed!
     pause
     exit /b 1
 )
-echo Done!
-echo.
 
-echo [4/6] Installing Node.js dependencies (this may take a few minutes)...
-call npm install --silent
+echo.
+echo [2/7] Installing NPM dependencies...
+call npm install
 if errorlevel 1 (
-    echo ERROR: npm install failed!
+    echo ERROR: NPM install failed!
     pause
     exit /b 1
 )
-echo Done!
-echo.
 
-echo [5/6] Setting up environment file...
-if not exist ".env" (
-    copy .env.example .env >nul
-    echo Environment file created!
+echo.
+echo [3/7] Setting up .env file...
+if not exist .env (
+    copy .env.example .env
+    echo .env file created.
 ) else (
-    echo Environment file already exists!
+    echo .env file already exists.
 )
-echo.
 
-echo [6/6] Generating application key...
-call php artisan key:generate --ansi
 echo.
+echo [4/7] Generating application key...
+call php artisan key:generate
 
+echo.
+echo [5/7] Clearing caches...
+call php artisan config:clear
+call php artisan cache:clear
+call php artisan view:clear
+
+echo.
+echo [6/7] Creating MySQL database...
+for /f "tokens=3" %%a in ('findstr /i "DB_DATABASE" .env') do set DB_NAME=%%a
+for /f "tokens=3" %%a in ('findstr /i "DB_USERNAME" .env') do set DB_USER=%%a
+for /f "tokens=3" %%a in ('findstr /i "DB_PASSWORD" .env') do set DB_PASS=%%a
+
+echo Dropping database if exists: %DB_NAME%
+echo Creating database: %DB_NAME%
+
+REM Create database using mysql command
+mysql -u %DB_USER% -p%DB_PASS% -e "DROP DATABASE IF EXISTS %DB_NAME%;" 2>nul
+mysql -u %DB_USER% -p%DB_PASS% -e "CREATE DATABASE %DB_NAME% CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+if errorlevel 1 (
+    echo.
+    echo WARNING: Could not create database automatically.
+    echo Please create database manually via phpMyAdmin:
+    echo   Database name: %DB_NAME%
+    echo.
+    pause
+)
+
+echo.
+echo [7/7] Running database migrations...
+call php artisan migrate:fresh --seed
+
+echo.
 echo ============================================
 echo  Setup Complete!
+echo  Run start.bat to start the development server
 echo ============================================
-echo.
-echo Next steps:
-echo 1. Run: npm run build
-echo 2. Run: php artisan serve
-echo 3. Open browser: http://localhost:8000
-echo.
-echo OR just run the 'start.bat' file to launch the app!
 echo.
 pause
