@@ -168,7 +168,7 @@ export default function GuestLayout({
             </header>
 
             {/* Main Content */}
-            <main className="flex-1 container overflow-hidden pb-24">{children}</main>
+            <main className="flex-1 w-full overflow-hidden pb-24">{children}</main>
 
             {/* SKILL.md Designed Footer - Refined Minimalism */}
             <footer className="fixed bottom-0 left-0 right-0 z-50">

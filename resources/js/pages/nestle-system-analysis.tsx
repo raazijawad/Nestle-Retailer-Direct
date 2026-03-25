@@ -37,18 +37,18 @@ export default function NestleSystemAnalysis({
             <Head title="Nestlé System Analysis" />
             <div className="flex min-h-screen w-full flex-col items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-100 dark:from-blue-950 dark:via-slate-900 dark:to-blue-900 overflow-x-hidden">
                 {/* Cards Container */}
-                <div className="flex flex-col justify-center gap-6 md:gap-10 w-full max-w-4xl mx-auto pb-28 md:pb-32 px-4">
+                <div className="flex flex-col justify-center gap-4 md:gap-10 w-full max-w-4xl mx-auto pb-28 md:pb-32 px-4">
                     {/* Mobile Layout - 3 rows x 2 cols */}
-                    <div className="flex flex-col gap-6 md:hidden">
+                    <div className="flex flex-col gap-4 md:hidden">
                         {/* Row 1 */}
-                        <div className="grid grid-cols-2 gap-7">
+                        <div className="grid grid-cols-2 gap-3">
                             {layoutSections.slice(0, 2).map((section) => {
                                 const Icon = section.icon;
                                 if (section.isComingSoon) {
                                     return (
                                         <div
                                             key={section.area}
-                                            className="flex h-30 w-full flex-col items-center justify-center rounded-xl bg-white/90 p-2 text-center shadow-lg backdrop-blur-sm border border-white/50 dark:bg-white/10 opacity-50"
+                                            className="flex h-24 w-full flex-col items-center justify-center rounded-xl bg-white/90 p-2 text-center shadow-lg backdrop-blur-sm border border-white/50 dark:bg-white/10 opacity-50"
                                         >
                                             <p className="font-medium text-[10px] text-muted-foreground">Coming Soon</p>
                                         </div>
@@ -58,10 +58,10 @@ export default function NestleSystemAnalysis({
                                     <a
                                         key={section.area}
                                         href={section.href}
-                                        className="group flex h-30 w-full flex-col items-center justify-center rounded-xl bg-white/90 p-2 text-center shadow-lg backdrop-blur-sm border border-white/50 dark:bg-white/10 transition-all duration-300 hover:scale-105 hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] hover:bg-white cursor-pointer"
+                                        className="group flex h-24 w-full flex-col items-center justify-center rounded-xl bg-white/90 p-2 text-center shadow-lg backdrop-blur-sm border border-white/50 dark:bg-white/10 transition-all duration-300 hover:scale-105 hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] hover:bg-white cursor-pointer"
                                     >
                                         <div className="transform transition-transform duration-300 group-hover:scale-110 group-hover:-translate-y-1">
-                                            <Icon className="mb-1.5 h-6 w-6 text-primary" />
+                                            <Icon className="mb-1.5 h-5 w-5 text-primary" />
                                         </div>
                                         <p className="font-medium text-[10px] group-hover:text-primary/80 transition-colors duration-300">{section.area}</p>
                                         <div className="mt-1.5 opacity-0 transform translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
@@ -78,14 +78,14 @@ export default function NestleSystemAnalysis({
                         </div>
 
                         {/* Row 2 */}
-                        <div className="grid grid-cols-2 gap-7">
+                        <div className="grid grid-cols-2 gap-3">
                             {layoutSections.slice(2, 3).map((section) => {
                                 const Icon = section.icon;
                                 if (section.isComingSoon) {
                                     return (
                                         <div
                                             key={section.area}
-                                            className="flex h-30 w-full flex-col items-center justify-center rounded-xl bg-white/90 p-2 text-center shadow-lg backdrop-blur-sm border border-white/50 dark:bg-white/10 opacity-50"
+                                            className="flex h-24 w-full flex-col items-center justify-center rounded-xl bg-white/90 p-2 text-center shadow-lg backdrop-blur-sm border border-white/50 dark:bg-white/10 opacity-50"
                                         >
                                             <p className="font-medium text-[10px] text-muted-foreground">Coming Soon</p>
                                         </div>
@@ -95,10 +95,10 @@ export default function NestleSystemAnalysis({
                                     <a
                                         key={section.area}
                                         href={section.href}
-                                        className="group flex h-30 w-full flex-col items-center justify-center rounded-xl bg-white/90 p-2 text-center shadow-lg backdrop-blur-sm border border-white/50 dark:bg-white/10 transition-all duration-300 hover:scale-105 hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] hover:bg-white cursor-pointer"
+                                        className="group flex h-24 w-full flex-col items-center justify-center rounded-xl bg-white/90 p-2 text-center shadow-lg backdrop-blur-sm border border-white/50 dark:bg-white/10 transition-all duration-300 hover:scale-105 hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] hover:bg-white cursor-pointer"
                                     >
                                         <div className="transform transition-transform duration-300 group-hover:scale-110 group-hover:-translate-y-1">
-                                            <Icon className="mb-1.5 h-6 w-6 text-primary" />
+                                            <Icon className="mb-1.5 h-5 w-5 text-primary" />
                                         </div>
                                         <p className="font-medium text-[10px] group-hover:text-primary/80 transition-colors duration-300">{section.area}</p>
                                         <div className="mt-1.5 opacity-0 transform translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
@@ -112,17 +112,17 @@ export default function NestleSystemAnalysis({
                                     </a>
                                 );
                             })}
-                            <div className="flex h-30 w-full flex-col items-center justify-center rounded-xl bg-white/90 p-2 text-center shadow-lg backdrop-blur-sm border border-white/50 dark:bg-white/10 opacity-50">
+                            <div className="flex h-24 w-full flex-col items-center justify-center rounded-xl bg-white/90 p-2 text-center shadow-lg backdrop-blur-sm border border-white/50 dark:bg-white/10 opacity-50">
                                 <p className="font-medium text-[10px] text-muted-foreground">Coming Soon</p>
                             </div>
                         </div>
 
                         {/* Row 3 */}
-                        <div className="grid grid-cols-2 gap-7">
-                            <div className="flex h-30 w-full flex-col items-center justify-center rounded-xl bg-white/90 p-2 text-center shadow-lg backdrop-blur-sm border border-white/50 dark:bg-white/10 opacity-50">
+                        <div className="grid grid-cols-2 gap-3">
+                            <div className="flex h-24 w-full flex-col items-center justify-center rounded-xl bg-white/90 p-2 text-center shadow-lg backdrop-blur-sm border border-white/50 dark:bg-white/10 opacity-50">
                                 <p className="font-medium text-[10px] text-muted-foreground">Coming Soon</p>
                             </div>
-                            <div className="flex h-30 w-full flex-col items-center justify-center rounded-xl bg-white/90 p-2 text-center shadow-lg backdrop-blur-sm border border-white/50 dark:bg-white/10 opacity-50">
+                            <div className="flex h-24 w-full flex-col items-center justify-center rounded-xl bg-white/90 p-2 text-center shadow-lg backdrop-blur-sm border border-white/50 dark:bg-white/10 opacity-50">
                                 <p className="font-medium text-[10px] text-muted-foreground">Coming Soon</p>
                             </div>
                         </div>
