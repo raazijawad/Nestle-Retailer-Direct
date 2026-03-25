@@ -7,6 +7,8 @@ use App\Concerns\ProfileValidationRules;
 use App\Models\User;
 use App\Models\ShopProfile;
 use App\Models\DistributorProfile;
+use App\Models\DistributorInventory;
+use App\Models\Product;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
 
@@ -51,6 +53,16 @@ class CreateNewUser implements CreatesNewUsers
                 'company_city' => $input['company_city'] ?? null,
                 'company_phone' => $input['company_phone'] ?? null,
             ]);
+
+            // Create distributor inventory for all 5 Nestlé products
+            $products = Product::all();
+            foreach ($products as $product) {
+                DistributorInventory::create([
+                    'user_id' => $user->id,
+                    'product_id' => $product->id,
+                    'stock_quantity' => 0, // Start with 0, distributor can restock later
+                ]);
+            }
         }
 
         return $user;

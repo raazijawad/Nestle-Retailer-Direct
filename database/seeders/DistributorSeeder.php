@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use App\Models\DistributorProfile;
+use App\Models\DistributorInventory;
+use App\Models\Product;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -41,6 +43,18 @@ class DistributorSeeder extends Seeder
             ],
         ];
 
+        // Get all 5 Nestlé products
+        $products = Product::all();
+
+        // Initial warehouse stock for each product (for demo purposes)
+        $initialStock = [
+            1 => 100, // Milo Powder
+            2 => 200, // Pure Life Water
+            3 => 50,  // Coffee Mate
+            4 => 150, // Cerelac Wheat
+            5 => 300, // KitKat Bar
+        ];
+
         foreach ($distributors as $distributorData) {
             $user = User::create([
                 'name' => $distributorData['name'],
@@ -56,6 +70,15 @@ class DistributorSeeder extends Seeder
                 'company_city' => $distributorData['company_city'],
                 'company_phone' => $distributorData['company_phone'],
             ]);
+
+            // Create distributor inventory for all 5 products
+            foreach ($products as $product) {
+                DistributorInventory::create([
+                    'user_id' => $user->id,
+                    'product_id' => $product->id,
+                    'stock_quantity' => $initialStock[$product->id] ?? 0,
+                ]);
+            }
         }
     }
 }

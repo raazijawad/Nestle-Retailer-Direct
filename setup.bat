@@ -74,8 +74,15 @@ if errorlevel 1 (
 )
 
 echo.
-echo [7/7] Running database migrations...
+echo [7/7] Running database migrations and seeding products...
 call php artisan migrate:fresh --seed
+if errorlevel 1 (
+    echo.
+    echo ERROR: Migration failed!
+    echo Please check your database connection.
+    pause
+    exit /b 1
+)
 
 echo.
 echo ============================================
