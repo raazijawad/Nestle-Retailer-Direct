@@ -26,7 +26,7 @@ const distributorSections = [
         href: '/distributor/warehouse-inventory',
         description: 'Manage stock levels',
         color: 'from-emerald-500 to-emerald-600',
-        isComingSoon: false,
+        isComingSoon: true,
     },
     {
         area: 'Delivery Tracking',
