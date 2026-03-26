@@ -136,8 +136,8 @@ class DistributorController extends Controller
     public function incomingOrders(Request $request)
     {
         $distributorId = auth()->id();
-        
-        $query = Order::with(['user', 'items'])
+
+        $query = Order::with(['user.shopProfile', 'items'])
             ->where('distributor_id', $distributorId);
 
         if ($request->filled('status')) {
@@ -156,6 +156,8 @@ class DistributorController extends Controller
                     'name' => $order->user->name,
                     'email' => $order->user->email,
                     'shop_name' => $order->user->shopProfile?->shop_name,
+                    'phone' => $order->user->shopProfile?->shop_phone,
+                    'address' => $order->user->shopProfile?->shop_address,
                 ],
                 'items' => $order->items->map(function ($item) {
                     return [

@@ -17,6 +17,19 @@ interface OrderUser {
     name: string;
     email: string;
     shop_name: string | null;
+    phone: string | null;
+    address: string | null;
+}
+
+function formatAddress(address: string | null): string {
+    if (!address) return '';
+    // Truncate long addresses for display
+    return address.length > 60 ? address.substring(0, 60) + '...' : address;
+}
+
+function formatPhone(phone: string | null): string {
+    if (!phone) return '';
+    return phone;
 }
 
 interface Order {
@@ -302,9 +315,28 @@ export default function IncomingOrders({ orders, stats }: Props) {
                                                             <div className="text-xs sm:text-sm text-slate-600 font-medium truncate">
                                                                 {order.user.shop_name || order.user.email}
                                                             </div>
-                                                            <div className="text-xs text-slate-500 mt-1 flex items-center gap-1">
-                                                                <Clock className="h-3 w-3" />
-                                                                {order.created_at}
+                                                            <div className="text-xs text-slate-500 mt-1.5 space-y-0.5">
+                                                                {order.user.phone && (
+                                                                    <div className="flex items-center gap-1">
+                                                                        <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                                                        </svg>
+                                                                        <span>{order.user.phone}</span>
+                                                                    </div>
+                                                                )}
+                                                                {order.user.address && (
+                                                                    <div className="flex items-start gap-1">
+                                                                        <svg className="h-3 w-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                                        </svg>
+                                                                        <span className="break-words">{order.user.address}</span>
+                                                                    </div>
+                                                                )}
+                                                                <div className="flex items-center gap-1 pt-0.5">
+                                                                    <Clock className="h-3 w-3" />
+                                                                    <span>{order.created_at}</span>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -507,6 +539,25 @@ export default function IncomingOrders({ orders, stats }: Props) {
                                                         <div className="font-semibold text-slate-900 truncate">{order.user.name}</div>
                                                         <div className="text-xs text-slate-600 truncate">
                                                             {order.user.shop_name || order.user.email}
+                                                        </div>
+                                                        <div className="text-xs text-slate-500 mt-1 space-y-0.5">
+                                                            {order.user.phone && (
+                                                                <div className="flex items-center gap-1">
+                                                                    <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                                                    </svg>
+                                                                    <span className="truncate">{formatPhone(order.user.phone)}</span>
+                                                                </div>
+                                                            )}
+                                                            {order.user.address && (
+                                                                <div className="flex items-start gap-1">
+                                                                    <svg className="h-3 w-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                                    </svg>
+                                                                    <span className="break-words">{formatAddress(order.user.address)}</span>
+                                                                </div>
+                                                            )}
                                                         </div>
                                                     </div>
                                                 </div>
