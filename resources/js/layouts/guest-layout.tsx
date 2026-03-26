@@ -11,13 +11,6 @@ import {
     DropdownMenuItem,
 } from '@/components/ui/dropdown-menu';
 
-const navLinks = [
-    { name: 'Home', icon: Home, href: '/' },
-    { name: 'Orders', icon: ShoppingCart, href: '/my-orders' },
-    { name: 'Inventory', icon: Package, href: '/stock' },
-    { name: 'Profile', icon: User, href: '/user/profile' },
-];
-
 export default function GuestLayout({
     children,
     canRegister = true,
@@ -25,8 +18,17 @@ export default function GuestLayout({
     children: React.ReactNode;
     canRegister?: boolean;
 }) {
-    const { auth } = usePage().props as { auth?: { user?: { name?: string; email?: string } } };
+    const { auth } = usePage().props as { auth?: { user?: { name?: string; email?: string; role?: string }; role?: string; isDistributor?: boolean } };
     const isLoggedIn = !!auth?.user;
+    const isDistributor = auth?.isDistributor || auth?.user?.role === 'distributor';
+
+    // Different navigation links based on user role
+    const navLinks = [
+        { name: 'Home', icon: Home, href: '/' },
+        { name: 'Orders', icon: ShoppingCart, href: isDistributor ? '/distributor/incoming-orders' : '/my-orders' },
+        { name: 'Inventory', icon: Package, href: isDistributor ? '/distributor/warehouse-inventory' : '/stock' },
+        { name: 'Profile', icon: User, href: '/user/profile' },
+    ];
 
     return (
         <div className="flex h-screen flex-col bg-transparent overflow-hidden">

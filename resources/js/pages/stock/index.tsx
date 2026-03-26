@@ -176,7 +176,7 @@ export default function Stock({ products, categories }: Props) {
                     </Link>
 
                     {/* Title */}
-                    <h1 className="text-base md:text-lg font-bold text-white tracking-widest uppercase">Inventory Snapshots</h1>
+                    <h1 className="text-base md:text-lg font-bold text-white tracking-widest uppercase">Inventory</h1>
 
                     {/* Help button */}
                     <button className="group">

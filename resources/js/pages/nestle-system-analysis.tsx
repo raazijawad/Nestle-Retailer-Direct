@@ -14,7 +14,7 @@ const layoutSections = [
         isComingSoon: false,
     },
     {
-        area: 'Inventory Snapshots',
+        area: 'Inventory',
         icon: Package,
         href: '/stock',
         isComingSoon: true,
