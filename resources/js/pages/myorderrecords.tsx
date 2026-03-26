@@ -1,10 +1,6 @@
 import { Head } from '@inertiajs/react';
-import { Clock, Package, Calendar, DollarSign, ChevronRight, Home, ShoppingCart, User } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Clock, Package, Calendar, DollarSign, ChevronRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Link, usePage } from '@inertiajs/react';
-import type { BreadcrumbItem } from '@/types';
 
 interface OrderItem {
     product_name: string;
@@ -34,187 +30,211 @@ interface Props {
     };
 }
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Home',
-        href: '/',
-    },
-    {
-        title: 'My Orders',
-        href: '/my-orders',
-    },
-];
-
-function getStatusBadgeVariant(status: string): 'default' | 'secondary' | 'destructive' | 'outline' {
-    switch (status) {
-        case 'pending':
-            return 'secondary';
-        case 'approved':
-            return 'default';
-        case 'rejected':
-            return 'destructive';
-        case 'completed':
-            return 'outline';
-        default:
-            return 'outline';
-    }
-}
-
 function getStatusBadgeClass(status: string): string {
     switch (status) {
         case 'pending':
-            return 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200';
+            return 'bg-amber-500 text-white';
         case 'approved':
-            return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200';
+            return 'bg-emerald-500 text-white';
         case 'rejected':
-            return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
+            return 'bg-red-500 text-white';
         case 'completed':
-            return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
+            return 'bg-blue-500 text-white';
         default:
-            return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+            return 'bg-gray-500 text-white';
     }
 }
 
 export default function MyOrderRecords({ orders, stats }: Props) {
-    const { auth } = usePage().props as { auth?: { user?: { name?: string; email?: string } } };
-
     return (
-        <div className="flex h-screen flex-col bg-gradient-to-br from-blue-50 via-white to-blue-100 dark:from-blue-950 dark:via-slate-900 dark:to-blue-900">
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 flex items-start justify-center py-4 px-3 md:py-8">
             <Head title="My Orders" />
-            {/* Header with back button only */}
-            <div className="sticky top-0 z-40 bg-gradient-to-r from-[#00447C] via-[#003d6f] to-[#00284a] px-4 py-4 md:py-2">
-                <div className="container">
-                    <div className="flex items-center gap-2 text-white/70 text-sm mb-3">
-                        <a href="/" className="hover:text-white transition-colors flex items-center gap-1">
-                            <ChevronRight className="h-4 w-4 rotate-180" />
-                            Back to Home
-                        </a>
-                    </div>
-                    <h1 className="text-2xl md:text-3xl font-bold text-white">My Order History</h1>
-                    <p className="text-white/70 text-sm md:text-base mt-1">Track and manage your orders</p>
-                </div>
+
+            {/* Decorative Background Elements */}
+            <div className="fixed inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-0 left-1/4 w-64 h-64 md:w-96 md:h-96 bg-[#00447C]/5 rounded-full blur-3xl"></div>
+                <div className="absolute bottom-0 right-1/4 w-64 h-64 md:w-80 md:h-80 bg-blue-400/5 rounded-full blur-3xl"></div>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] md:w-[800px] md:h-[800px] bg-gradient-to-br from-[#00447C]/3 via-transparent to-transparent rounded-full blur-3xl"></div>
             </div>
 
-            <div className="flex-1 container overflow-y-auto pb-24 pt-3 md:pt-6 px-3 md:px-4">
+            {/* Main Container */}
+            <div className="relative w-full max-w-5xl mx-auto">
+                {/* Header */}
+                <header className="relative bg-white/80 backdrop-blur-xl border-b border-slate-200/50 sticky top-0 z-50 rounded-t-2xl">
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#00447C]/5 via-transparent to-[#00447C]/5"></div>
+                    <div className="relative px-4 md:px-6 py-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <div className="flex items-center gap-3">
+                                <a href="/" className="flex items-center gap-2 text-slate-600 hover:text-[#00447C] transition-colors">
+                                    <ChevronRight className="h-4 w-4 rotate-180" />
+                                    <span className="text-sm font-medium">Back to Home</span>
+                                </a>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 border border-blue-200">
+                                    <Package className="h-3.5 w-3.5 text-blue-600" />
+                                    <span className="text-sm font-semibold text-blue-700 whitespace-nowrap">{stats.total_orders} Orders</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="mt-3">
+                            <h1 className="text-lg md:text-xl font-bold text-slate-900 tracking-tight">My Order History</h1>
+                            <p className="text-xs text-slate-500 font-medium">Track and manage your orders</p>
+                        </div>
+                    </div>
+                </header>
+
+                {/* Content */}
+                <main className="relative bg-white/60 backdrop-blur-sm border-x border-slate-200/50 px-4 md:px-6 py-6 md:py-8 pb-40">
                     {/* Stats Cards */}
-                    <div className="grid gap-2 grid-cols-4 mb-4">
-                        <Card className="bg-white/90 dark:bg-white/10 border-white/50 backdrop-blur-sm">
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 py-1.5">
-                                <CardTitle className="text-[9px] md:text-[10px] font-medium">Total</CardTitle>
-                                <Package className="h-3 w-3 text-muted-foreground" />
-                            </CardHeader>
-                            <CardContent className="py-0">
-                                <div className="text-base md:text-lg font-bold">{stats.total_orders}</div>
-                            </CardContent>
-                        </Card>
-                        <Card className="bg-white/90 dark:bg-white/10 border-white/50 backdrop-blur-sm">
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 py-1.5">
-                                <CardTitle className="text-[9px] md:text-[10px] font-medium">Pending</CardTitle>
-                                <Clock className="h-3 w-3 text-muted-foreground" />
-                            </CardHeader>
-                            <CardContent className="py-0">
-                                <div className="text-base md:text-lg font-bold">{stats.pending_orders}</div>
-                            </CardContent>
-                        </Card>
-                        <Card className="bg-white/90 dark:bg-white/10 border-white/50 backdrop-blur-sm">
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 py-1.5">
-                                <CardTitle className="text-[9px] md:text-[10px] font-medium">Done</CardTitle>
-                                <Calendar className="h-3 w-3 text-muted-foreground" />
-                            </CardHeader>
-                            <CardContent className="py-0">
-                                <div className="text-base md:text-lg font-bold">{stats.completed_orders}</div>
-                            </CardContent>
-                        </Card>
-                        <Card className="bg-white/90 dark:bg-white/10 border-white/50 backdrop-blur-sm">
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 py-1.5">
-                                <CardTitle className="text-[9px] md:text-[10px] font-medium">Spent</CardTitle>
-                                <DollarSign className="h-3 w-3 text-muted-foreground" />
-                            </CardHeader>
-                            <CardContent className="py-0">
-                                <div className="text-base md:text-lg font-bold">LKR {stats.total_spent.toFixed(2)}</div>
-                            </CardContent>
-                        </Card>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
+                        <div className="group relative">
+                            <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl md:rounded-2xl blur-lg opacity-20 group-hover:opacity-30 transition-opacity"></div>
+                            <div className="relative bg-white rounded-xl md:rounded-2xl p-3 md:p-5 border border-slate-200/50 shadow-sm hover:shadow-md transition-shadow">
+                                <div className="flex items-center justify-between mb-2 md:mb-3">
+                                    <span className="text-[10px] md:text-xs font-semibold text-slate-500 uppercase tracking-wide">Total</span>
+                                    <div className="w-7 h-7 md:w-9 md:h-9 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                                        <Package className="h-3.5 w-3.5 md:h-4 md:w-4 text-white" />
+                                    </div>
+                                </div>
+                                <div className="text-2xl md:text-3xl font-bold bg-gradient-to-br from-slate-900 to-slate-600 bg-clip-text text-transparent">{stats.total_orders}</div>
+                            </div>
+                        </div>
+
+                        <div className="group relative">
+                            <div className="absolute inset-0 bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl md:rounded-2xl blur-lg opacity-20 group-hover:opacity-30 transition-opacity"></div>
+                            <div className="relative bg-white rounded-xl md:rounded-2xl p-3 md:p-5 border border-slate-200/50 shadow-sm hover:shadow-md transition-shadow">
+                                <div className="flex items-center justify-between mb-2 md:mb-3">
+                                    <span className="text-[10px] md:text-xs font-semibold text-slate-500 uppercase tracking-wide">Pending</span>
+                                    <div className="w-7 h-7 md:w-9 md:h-9 rounded-lg bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center">
+                                        <Clock className="h-3.5 w-3.5 md:h-4 md:w-4 text-white" />
+                                    </div>
+                                </div>
+                                <div className="text-2xl md:text-3xl font-bold bg-gradient-to-br from-amber-600 to-amber-500 bg-clip-text text-transparent">{stats.pending_orders}</div>
+                            </div>
+                        </div>
+
+                        <div className="group relative">
+                            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl md:rounded-2xl blur-lg opacity-20 group-hover:opacity-30 transition-opacity"></div>
+                            <div className="relative bg-white rounded-xl md:rounded-2xl p-3 md:p-5 border border-slate-200/50 shadow-sm hover:shadow-md transition-shadow">
+                                <div className="flex items-center justify-between mb-2 md:mb-3">
+                                    <span className="text-[10px] md:text-xs font-semibold text-slate-500 uppercase tracking-wide">Done</span>
+                                    <div className="w-7 h-7 md:w-9 md:h-9 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center">
+                                        <Calendar className="h-3.5 w-3.5 md:h-4 md:w-4 text-white" />
+                                    </div>
+                                </div>
+                                <div className="text-2xl md:text-3xl font-bold bg-gradient-to-br from-emerald-600 to-emerald-500 bg-clip-text text-transparent">{stats.completed_orders}</div>
+                            </div>
+                        </div>
+
+                        <div className="group relative">
+                            <div className="absolute inset-0 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl md:rounded-2xl blur-lg opacity-20 group-hover:opacity-30 transition-opacity"></div>
+                            <div className="relative bg-white rounded-xl md:rounded-2xl p-3 md:p-5 border border-slate-200/50 shadow-sm hover:shadow-md transition-shadow">
+                                <div className="flex items-center justify-between mb-2 md:mb-3">
+                                    <span className="text-[10px] md:text-xs font-semibold text-slate-500 uppercase tracking-wide">Spent</span>
+                                    <div className="w-7 h-7 md:w-9 md:h-9 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center">
+                                        <DollarSign className="h-3.5 w-3.5 md:h-4 md:w-4 text-white" />
+                                    </div>
+                                </div>
+                                <div className="text-2xl md:text-3xl font-bold bg-gradient-to-br from-slate-900 to-slate-600 bg-clip-text text-transparent">LKR {stats.total_spent.toFixed(2)}</div>
+                            </div>
+                        </div>
                     </div>
 
                     {/* Orders List */}
-                    <div className="container max-w-4xl mx-auto">
-                    <Card className="bg-white/90 dark:bg-white/10 border-white/50 backdrop-blur-sm">
-                        <CardHeader className="px-3 py-2 md:px-6 md:py-4">
-                            <CardTitle className="text-sm md:text-lg">Recent Orders</CardTitle>
-                        </CardHeader>
-                        <CardContent className="px-2 md:px-6">
-                            {orders.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center py-12 text-center">
-                                    <Package className="h-12 w-12 text-muted-foreground mb-4" />
-                                    <h3 className="text-lg font-semibold">No orders yet</h3>
-                                    <p className="text-muted-foreground">Your order history will appear here</p>
+                    <div className="space-y-3 md:space-y-4">
+                        {orders.length === 0 ? (
+                            <div className="relative bg-white rounded-2xl border border-slate-200/50 shadow-sm overflow-hidden">
+                                <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-transparent"></div>
+                                <div className="relative flex flex-col items-center justify-center py-16 text-center px-6">
+                                    <Package className="h-16 w-16 text-slate-300 mb-4" />
+                                    <h3 className="text-lg font-semibold text-slate-900 mb-2">No orders yet</h3>
+                                    <p className="text-slate-500 text-sm">Your order history will appear here</p>
                                 </div>
-                            ) : (
-                                <div className="space-y-2">
-                                    {orders.map((order) => (
-                                        <div
-                                            key={order.id}
-                                            className="rounded-lg border border-border p-2 md:p-2.5 hover:bg-muted/30 transition-colors"
-                                        >
-                                            <div className="flex items-center gap-1.5 md:gap-2">
-                                                {/* Order Info */}
-                                                <div className="h-7 w-7 md:h-8 md:w-8 rounded-full bg-gradient-to-br from-[#00447C] to-[#003d6f] flex items-center justify-center text-white font-semibold text-[10px] md:text-xs flex-shrink-0">
-                                                    #{order.id}
-                                                </div>
-                                                <div className="min-w-0">
-                                                    <div className="text-[10px] md:text-xs font-medium truncate">Order #{order.id}</div>
-                                                    <div className="text-[9px] md:text-[10px] text-muted-foreground flex items-center gap-0.5 md:gap-1">
-                                                        <Calendar className="h-2 w-2 md:h-2.5 md:w-2.5" />
-                                                        <span className="truncate">{order.created_date}</span>
+                            </div>
+                        ) : (
+                            orders.map((order, index) => (
+                                <div
+                                    key={order.id}
+                                    className="group relative"
+                                    style={{ animationDelay: `${index * 100}ms` }}
+                                >
+                                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-blue-600/5 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                                    <div className="relative bg-white rounded-2xl border border-blue-200/50 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
+                                        {/* Top accent bar */}
+                                        <div className="h-1 bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600"></div>
+
+                                        <div className="p-4 md:p-5">
+                                            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-3 md:mb-4">
+                                                <div className="flex items-center gap-3 md:gap-4 flex-1">
+                                                    <div className="relative flex-shrink-0">
+                                                        <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl blur-md opacity-50"></div>
+                                                        <div className="relative h-10 w-10 md:h-12 md:w-12 rounded-xl bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold text-base md:text-lg shadow-lg">
+                                                            #{order.id}
+                                                        </div>
+                                                    </div>
+                                                    <div className="min-w-0 flex-1">
+                                                        <div className="font-bold text-sm md:text-base text-slate-900 truncate">Order #{order.id}</div>
+                                                        <div className="text-xs text-slate-600 font-medium truncate">
+                                                            Dist: {order.distributor_name}
+                                                        </div>
+                                                        <div className="text-xs text-slate-500 mt-1 flex items-center gap-1">
+                                                            <Clock className="h-3 w-3" />
+                                                            {order.created_date}
+                                                        </div>
                                                     </div>
                                                 </div>
+                                                <Badge className={getStatusBadgeClass(order.status)} variant="outline">
+                                                    {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                                                </Badge>
+                                            </div>
 
-                                                {/* Order Items */}
-                                                <div className="flex items-center gap-1 flex-1 min-w-0 overflow-x-auto">
-                                                    {order.items.map((item, index) => (
+                                            {/* Order Items */}
+                                            <div className="bg-gradient-to-br from-slate-50 to-slate-100/50 rounded-xl p-3 md:p-4 mb-3 md:mb-4 border border-slate-200/50">
+                                                <div className="text-xs font-semibold text-slate-700 mb-2 md:mb-3 flex items-center gap-2">
+                                                    <Package className="h-3.5 w-3.5" />
+                                                    Order Items
+                                                </div>
+                                                <div className="space-y-1.5 md:space-y-2">
+                                                    {order.items.map((item, itemIndex) => (
                                                         <div
-                                                            key={index}
-                                                            className="flex items-center gap-1 md:gap-1.5 bg-muted/50 rounded-md px-1.5 md:px-2 py-1 flex-shrink-0"
+                                                            key={itemIndex}
+                                                            className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 text-xs p-2 rounded-lg bg-white/50 border border-slate-200/50"
                                                         >
-                                                            {item.product_image && (
-                                                                <img
-                                                                    src={item.product_image}
-                                                                    alt={item.product_name}
-                                                                    className="h-4 w-4 md:h-5 md:w-5 rounded object-cover flex-shrink-0"
-                                                                />
-                                                            )}
-                                                            <div className="min-w-0">
-                                                                <div className="text-[9px] md:text-xs font-medium truncate">{item.product_name}</div>
-                                                                <div className="text-[8px] md:text-[10px] text-muted-foreground whitespace-nowrap">
+                                                            <span className="font-medium text-slate-700 break-words">{item.product_name}</span>
+                                                            <div className="text-right flex-shrink-0">
+                                                                <span className="text-slate-600">
                                                                     Qty: {item.quantity} × LKR {item.price.toFixed(2)}
-                                                                </div>
+                                                                </span>
+                                                                <span className="font-bold text-slate-900 ml-2">
+                                                                    = LKR {item.subtotal.toFixed(2)}
+                                                                </span>
                                                             </div>
                                                         </div>
                                                     ))}
                                                 </div>
+                                            </div>
 
-                                                {/* Status & Total */}
-                                                <div className="text-right flex-shrink-0">
-                                                    <Badge className={`${getStatusBadgeClass(order.status)} text-[8px] md:text-xs px-1.5 py-0 md:px-2 md:py-0.5`}>
-                                                        {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                                                    </Badge>
-                                                    <div className="text-[8px] md:text-[10px] text-muted-foreground mt-0.5 truncate max-w-[80px] md:max-w-none">
-                                                        Dist: {order.distributor_name}
+                                            {/* Total Amount */}
+                                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-3 md:pt-4 border-t border-slate-200/50">
+                                                <div>
+                                                    <div className="text-xs text-slate-500 font-medium mb-0.5">Total Amount</div>
+                                                    <div className="text-xl md:text-2xl font-bold bg-gradient-to-br from-slate-900 to-slate-700 bg-clip-text text-transparent">
+                                                        LKR {order.total_amount.toFixed(2)}
                                                     </div>
-                                                    <div className="text-[10px] md:text-xs font-semibold mt-0.5">LKR {order.total_amount.toFixed(2)}</div>
                                                 </div>
                                             </div>
                                         </div>
-                                    ))}
+                                    </div>
                                 </div>
-                            )}
-                        </CardContent>
-                    </Card>
+                            ))
+                        )}
                     </div>
-                </div>
+                </main>
+            </div>
 
-                {/* Footer Navigation */}
-                <footer className="fixed bottom-0 left-0 right-0 z-50">
+            {/* Footer Navigation */}
+            <footer className="fixed bottom-0 left-0 right-0 z-50">
                 <div className="absolute inset-0 bg-gradient-to-r from-[#00447C] via-[#003d6f] to-[#00284a]"></div>
                 <div className="absolute inset-0 opacity-[0.02]" style={{
                     backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`
@@ -230,7 +250,9 @@ export default function MyOrderRecords({ orders, stats }: Props) {
                             <a href="/" className="group relative flex flex-col items-center gap-1.5 p-2">
                                 <div className="relative">
                                     <div className="absolute inset-0 bg-gradient-to-br from-blue-400/40 to-cyan-400/40 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                                    <Home className="relative h-5 w-5 text-white/60 group-hover:text-white transition-all duration-500 group-hover:scale-110 group-hover:-translate-y-0.5" />
+                                    <svg className="relative h-5 w-5 text-white/60 group-hover:text-white transition-all duration-500 group-hover:scale-110 group-hover:-translate-y-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                    </svg>
                                 </div>
                                 <span className="text-[10px] text-white/50 font-medium tracking-wider uppercase group-hover:text-white/80 transition-colors duration-500">Home</span>
                                 <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-0 h-px bg-gradient-to-r from-transparent via-blue-400 to-transparent group-hover:w-8 transition-all duration-500"></div>
@@ -238,7 +260,9 @@ export default function MyOrderRecords({ orders, stats }: Props) {
                             <a href="/my-orders" className="group relative flex flex-col items-center gap-1.5 p-2">
                                 <div className="relative">
                                     <div className="absolute inset-0 bg-gradient-to-br from-blue-400/40 to-cyan-400/40 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                                    <ShoppingCart className="relative h-5 w-5 text-white/60 group-hover:text-white transition-all duration-500 group-hover:scale-110 group-hover:-translate-y-0.5" />
+                                    <svg className="relative h-5 w-5 text-white/60 group-hover:text-white transition-all duration-500 group-hover:scale-110 group-hover:-translate-y-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 15H4L5 9z" />
+                                    </svg>
                                 </div>
                                 <span className="text-[10px] text-white/50 font-medium tracking-wider uppercase group-hover:text-white/80 transition-colors duration-500">Orders</span>
                                 <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-0 h-px bg-gradient-to-r from-transparent via-blue-400 to-transparent group-hover:w-8 transition-all duration-500"></div>
@@ -246,7 +270,9 @@ export default function MyOrderRecords({ orders, stats }: Props) {
                             <a href="/stock" className="group relative flex flex-col items-center gap-1.5 p-2">
                                 <div className="relative">
                                     <div className="absolute inset-0 bg-gradient-to-br from-blue-400/40 to-cyan-400/40 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                                    <User className="relative h-5 w-5 text-white/60 group-hover:text-white transition-all duration-500 group-hover:scale-110 group-hover:-translate-y-0.5" />
+                                    <svg className="relative h-5 w-5 text-white/60 group-hover:text-white transition-all duration-500 group-hover:scale-110 group-hover:-translate-y-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                                    </svg>
                                 </div>
                                 <span className="text-[10px] text-white/50 font-medium tracking-wider uppercase group-hover:text-white/80 transition-colors duration-500">Inventory</span>
                                 <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-0 h-px bg-gradient-to-r from-transparent via-blue-400 to-transparent group-hover:w-8 transition-all duration-500"></div>
@@ -254,7 +280,9 @@ export default function MyOrderRecords({ orders, stats }: Props) {
                             <a href="/user/profile" className="group relative flex flex-col items-center gap-1.5 p-2">
                                 <div className="relative">
                                     <div className="absolute inset-0 bg-gradient-to-br from-blue-400/40 to-cyan-400/40 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                                    <User className="relative h-5 w-5 text-white/60 group-hover:text-white transition-all duration-500 group-hover:scale-110 group-hover:-translate-y-0.5" />
+                                    <svg className="relative h-5 w-5 text-white/60 group-hover:text-white transition-all duration-500 group-hover:scale-110 group-hover:-translate-y-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
                                 </div>
                                 <span className="text-[10px] text-white/50 font-medium tracking-wider uppercase group-hover:text-white/80 transition-colors duration-500">Profile</span>
                                 <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-0 h-px bg-gradient-to-r from-transparent via-blue-400 to-transparent group-hover:w-8 transition-all duration-500"></div>
