@@ -1,6 +1,6 @@
 import { Link, usePage, router } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
-import { LayoutDashboard, LogIn, UserPlus, Home, Package, ShoppingCart, Settings, User, LogOut } from 'lucide-react';
+import { Home, Package, ShoppingCart, Settings, User, LogOut, LogIn, UserPlus, LayoutDashboard } from 'lucide-react';
 import {
     DropdownMenu,
     DropdownMenuTrigger,
@@ -53,23 +53,15 @@ export default function GuestLayout({
                 
                 {/* Content */}
                 <div className="relative container flex h-20 md:h-16 items-center justify-between px-4">
-                    {/* Logo section */}
-                    <div className="flex items-center gap-3">
-                        {/* Icon with glow container */}
-                        <div className="relative group">
-                            <div className="absolute inset-0 bg-gradient-to-br from-blue-400/30 to-cyan-400/30 rounded-lg blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                            <div className="relative w-10 h-10 rounded-lg bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm border border-white/10 flex items-center justify-center">
-                                <LayoutDashboard className="h-6 w-6 text-white" />
-                            </div>
-                        </div>
-                        
-                        {/* Brand text */}
+                    {/* Brand logo and text */}
+                    <div className="flex items-center gap-2 md:gap-3">
+                        <img src="/Nestle-Logo.png" alt="Nestlé" className="h-8 md:h-10 w-auto object-contain brightness-0 invert" />
                         <div className="flex flex-col">
                             <span className="text-xs md:text-lg font-bold text-white tracking-tight">Nestlé Retailer Direct</span>
                             <span className="text-[9px] text-white/50 font-medium tracking-widest uppercase">System Analysis</span>
                         </div>
                     </div>
-                    
+
                     {/* Navigation buttons - Desktop */}
                     <nav className="hidden md:flex items-center gap-2">
                         {isLoggedIn ? (
