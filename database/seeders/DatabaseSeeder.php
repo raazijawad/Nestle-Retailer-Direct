@@ -11,9 +11,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Seed only the 5 Nestlé products
-        // All user accounts (retailers, distributors, admins) must be created manually
+        // Seed admin user and Nestlé products
         $this->call([
+            AdminUserSeeder::class,
             ProductSeeder::class,
         ]);
     }
