@@ -16,7 +16,21 @@ echo.
 pause
 
 echo.
-echo [1/7] Installing Composer dependencies...
+echo [1/7] Enabling PHP zip extension...
+for /f "delims=" %%i in ('php -r "echo php_ini_loaded_file();"') do set PHP_INI=%%i
+echo Found php.ini: %PHP_INI%
+if exist "%PHP_INI%" (
+    (findstr /i /v "^;extension=zip" "%PHP_INI%" | findstr /i /v "^extension=zip") > "%TEMP%\php_temp.ini"
+    echo extension=zip >> "%TEMP%\php_temp.ini"
+    copy /y "%TEMP%\php_temp.ini" "%PHP_INI%" >nul
+    del "%TEMP%\php_temp.ini"
+    echo Zip extension enabled in php.ini
+) else (
+    echo WARNING: Could not find php.ini file
+)
+
+echo.
+echo [2/7] Installing Composer dependencies...
 call composer install --no-interaction --prefer-dist
 if errorlevel 1 (
     echo ERROR: Composer install failed!
@@ -25,7 +39,7 @@ if errorlevel 1 (
 )
 
 echo.
-echo [2/7] Installing NPM dependencies...
+echo [3/7] Installing NPM dependencies...
 call npm install
 if errorlevel 1 (
     echo ERROR: NPM install failed!
@@ -34,7 +48,7 @@ if errorlevel 1 (
 )
 
 echo.
-echo [3/7] Setting up .env file...
+echo [4/7] Setting up .env file...
 if not exist .env (
     copy .env.example .env
     echo .env file created.
@@ -43,17 +57,17 @@ if not exist .env (
 )
 
 echo.
-echo [4/7] Generating application key...
+echo [5/7] Generating application key...
 call php artisan key:generate
 
 echo.
-echo [5/7] Clearing caches...
+echo [6/7] Clearing caches...
 call php artisan config:clear
 call php artisan cache:clear
 call php artisan view:clear
 
 echo.
-echo [6/7] Creating MySQL database...
+echo [7/7] Creating MySQL database...
 for /f "tokens=3" %%a in ('findstr /i "DB_DATABASE" .env') do set DB_NAME=%%a
 for /f "tokens=3" %%a in ('findstr /i "DB_USERNAME" .env') do set DB_USER=%%a
 for /f "tokens=3" %%a in ('findstr /i "DB_PASSWORD" .env') do set DB_PASS=%%a
@@ -74,7 +88,7 @@ if errorlevel 1 (
 )
 
 echo.
-echo [7/7] Running database migrations and seeding products...
+echo [8/7] Running database migrations and seeding products...
 call php artisan migrate:fresh --seed
 if errorlevel 1 (
     echo.
