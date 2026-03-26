@@ -451,7 +451,7 @@ export default function QuickReorder({ products, distributors }: Props) {
                                             </p>
                                         )}
                                         <p className="text-xs text-gray-500 mt-0.5">
-                                            Lkr {order.price?.toFixed(2) || '0.00'} each
+                                            LKR {order.price?.toFixed(2) || '0.00'} each
                                         </p>
                                     </div>
 
@@ -513,7 +513,7 @@ export default function QuickReorder({ products, distributors }: Props) {
                                 </div>
                                 <div className="flex justify-between items-center">
                                     <span className="text-xs md:text-sm text-gray-600">Total Amount</span>
-                                    <span className="font-bold text-[#00447C] text-lg md:text-xl">Lkr {totalAmount.toFixed(2)}</span>
+                                    <span className="font-bold text-[#00447C] text-lg md:text-xl">LKR {totalAmount.toFixed(2)}</span>
                                 </div>
                             </div>
 
@@ -610,7 +610,7 @@ export default function QuickReorder({ products, distributors }: Props) {
                                 </div>
                                 <div className="flex justify-between items-center">
                                     <span className="text-xs md:text-sm text-gray-600">Total Amount</span>
-                                    <span className="font-bold text-purple-600 text-lg md:text-xl">Lkr {totalAmount.toFixed(2)}</span>
+                                    <span className="font-bold text-purple-600 text-lg md:text-xl">LKR {totalAmount.toFixed(2)}</span>
                                 </div>
                             </div>
 
@@ -677,7 +677,7 @@ export default function QuickReorder({ products, distributors }: Props) {
                                 disabled={isSubmitting}
                                 className="flex-1 px-3 md:px-4 py-2.5 md:py-3 rounded-xl bg-gradient-to-r from-purple-600 to-purple-700 text-white font-semibold text-sm md:text-base"
                             >
-                                {isSubmitting ? 'Processing...' : `Pay Lkr ${totalAmount.toFixed(2)}`}
+                                {isSubmitting ? 'Processing...' : `Pay LKR ${totalAmount.toFixed(2)}`}
                             </button>
                         </div>
                     </div>
@@ -692,7 +692,7 @@ export default function QuickReorder({ products, distributors }: Props) {
                         disabled={isSubmitting || totalItems === 0}
                         className="w-full max-w-xs mx-auto block px-6 py-3 rounded-xl bg-white text-[#00447C] font-bold hover:bg-gray-100 disabled:opacity-50"
                     >
-                        REORDER NOW ({totalItems} items) - Lkr {totalAmount.toFixed(2)}
+                        REORDER NOW ({totalItems} items) - LKR {totalAmount.toFixed(2)}
                     </button>
                 </div>
             </footer>

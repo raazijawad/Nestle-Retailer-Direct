@@ -229,7 +229,7 @@ export default function RetailerInventory({ products, stats }: Props) {
                                             <p className="text-xs text-slate-500 line-clamp-2 mt-1">{product.description}</p>
                                         </div>
                                         <div className="flex items-center justify-between">
-                                            <span className="text-lg font-bold text-[#00447C]">Lkr {product.price.toFixed(2)}</span>
+                                            <span className="text-lg font-bold text-[#00447C]">LKR {product.price.toFixed(2)}</span>
                                             <span className="text-sm text-slate-600 font-medium">{product.stock_quantity} units</span>
                                         </div>
                                         <div className="h-2 bg-slate-100 rounded-full overflow-hidden">

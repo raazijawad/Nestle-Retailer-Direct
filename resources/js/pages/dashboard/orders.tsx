@@ -161,7 +161,7 @@ export default function Orders({ orders, stats }: Props) {
                             <DollarSign className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">Lkr {stats.total_revenue.toFixed(2)}</div>
+                            <div className="text-2xl font-bold">LKR {stats.total_revenue.toFixed(2)}</div>
                             <p className="text-xs text-muted-foreground">All time revenue</p>
                         </CardContent>
                     </Card>
@@ -204,7 +204,7 @@ export default function Orders({ orders, stats }: Props) {
                                                     {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                                                 </Badge>
                                                 <div className="text-right">
-                                                    <div className="font-semibold">Lkr {order.total_amount.toFixed(2)}</div>
+                                                    <div className="font-semibold">LKR {order.total_amount.toFixed(2)}</div>
                                                     <div className="text-xs text-muted-foreground">{order.created_at}</div>
                                                 </div>
                                             </div>
@@ -229,7 +229,7 @@ export default function Orders({ orders, stats }: Props) {
                                                         <div>
                                                             <div className="text-xs font-medium">{item.product_name}</div>
                                                             <div className="text-[10px] text-muted-foreground">
-                                                                Qty: {item.quantity} × Lkr {item.price.toFixed(2)}
+                                                                Qty: {item.quantity} × LKR {item.price.toFixed(2)}
                                                             </div>
                                                         </div>
                                                     </div>

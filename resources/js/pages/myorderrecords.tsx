@@ -131,7 +131,7 @@ export default function MyOrderRecords({ orders, stats }: Props) {
                                 <DollarSign className="h-3 w-3 text-muted-foreground" />
                             </CardHeader>
                             <CardContent className="py-0">
-                                <div className="text-base md:text-lg font-bold">Lkr {stats.total_spent.toFixed(2)}</div>
+                                <div className="text-base md:text-lg font-bold">LKR {stats.total_spent.toFixed(2)}</div>
                             </CardContent>
                         </Card>
                     </div>
@@ -186,7 +186,7 @@ export default function MyOrderRecords({ orders, stats }: Props) {
                                                             <div className="min-w-0">
                                                                 <div className="text-[9px] md:text-xs font-medium truncate">{item.product_name}</div>
                                                                 <div className="text-[8px] md:text-[10px] text-muted-foreground whitespace-nowrap">
-                                                                    Qty: {item.quantity} × Lkr {item.price.toFixed(2)}
+                                                                    Qty: {item.quantity} × LKR {item.price.toFixed(2)}
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -201,7 +201,7 @@ export default function MyOrderRecords({ orders, stats }: Props) {
                                                     <div className="text-[8px] md:text-[10px] text-muted-foreground mt-0.5 truncate max-w-[80px] md:max-w-none">
                                                         Dist: {order.distributor_name}
                                                     </div>
-                                                    <div className="text-[10px] md:text-xs font-semibold mt-0.5">Lkr {order.total_amount.toFixed(2)}</div>
+                                                    <div className="text-[10px] md:text-xs font-semibold mt-0.5">LKR {order.total_amount.toFixed(2)}</div>
                                                 </div>
                                             </div>
                                         </div>

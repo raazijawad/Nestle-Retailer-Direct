@@ -237,7 +237,7 @@ export default function DistributorOrders({ orders, stats }: Props) {
                                                     {order.status.replace('_', ' ').charAt(0).toUpperCase() + order.status.replace('_', ' ').slice(1)}
                                                 </Badge>
                                                 <div className="text-right">
-                                                    <div className="font-semibold">Lkr {order.total_amount.toFixed(2)}</div>
+                                                    <div className="font-semibold">LKR {order.total_amount.toFixed(2)}</div>
                                                     <div className="text-xs text-muted-foreground">{order.created_at}</div>
                                                 </div>
                                             </div>
@@ -255,7 +255,7 @@ export default function DistributorOrders({ orders, stats }: Props) {
                                                         <div>
                                                             <div className="text-xs font-medium">{item.product_name}</div>
                                                             <div className="text-[10px] text-muted-foreground">
-                                                                Qty: {item.quantity} × Lkr {item.price.toFixed(2)}
+                                                                Qty: {item.quantity} × LKR {item.price.toFixed(2)}
                                                             </div>
                                                         </div>
                                                     </div>

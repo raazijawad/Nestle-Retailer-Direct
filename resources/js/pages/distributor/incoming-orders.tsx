@@ -328,10 +328,10 @@ export default function IncomingOrders({ orders, stats }: Props) {
                                                                 <span className="font-medium text-slate-700 break-words">{item.product_name}</span>
                                                                 <div className="text-right flex-shrink-0">
                                                                     <span className="text-slate-600">
-                                                                        {item.quantity} × Lkr {item.price.toFixed(2)}
+                                                                        {item.quantity} × LKR {item.price.toFixed(2)}
                                                                     </span>
                                                                     <span className="font-bold text-slate-900 ml-2">
-                                                                        = Lkr {item.subtotal.toFixed(2)}
+                                                                        = LKR {item.subtotal.toFixed(2)}
                                                                     </span>
                                                                 </div>
                                                             </div>
@@ -344,7 +344,7 @@ export default function IncomingOrders({ orders, stats }: Props) {
                                                     <div>
                                                         <div className="text-xs text-slate-500 font-medium mb-0.5">Total Amount</div>
                                                         <div className="text-xl md:text-2xl font-bold bg-gradient-to-br from-slate-900 to-slate-700 bg-clip-text text-transparent">
-                                                            Lkr {order.total_amount.toFixed(2)}
+                                                            LKR {order.total_amount.toFixed(2)}
                                                         </div>
                                                     </div>
                                                     <div className="flex gap-2 flex-shrink-0">
@@ -515,7 +515,7 @@ export default function IncomingOrders({ orders, stats }: Props) {
                                                         {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                                                     </Badge>
                                                     <div className="text-right">
-                                                        <div className="text-sm font-bold text-slate-900">Lkr {order.total_amount.toFixed(2)}</div>
+                                                        <div className="text-sm font-bold text-slate-900">LKR {order.total_amount.toFixed(2)}</div>
                                                         <div className="text-xs text-slate-500">{order.items.length} items</div>
                                                     </div>
                                                 </div>
