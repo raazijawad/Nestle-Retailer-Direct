@@ -1,0 +1,75 @@
+databases:
+  - name: nestle-retailer-direct-db
+    databaseName: nestle_retailer_direct
+    user: nestle_user
+    region: oregon
+    plan: free
+
+services:
+  - type: web
+    name: nestle-retailer-direct
+    region: oregon
+    plan: free
+    buildCommand: |
+      cp .env.example .env
+      composer install --no-dev --optimize-autoloader
+      npm install
+      npm run build
+      php artisan optimize
+    startCommand: |
+      php artisan migrate --force
+      php artisan serve --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: APP_NAME
+        value: Nestle-Retailer-Direct
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: APP_URL
+        fromService:
+          name: nestle-retailer-direct
+          type: web
+          envVarKey: RENDER_EXTERNAL_URL
+      - key: APP_KEY
+        generateValue: true
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: LOG_LEVEL
+        value: info
+      - key: BROADCAST_CONNECTION
+        value: log
+      - key: FILESYSTEM_DISK
+        value: public
+      - key: QUEUE_CONNECTION
+        value: database
+      - key: CACHE_STORE
+        value: database
+      - key: SESSION_DRIVER
+        value: database
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        fromDatabase:
+          name: nestle-retailer-direct-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: nestle-retailer-direct-db
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: nestle-retailer-direct-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: nestle-retailer-direct-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: nestle-retailer-direct-db
+          property: password
+      - key: PAYPAL_MODE
+        value: sandbox
+      - key: VITE_APP_NAME
+        value: Nestle-Retailer-Direct
