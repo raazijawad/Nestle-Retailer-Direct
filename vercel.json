@@ -1,11 +1,9 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "outputDirectory": "public",
   "buildCommand": "composer install --no-dev --optimize-autoloader && npm install && npm run build",
-  "devCommand": "php artisan serve",
-  "installCommand": "composer install --no-dev --optimize-autoloader",
+  "outputDirectory": "public",
   "functions": {
-    "api/*.php": {
+    "api/index.php": {
       "runtime": "vercel-php@0.7.3"
     }
   },
@@ -19,16 +17,18 @@
     },
     {
       "src": "/(.*)",
-      "dest": "/api/lambda.php"
+      "dest": "/api/index.php"
     }
   ],
   "env": {
     "APP_NAME": "Nestle-Retailer-Direct",
     "APP_ENV": "production",
     "APP_DEBUG": "false",
+    "APP_KEY": "base64:2Fl8VpNqJ9zK3mR7nL4wX5yH6bC9dE0fG1hI2jK3lM4=",
     "LOG_CHANNEL": "stderr",
     "CACHE_DRIVER": "array",
     "SESSION_DRIVER": "cookie",
+    "SESSION_SECURE_COOKIE": "true",
     "QUEUE_CONNECTION": "sync",
     "DB_CONNECTION": "pgsql",
     "FILESYSTEM_DISK": "public"
