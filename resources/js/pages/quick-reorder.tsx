@@ -2,7 +2,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import { ChevronLeft, Plus, Minus, ShoppingCart, Users, ChevronDown, CreditCard, DollarSign, Warehouse, Banknote } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -10,6 +10,70 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
+
+// Credit card input formatting utilities
+function formatCardNumber(value: string): string {
+    // Remove all non-digit characters
+    const digits = value.replace(/\D/g, '');
+    // Limit to 16 digits
+    const limited = digits.slice(0, 16);
+    // Add space every 4 digits
+    return limited.replace(/(\d{4})(?=\d)/g, '$1 ').trim();
+}
+
+function formatExpiryDate(value: string): string {
+    // Remove all non-digit characters
+    const digits = value.replace(/\D/g, '');
+    // Limit to 4 digits (MMYY)
+    const limited = digits.slice(0, 4);
+    
+    if (limited.length >= 2) {
+        const month = limited.slice(0, 2);
+        const year = limited.slice(2);
+        
+        // Restrict month to 01-12
+        let validMonth = month;
+        const monthNum = parseInt(month, 10);
+        if (monthNum > 12) {
+            validMonth = '12';
+        } else if (monthNum === 0) {
+            validMonth = '01';
+        }
+        
+        return validMonth + (year ? '/' + year : '');
+    }
+    return limited;
+}
+
+function validateCardNumber(value: string): boolean {
+    const digits = value.replace(/\D/g, '');
+    return digits.length === 16;
+}
+
+function validateExpiryDate(value: string): boolean {
+    const match = value.match(/^(\d{2})\/(\d{2})$/);
+    if (!match) return false;
+    
+    const month = parseInt(match[1], 10);
+    const year = parseInt(match[2], 10);
+    
+    // Validate month (01-12)
+    if (month < 1 || month > 12) return false;
+    
+    // Validate year (not in the past)
+    const currentYear = new Date().getFullYear() % 100;
+    const currentMonth = new Date().getMonth() + 1;
+    
+    if (year < currentYear || (year === currentYear && month < currentMonth)) {
+        return false;
+    }
+    
+    return true;
+}
+
+function validateCVV(value: string): boolean {
+    return /^\d{3}$/.test(value);
+}
 
 interface Product {
     id: number;
@@ -93,6 +157,13 @@ export default function QuickReorder({ products, distributors }: Props) {
     const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [showCreditCardModal, setShowCreditCardModal] = useState(false);
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<'cod' | 'paypal' | 'credit_card'>('cod');
+    
+    // Credit card form state
+    const [cardNumber, setCardNumber] = useState('');
+    const [cardExpiry, setCardExpiry] = useState('');
+    const [cardCvv, setCardCvv] = useState('');
+    const [cardName, setCardName] = useState('');
+    const cardNumberRef = useRef<HTMLInputElement>(null);
 
     // Fetch distributor inventory when distributor is selected
     useEffect(() => {
@@ -294,6 +365,44 @@ export default function QuickReorder({ products, distributors }: Props) {
             toast({
                 title: 'Error',
                 description: 'Please select a distributor',
+                variant: 'destructive',
+            });
+            return;
+        }
+
+        // Validate card details
+        if (!validateCardNumber(cardNumber)) {
+            toast({
+                title: 'Invalid Card Number',
+                description: 'Please enter a valid 16-digit card number',
+                variant: 'destructive',
+            });
+            cardNumberRef.current?.focus();
+            return;
+        }
+
+        if (!validateExpiryDate(cardExpiry)) {
+            toast({
+                title: 'Invalid Expiry Date',
+                description: 'Please enter a valid expiry date (MM/YY)',
+                variant: 'destructive',
+            });
+            return;
+        }
+
+        if (!validateCVV(cardCvv)) {
+            toast({
+                title: 'Invalid CVV',
+                description: 'Please enter a valid 3-digit CVV',
+                variant: 'destructive',
+            });
+            return;
+        }
+
+        if (!cardName.trim()) {
+            toast({
+                title: 'Cardholder Name Required',
+                description: 'Please enter the cardholder name',
                 variant: 'destructive',
             });
             return;
@@ -618,11 +727,15 @@ export default function QuickReorder({ products, distributors }: Props) {
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Card Number</label>
                                     <input
+                                        ref={cardNumberRef}
                                         type="text"
                                         id="card_number"
+                                        value={cardNumber}
+                                        onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
                                         placeholder="1234 5678 9012 3456"
-                                        className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                        className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 font-mono"
                                         maxLength={19}
+                                        autoComplete="cc-number"
                                     />
                                 </div>
 
@@ -631,8 +744,11 @@ export default function QuickReorder({ products, distributors }: Props) {
                                     <input
                                         type="text"
                                         id="card_name"
+                                        value={cardName}
+                                        onChange={(e) => setCardName(e.target.value)}
                                         placeholder="John Doe"
                                         className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                        autoComplete="cc-name"
                                     />
                                 </div>
 
@@ -642,9 +758,12 @@ export default function QuickReorder({ products, distributors }: Props) {
                                         <input
                                             type="text"
                                             id="card_expiry"
+                                            value={cardExpiry}
+                                            onChange={(e) => setCardExpiry(formatExpiryDate(e.target.value))}
                                             placeholder="MM/YY"
-                                            className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                            className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 font-mono text-center"
                                             maxLength={5}
+                                            autoComplete="cc-exp"
                                         />
                                     </div>
                                     <div>
@@ -652,9 +771,12 @@ export default function QuickReorder({ products, distributors }: Props) {
                                         <input
                                             type="text"
                                             id="card_cvv"
+                                            value={cardCvv}
+                                            onChange={(e) => setCardCvv(e.target.value.replace(/\D/g, '').slice(0, 3))}
                                             placeholder="123"
-                                            className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                                            maxLength={4}
+                                            className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 font-mono text-center"
+                                            maxLength={3}
+                                            autoComplete="cc-csc"
                                         />
                                     </div>
                                 </div>
@@ -666,6 +788,11 @@ export default function QuickReorder({ products, distributors }: Props) {
                                 onClick={() => {
                                     setShowCreditCardModal(false);
                                     setShowPaymentModal(true);
+                                    // Reset form
+                                    setCardNumber('');
+                                    setCardExpiry('');
+                                    setCardCvv('');
+                                    setCardName('');
                                 }}
                                 disabled={isSubmitting}
                                 className="flex-1 px-3 md:px-4 py-2.5 md:py-3 rounded-xl border border-gray-300 font-semibold text-sm md:text-base hover:bg-gray-50"
