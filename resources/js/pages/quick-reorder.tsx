@@ -1,5 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { ChevronLeft, Plus, Minus, ShoppingCart, Users, ChevronDown, CreditCard, DollarSign, Warehouse } from 'lucide-react';
+import { ChevronLeft, Plus, Minus, ShoppingCart, Users, ChevronDown, CreditCard, DollarSign, Warehouse, Banknote } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
@@ -91,7 +91,8 @@ export default function QuickReorder({ products, distributors }: Props) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isDistributorOpen, setIsDistributorOpen] = useState(false);
     const [showPaymentModal, setShowPaymentModal] = useState(false);
-    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<'cod' | 'paypal'>('cod');
+    const [showCreditCardModal, setShowCreditCardModal] = useState(false);
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<'cod' | 'paypal' | 'credit_card'>('cod');
 
     // Fetch distributor inventory when distributor is selected
     useEffect(() => {
@@ -204,6 +205,13 @@ export default function QuickReorder({ products, distributors }: Props) {
             return;
         }
 
+        // If credit card is selected, show credit card form
+        if (selectedPaymentMethod === 'credit_card') {
+            setShowPaymentModal(false);
+            setShowCreditCardModal(true);
+            return;
+        }
+
         const orderData = {
             distributor_id: selectedDistributor.id,
             payment_method: selectedPaymentMethod,
@@ -221,7 +229,7 @@ export default function QuickReorder({ products, distributors }: Props) {
         if (selectedPaymentMethod === 'paypal') {
             // Use fetch for PayPal to get JSON response and redirect manually
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-            
+
             fetch('/orders', {
                 method: 'POST',
                 headers: {
@@ -256,6 +264,7 @@ export default function QuickReorder({ products, distributors }: Props) {
                 });
             });
         } else {
+            // For COD, submit directly
             router.post('/orders', orderData, {
                 preserveScroll: true,
                 onSuccess: () => {
@@ -276,6 +285,69 @@ export default function QuickReorder({ products, distributors }: Props) {
                 },
             });
         }
+    };
+
+    const handleCreditCardSubmit = () => {
+        const itemsToOrder = orderItems.filter((item) => item && item.quantity > 0);
+
+        if (!selectedDistributor) {
+            toast({
+                title: 'Error',
+                description: 'Please select a distributor',
+                variant: 'destructive',
+            });
+            return;
+        }
+
+        const orderData = {
+            distributor_id: selectedDistributor.id,
+            payment_method: 'credit_card',
+            items: itemsToOrder.map((item) => ({
+                product_id: item.id,
+                product_name: item.name,
+                product_image: item.image,
+                quantity: item.quantity,
+                price: item.price,
+            })),
+        };
+
+        setIsSubmitting(true);
+
+        // Submit credit card order directly (mock payment - instant success)
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
+        fetch('/orders', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json',
+                'X-Inertia': 'false',
+            },
+            body: JSON.stringify(orderData),
+            credentials: 'same-origin',
+        })
+        .then(res => res.json())
+        .then(data => {
+            setIsSubmitting(false);
+            if (data.success) {
+                toast({
+                    title: 'Order Successful!',
+                    description: 'Your credit card payment was processed successfully.',
+                });
+                window.location.href = '/my-orders';
+            } else {
+                throw new Error('Invalid response from server');
+            }
+        })
+        .catch(err => {
+            setIsSubmitting(false);
+            toast({
+                title: 'Payment Failed',
+                description: err.message || 'There was an error processing your payment.',
+                variant: 'destructive',
+            });
+        });
     };
 
     // Safe reduce with null checks
@@ -464,6 +536,23 @@ export default function QuickReorder({ products, distributors }: Props) {
                                 </button>
 
                                 <button
+                                    onClick={() => setSelectedPaymentMethod('credit_card')}
+                                    className={`w-full p-3 md:p-4 rounded-xl border-2 flex items-center gap-2 md:gap-4 ${
+                                        selectedPaymentMethod === 'credit_card'
+                                            ? 'border-[#00447C] bg-blue-50'
+                                            : 'border-gray-200'
+                                    }`}
+                                >
+                                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0">
+                                        <Banknote className="h-5 w-5 md:h-6 md:w-6 text-white" />
+                                    </div>
+                                    <div className="flex-1 text-left min-w-0">
+                                        <div className="font-semibold text-sm md:text-base">Credit Card</div>
+                                        <div className="text-xs text-gray-500">Visa, Mastercard, etc.</div>
+                                    </div>
+                                </button>
+
+                                <button
                                     onClick={() => setSelectedPaymentMethod('cod')}
                                     className={`w-full p-3 md:p-4 rounded-xl border-2 flex items-center gap-2 md:gap-4 ${
                                         selectedPaymentMethod === 'cod'
@@ -496,6 +585,99 @@ export default function QuickReorder({ products, distributors }: Props) {
                                 className="flex-1 px-3 md:px-4 py-2.5 md:py-3 rounded-xl bg-gradient-to-r from-[#00447C] to-[#003d6f] text-white font-semibold text-sm md:text-base"
                             >
                                 {isSubmitting ? 'Processing...' : (selectedPaymentMethod === 'paypal' ? 'Pay with PayPal' : 'Place Order')}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Credit Card Modal */}
+            {showCreditCardModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-3 md:p-4 bg-black/50 backdrop-blur-sm">
+                    <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+                        <div className="bg-gradient-to-r from-purple-600 to-purple-800 px-4 md:px-6 py-3 md:py-4">
+                            <h3 className="text-base md:text-lg font-bold text-white flex items-center gap-2">
+                                <Banknote className="h-4 w-4 md:h-5 md:w-5" />
+                                Credit Card Payment
+                            </h3>
+                        </div>
+
+                        <div className="p-4 md:p-6 space-y-4">
+                            <div className="bg-gray-50 rounded-lg p-3 md:p-4">
+                                <div className="flex justify-between items-center mb-2">
+                                    <span className="text-xs md:text-sm text-gray-600">Total Items</span>
+                                    <span className="font-semibold text-sm md:text-base">{totalItems}</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-xs md:text-sm text-gray-600">Total Amount</span>
+                                    <span className="font-bold text-purple-600 text-lg md:text-xl">Lkr {totalAmount.toFixed(2)}</span>
+                                </div>
+                            </div>
+
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Card Number</label>
+                                    <input
+                                        type="text"
+                                        id="card_number"
+                                        placeholder="1234 5678 9012 3456"
+                                        className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                        maxLength={19}
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Cardholder Name</label>
+                                    <input
+                                        type="text"
+                                        id="card_name"
+                                        placeholder="John Doe"
+                                        className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                    />
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
+                                        <input
+                                            type="text"
+                                            id="card_expiry"
+                                            placeholder="MM/YY"
+                                            className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                            maxLength={5}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">CVV</label>
+                                        <input
+                                            type="text"
+                                            id="card_cvv"
+                                            placeholder="123"
+                                            className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                            maxLength={4}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex gap-2 md:gap-3 p-4 md:p-6 pt-0">
+                            <button
+                                onClick={() => {
+                                    setShowCreditCardModal(false);
+                                    setShowPaymentModal(true);
+                                }}
+                                disabled={isSubmitting}
+                                className="flex-1 px-3 md:px-4 py-2.5 md:py-3 rounded-xl border border-gray-300 font-semibold text-sm md:text-base hover:bg-gray-50"
+                            >
+                                Back
+                            </button>
+                            <button
+                                onClick={handleCreditCardSubmit}
+                                disabled={isSubmitting}
+                                className="flex-1 px-3 md:px-4 py-2.5 md:py-3 rounded-xl bg-gradient-to-r from-purple-600 to-purple-700 text-white font-semibold text-sm md:text-base"
+                            >
+                                {isSubmitting ? 'Processing...' : `Pay Lkr ${totalAmount.toFixed(2)}`}
                             </button>
                         </div>
                     </div>

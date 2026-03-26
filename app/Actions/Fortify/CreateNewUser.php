@@ -2,19 +2,14 @@
 
 namespace App\Actions\Fortify;
 
-use App\Concerns\PasswordValidationRules;
-use App\Concerns\ProfileValidationRules;
 use App\Models\User;
-use App\Models\ShopProfile;
-use App\Models\DistributorProfile;
-use App\Models\DistributorInventory;
-use App\Models\Product;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
 
 class CreateNewUser implements CreatesNewUsers
 {
-    use PasswordValidationRules, ProfileValidationRules;
+    use CreatesNewUsers;
 
     /**
      * Validate and create a newly registered user.
@@ -24,45 +19,24 @@ class CreateNewUser implements CreatesNewUsers
     public function create(array $input): User
     {
         Validator::make($input, [
-            ...$this->profileRules(),
-            'password' => $this->passwordRules(),
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
             'role' => ['required', 'in:retailer,distributor'],
         ])->validate();
 
         $user = User::create([
             'name' => $input['name'],
             'email' => $input['email'],
-            'password' => $input['password'],
+            'password' => Hash::make($input['password']),
             'role' => $input['role'],
         ]);
 
         // Create profile based on role
         if ($input['role'] === 'retailer') {
-            ShopProfile::create([
-                'user_id' => $user->id,
-                'shop_name' => $input['shop_name'] ?? null,
-                'shop_address' => $input['shop_address'] ?? null,
-                'shop_city' => $input['shop_city'] ?? null,
-                'shop_phone' => $input['shop_phone'] ?? null,
-            ]);
+            $user->shopProfile()->create([]);
         } elseif ($input['role'] === 'distributor') {
-            DistributorProfile::create([
-                'user_id' => $user->id,
-                'company_name' => $input['company_name'] ?? null,
-                'company_address' => $input['company_address'] ?? null,
-                'company_city' => $input['company_city'] ?? null,
-                'company_phone' => $input['company_phone'] ?? null,
-            ]);
-
-            // Create distributor inventory for all 5 Nestlé products
-            $products = Product::all();
-            foreach ($products as $product) {
-                DistributorInventory::create([
-                    'user_id' => $user->id,
-                    'product_id' => $product->id,
-                    'stock_quantity' => 0, // Start with 0, distributor can restock later
-                ]);
-            }
+            $user->distributorProfile()->create([]);
         }
 
         return $user;

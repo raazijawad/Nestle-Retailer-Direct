@@ -117,13 +117,15 @@ class PayPalController extends Controller
 
         if ($useMockPayment) {
             // Mock PayPal - simulate successful payment
+            $paymentMethod = $order->payment_method ?? 'paypal';
+            
             $order->update([
                 'payment_status' => 'paid',
-                'payment_method' => 'paypal',
+                'payment_method' => $paymentMethod,
                 'paypal_transaction_id' => 'MOCK-' . strtoupper(uniqid()),
             ]);
 
-            return redirect()->route('my-orders')->with('success', 'PayPal payment completed successfully!');
+            return redirect()->route('my-orders')->with('success', ucfirst($paymentMethod) . ' payment completed successfully!');
         }
 
         // Real PayPal - capture the payment
@@ -137,13 +139,15 @@ class PayPalController extends Controller
             $response = $provider->capturePaymentOrder($token);
 
             if (isset($response['status']) && $response['status'] === 'COMPLETED') {
+                $paymentMethod = $order->payment_method ?? 'paypal';
+                
                 $order->update([
                     'payment_status' => 'paid',
-                    'payment_method' => 'paypal',
+                    'payment_method' => $paymentMethod,
                     'paypal_transaction_id' => $response['id'] ?? null,
                 ]);
 
-                return redirect()->route('my-orders')->with('success', 'Payment completed successfully!');
+                return redirect()->route('my-orders')->with('success', ucfirst($paymentMethod) . ' payment completed successfully!');
             }
 
             return redirect()->back()->withErrors(['paypal' => 'Payment capture failed.']);

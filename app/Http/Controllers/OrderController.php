@@ -29,7 +29,7 @@ class OrderController extends Controller
             'items.*.quantity' => 'required|integer|min:1',
             'items.*.price' => 'required|numeric|min:0',
             'distributor_id' => 'required|integer|exists:users,id',
-            'payment_method' => 'nullable|in:cod,paypal',
+            'payment_method' => 'nullable|in:cod,paypal,credit_card',
         ], [
             'items.required' => 'Please select at least one item to order.',
             'items.min' => 'Please select at least one item to order.',
@@ -96,6 +96,18 @@ class OrderController extends Controller
             return response()->json([
                 'success' => true,
                 'redirectUrl' => route('paypal.process', ['order_id' => $order->id]),
+            ]);
+        }
+
+        // For Credit Card payment, process immediately (mock payment - instant success)
+        if ($validated['payment_method'] === 'credit_card') {
+            $order->update([
+                'payment_status' => 'paid',
+                'payment_method' => 'credit_card',
+            ]);
+
+            return response()->json([
+                'success' => true,
             ]);
         }
 
