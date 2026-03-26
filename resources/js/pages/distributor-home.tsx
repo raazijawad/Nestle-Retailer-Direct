@@ -17,7 +17,6 @@ const distributorSections = [
         icon: ClipboardList,
         href: '/distributor/incoming-orders',
         description: 'View incoming orders',
-        color: 'from-blue-500 to-blue-600',
         isComingSoon: false,
     },
     {
@@ -25,7 +24,6 @@ const distributorSections = [
         icon: Warehouse,
         href: '/distributor/warehouse-inventory',
         description: 'Manage stock levels',
-        color: 'from-emerald-500 to-emerald-600',
         isComingSoon: true,
     },
     {
@@ -33,7 +31,6 @@ const distributorSections = [
         icon: Truck,
         href: '/distributor/delivery',
         description: 'Track shipments',
-        color: 'from-amber-500 to-amber-600',
         isComingSoon: true,
     },
     {
@@ -41,7 +38,6 @@ const distributorSections = [
         icon: BarChart3,
         href: '/distributor/statistics',
         description: 'View performance',
-        color: 'from-purple-500 to-purple-600',
         isComingSoon: true,
     },
     {
@@ -49,7 +45,6 @@ const distributorSections = [
         icon: MapPin,
         href: '/distributor/schedule',
         description: 'Manage schedules',
-        color: 'from-pink-500 to-pink-600',
         isComingSoon: true,
     },
     {
@@ -57,7 +52,6 @@ const distributorSections = [
         icon: Users,
         href: '/distributor/retailers',
         description: 'Manage retailers',
-        color: 'from-cyan-500 to-cyan-600',
         isComingSoon: true,
     },
     {
@@ -65,7 +59,6 @@ const distributorSections = [
         icon: PackageSearch,
         href: '/distributor/dashboard',
         description: 'Full tracking view',
-        color: 'from-indigo-500 to-indigo-600',
         isComingSoon: true,
     },
     {
@@ -73,7 +66,6 @@ const distributorSections = [
         icon: Bell,
         href: '/distributor/notifications',
         description: 'View alerts',
-        color: 'from-orange-500 to-orange-600',
         isComingSoon: true,
     },
 ];
@@ -86,98 +78,245 @@ interface Props {
 export default function DistributorHome({ name, companyName }: Props) {
     return (
         <GuestLayout>
-            <Head title="Distributor Dashboard" />
-            <div className="flex h-full flex-col items-center justify-center bg-gradient-to-br from-[#00447C] via-[#003d6f] to-[#00284a]">
-                {/* Subtle noise texture */}
-                <div className="absolute inset-0 opacity-[0.02]" style={{
-                    backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`
-                }}></div>
-
-                {/* Animated glow orbs */}
-                <div className="absolute inset-0 overflow-hidden">
-                    <div className="absolute top-0 left-1/4 w-64 h-64 bg-blue-400/10 rounded-full blur-3xl animate-pulse"></div>
-                    <div className="absolute bottom-0 right-1/4 w-48 h-48 bg-cyan-400/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-                </div>
-
+            <Head title="Distributor Portal" />
+            <div className="flex min-h-screen w-full flex-col items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-100 dark:from-blue-950 dark:via-slate-900 dark:to-blue-900 overflow-x-hidden">
                 {/* Header */}
-                <div className="relative z-10 text-center mb-8">
-                    <h1 className="text-4xl md:text-5xl font-bold text-white mb-2 tracking-wider">DISTRIBUTOR PORTAL</h1>
-                    <p className="text-white/70 text-sm md:text-base">{companyName} • {name}</p>
+                <div className="text-center mb-6 md:mb-8">
+                    <h1 className="text-xl md:text-2xl font-bold text-primary mb-1 tracking-wider">DISTRIBUTOR PORTAL</h1>
+                    <p className="text-muted-foreground text-xs md:text-sm">{companyName} • {name}</p>
                 </div>
 
                 {/* Cards Container */}
-                <div className="relative z-10 flex flex-col justify-center gap-4 md:gap-6 py-4 md:py-8">
-                    {/* Mobile Layout - 2 columns */}
-                    <div className="grid grid-cols-2 gap-3 md:hidden">
-                        {distributorSections.map((section) => {
-                            const Icon = section.icon;
-                            if (section.isComingSoon) {
+                <div className="flex flex-col justify-center gap-3 md:gap-6 w-full max-w-5xl mx-auto pb-24 md:pb-28 px-3 md:px-4">
+                    {/* Mobile Layout - Multiple rows x 2 cols */}
+                    <div className="flex flex-col gap-3 md:hidden">
+                        {/* Row 1 */}
+                        <div className="grid grid-cols-2 gap-2">
+                            {distributorSections.slice(0, 2).map((section) => {
+                                const Icon = section.icon;
+                                if (section.isComingSoon) {
+                                    return (
+                                        <div
+                                            key={section.area}
+                                            className="flex h-20 w-full flex-col items-center justify-center rounded-xl bg-white/90 p-2 text-center shadow-lg backdrop-blur-sm border border-white/50 opacity-50"
+                                        >
+                                            <p className="font-medium text-[9px] text-muted-foreground">Coming Soon</p>
+                                        </div>
+                                    );
+                                }
                                 return (
-                                    <div
+                                    <Link
                                         key={section.area}
-                                        className="flex flex-col items-center justify-center rounded-xl bg-white/10 p-3 text-center shadow-lg backdrop-blur-sm border border-white/20 opacity-50"
+                                        href={section.href}
+                                        className="group flex h-20 w-full flex-col items-center justify-center rounded-xl bg-white/90 p-2 text-center shadow-lg backdrop-blur-sm border border-white/50 transition-all duration-300 hover:scale-105 hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] hover:bg-white cursor-pointer"
                                     >
-                                        <p className="font-medium text-xs text-white/60 text-center">Coming Soon</p>
-                                    </div>
+                                        <div className="transform transition-transform duration-300 group-hover:scale-110 group-hover:-translate-y-1">
+                                            <Icon className="mb-1 h-4 w-4 text-primary" />
+                                        </div>
+                                        <p className="font-medium text-[9px] group-hover:text-primary/80 transition-colors duration-300 text-center leading-tight">{section.area}</p>
+                                        <div className="mt-1 opacity-0 transform translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                                            <span className="text-[8px] text-muted-foreground flex items-center gap-0.5">
+                                                Click
+                                                <svg className="w-2 h-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                                </svg>
+                                            </span>
+                                        </div>
+                                    </Link>
                                 );
-                            }
-                            return (
-                                <Link
-                                    key={section.area}
-                                    href={section.href}
-                                    className="group flex flex-col items-center justify-center rounded-xl bg-white/10 p-3 text-center shadow-lg backdrop-blur-sm border border-white/20 transition-all duration-300 hover:scale-105 hover:bg-white/20 hover:shadow-xl hover:border-white/30 cursor-pointer"
-                                >
-                                    <div className={`transform transition-transform duration-300 group-hover:scale-110 group-hover:-translate-y-1 rounded-lg bg-gradient-to-br ${section.color} p-2`}>
-                                        <Icon className="h-6 w-6 text-white" />
-                                    </div>
-                                    <p className="font-medium text-xs text-white mt-2 text-center">{section.area}</p>
-                                </Link>
-                            );
-                        })}
+                            })}
+                        </div>
+
+                        {/* Row 2 */}
+                        <div className="grid grid-cols-2 gap-2">
+                            {distributorSections.slice(2, 4).map((section) => {
+                                const Icon = section.icon;
+                                if (section.isComingSoon) {
+                                    return (
+                                        <div
+                                            key={section.area}
+                                            className="flex h-20 w-full flex-col items-center justify-center rounded-xl bg-white/90 p-2 text-center shadow-lg backdrop-blur-sm border border-white/50 opacity-50"
+                                        >
+                                            <p className="font-medium text-[9px] text-muted-foreground">Coming Soon</p>
+                                        </div>
+                                    );
+                                }
+                                return (
+                                    <Link
+                                        key={section.area}
+                                        href={section.href}
+                                        className="group flex h-20 w-full flex-col items-center justify-center rounded-xl bg-white/90 p-2 text-center shadow-lg backdrop-blur-sm border border-white/50 transition-all duration-300 hover:scale-105 hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] hover:bg-white cursor-pointer"
+                                    >
+                                        <div className="transform transition-transform duration-300 group-hover:scale-110 group-hover:-translate-y-1">
+                                            <Icon className="mb-1 h-4 w-4 text-primary" />
+                                        </div>
+                                        <p className="font-medium text-[9px] group-hover:text-primary/80 transition-colors duration-300 text-center leading-tight">{section.area}</p>
+                                        <div className="mt-1 opacity-0 transform translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                                            <span className="text-[8px] text-muted-foreground flex items-center gap-0.5">
+                                                Click
+                                                <svg className="w-2 h-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                                </svg>
+                                            </span>
+                                        </div>
+                                    </Link>
+                                );
+                            })}
+                        </div>
+
+                        {/* Row 3 */}
+                        <div className="grid grid-cols-2 gap-2">
+                            {distributorSections.slice(4, 6).map((section) => {
+                                const Icon = section.icon;
+                                if (section.isComingSoon) {
+                                    return (
+                                        <div
+                                            key={section.area}
+                                            className="flex h-20 w-full flex-col items-center justify-center rounded-xl bg-white/90 p-2 text-center shadow-lg backdrop-blur-sm border border-white/50 opacity-50"
+                                        >
+                                            <p className="font-medium text-[9px] text-muted-foreground">Coming Soon</p>
+                                        </div>
+                                    );
+                                }
+                                return (
+                                    <Link
+                                        key={section.area}
+                                        href={section.href}
+                                        className="group flex h-20 w-full flex-col items-center justify-center rounded-xl bg-white/90 p-2 text-center shadow-lg backdrop-blur-sm border border-white/50 transition-all duration-300 hover:scale-105 hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] hover:bg-white cursor-pointer"
+                                    >
+                                        <div className="transform transition-transform duration-300 group-hover:scale-110 group-hover:-translate-y-1">
+                                            <Icon className="mb-1 h-4 w-4 text-primary" />
+                                        </div>
+                                        <p className="font-medium text-[9px] group-hover:text-primary/80 transition-colors duration-300 text-center leading-tight">{section.area}</p>
+                                        <div className="mt-1 opacity-0 transform translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                                            <span className="text-[8px] text-muted-foreground flex items-center gap-0.5">
+                                                Click
+                                                <svg className="w-2 h-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                                </svg>
+                                            </span>
+                                        </div>
+                                    </Link>
+                                );
+                            })}
+                        </div>
+
+                        {/* Row 4 */}
+                        <div className="grid grid-cols-2 gap-2">
+                            {distributorSections.slice(6, 8).map((section) => {
+                                const Icon = section.icon;
+                                if (section.isComingSoon) {
+                                    return (
+                                        <div
+                                            key={section.area}
+                                            className="flex h-20 w-full flex-col items-center justify-center rounded-xl bg-white/90 p-2 text-center shadow-lg backdrop-blur-sm border border-white/50 opacity-50"
+                                        >
+                                            <p className="font-medium text-[9px] text-muted-foreground">Coming Soon</p>
+                                        </div>
+                                    );
+                                }
+                                return (
+                                    <Link
+                                        key={section.area}
+                                        href={section.href}
+                                        className="group flex h-20 w-full flex-col items-center justify-center rounded-xl bg-white/90 p-2 text-center shadow-lg backdrop-blur-sm border border-white/50 transition-all duration-300 hover:scale-105 hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] hover:bg-white cursor-pointer"
+                                    >
+                                        <div className="transform transition-transform duration-300 group-hover:scale-110 group-hover:-translate-y-1">
+                                            <Icon className="mb-1 h-4 w-4 text-primary" />
+                                        </div>
+                                        <p className="font-medium text-[9px] group-hover:text-primary/80 transition-colors duration-300 text-center leading-tight">{section.area}</p>
+                                        <div className="mt-1 opacity-0 transform translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                                            <span className="text-[8px] text-muted-foreground flex items-center gap-0.5">
+                                                Click
+                                                <svg className="w-2 h-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                                </svg>
+                                            </span>
+                                        </div>
+                                    </Link>
+                                );
+                            })}
+                        </div>
                     </div>
 
-                    {/* Desktop Layout - 4 columns x 2 rows */}
-                    <div className="hidden md:grid grid-cols-4 gap-4">
-                        {distributorSections.map((section) => {
-                            const Icon = section.icon;
-                            if (section.isComingSoon) {
+                    {/* Desktop Layout - 2 rows x 4 cols */}
+                    <div className="hidden md:flex flex-col gap-6">
+                        {/* Row 1 */}
+                        <div className="grid gap-6 md:grid-cols-4">
+                            {distributorSections.slice(0, 4).map((section) => {
+                                const Icon = section.icon;
+                                if (section.isComingSoon) {
+                                    return (
+                                        <div
+                                            key={section.area}
+                                            className="flex h-48 w-full flex-col items-center justify-center rounded-3xl bg-white/90 p-6 text-center shadow-2xl backdrop-blur-sm border border-white/50 opacity-50"
+                                        >
+                                            <p className="font-medium text-lg text-muted-foreground">Coming Soon</p>
+                                        </div>
+                                    );
+                                }
                                 return (
-                                    <div
+                                    <Link
                                         key={section.area}
-                                        className="flex h-36 w-44 flex-col items-center justify-center rounded-2xl bg-white/10 p-5 text-center shadow-2xl backdrop-blur-sm border border-white/20 opacity-50"
+                                        href={section.href}
+                                        className="group flex h-48 w-full flex-col items-center justify-center rounded-3xl bg-white/90 p-6 text-center shadow-2xl backdrop-blur-sm border border-white/50 transition-all duration-300 hover:scale-105 hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] hover:bg-white cursor-pointer"
                                     >
-                                        <p className="font-medium text-sm text-white/60">Coming Soon</p>
-                                    </div>
+                                        <div className="transform transition-transform duration-300 group-hover:scale-110 group-hover:-translate-y-2">
+                                            <Icon className="mb-3 h-10 w-10 text-primary" />
+                                        </div>
+                                        <p className="font-medium text-lg group-hover:text-primary/80 transition-colors duration-300 text-center">{section.area}</p>
+                                        <p className="text-xs text-muted-foreground mt-1 text-center">{section.description}</p>
+                                        <div className="mt-3 opacity-0 transform translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                                            <span className="text-xs text-muted-foreground flex items-center gap-2">
+                                                Click to view
+                                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                                </svg>
+                                            </span>
+                                        </div>
+                                    </Link>
                                 );
-                            }
-                            return (
-                                <Link
-                                    key={section.area}
-                                    href={section.href}
-                                    className="group flex h-36 w-44 flex-col items-center justify-center rounded-2xl bg-white/10 p-5 text-center shadow-2xl backdrop-blur-sm border border-white/20 transition-all duration-300 hover:scale-105 hover:bg-white/20 hover:shadow-[0_20px_60px_-15px_rgba(0,100,255,0.3)] hover:border-white/30 cursor-pointer"
-                                >
-                                    <div className={`transform transition-transform duration-300 group-hover:scale-110 group-hover:-translate-y-2 rounded-xl bg-gradient-to-br ${section.color} p-3 shadow-lg`}>
-                                        <Icon className="h-8 w-8 text-white" />
-                                    </div>
-                                    <p className="font-medium text-sm text-white mt-3">{section.area}</p>
-                                    <p className="text-xs text-white/60 mt-1">{section.description}</p>
-                                    <div className="mt-2 opacity-0 transform translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
-                                        <span className="text-xs text-white/80 flex items-center gap-1 justify-center">
-                                            Click to view
-                                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                            </svg>
-                                        </span>
-                                    </div>
-                                </Link>
-                            );
-                        })}
-                    </div>
-                </div>
+                            })}
+                        </div>
 
-                {/* Footer */}
-                <div className="relative z-10 mt-8 text-center">
-                    <p className="text-white/50 text-xs">© 2026 Nestlé OMS - Distributor Portal. All rights reserved.</p>
+                        {/* Row 2 */}
+                        <div className="grid gap-6 md:grid-cols-4">
+                            {distributorSections.slice(4, 8).map((section) => {
+                                const Icon = section.icon;
+                                if (section.isComingSoon) {
+                                    return (
+                                        <div
+                                            key={section.area}
+                                            className="flex h-48 w-full flex-col items-center justify-center rounded-3xl bg-white/90 p-6 text-center shadow-2xl backdrop-blur-sm border border-white/50 opacity-50"
+                                        >
+                                            <p className="font-medium text-lg text-muted-foreground">Coming Soon</p>
+                                        </div>
+                                    );
+                                }
+                                return (
+                                    <Link
+                                        key={section.area}
+                                        href={section.href}
+                                        className="group flex h-48 w-full flex-col items-center justify-center rounded-3xl bg-white/90 p-6 text-center shadow-2xl backdrop-blur-sm border border-white/50 transition-all duration-300 hover:scale-105 hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] hover:bg-white cursor-pointer"
+                                    >
+                                        <div className="transform transition-transform duration-300 group-hover:scale-110 group-hover:-translate-y-2">
+                                            <Icon className="mb-3 h-10 w-10 text-primary" />
+                                        </div>
+                                        <p className="font-medium text-lg group-hover:text-primary/80 transition-colors duration-300 text-center">{section.area}</p>
+                                        <p className="text-xs text-muted-foreground mt-1 text-center">{section.description}</p>
+                                        <div className="mt-3 opacity-0 transform translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                                            <span className="text-xs text-muted-foreground flex items-center gap-2">
+                                                Click to view
+                                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                                </svg>
+                                            </span>
+                                        </div>
+                                    </Link>
+                                );
+                            })}
+                        </div>
+                    </div>
                 </div>
             </div>
         </GuestLayout>
