@@ -248,8 +248,8 @@ class OrderController extends Controller
         $stats = [
             'total_orders' => (int) Order::where('user_id', Auth::id())->count(),
             'pending_orders' => (int) Order::where('user_id', Auth::id())->where('status', 'pending')->count(),
-            'completed_orders' => (int) Order::where('user_id', Auth::id())->where('status', 'completed')->count(),
-            'total_spent' => (float) Order::where('user_id', Auth::id())->sum('total_amount'),
+            'completed_orders' => (int) Order::where('user_id', Auth::id())->whereIn('status', ['approved', 'completed'])->count(),
+            'total_spent' => (float) Order::where('user_id', Auth::id())->whereIn('status', ['approved', 'completed'])->sum('total_amount'),
         ];
 
         return inertia('myorderrecords', [
