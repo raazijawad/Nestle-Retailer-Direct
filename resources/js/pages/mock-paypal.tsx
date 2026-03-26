@@ -62,7 +62,7 @@ export default function MockPayPal({ orderId, amount, returnUrl, cancelUrl }: Mo
             <CardContent>
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
                     <p className="text-sm text-blue-800 font-medium mb-1">Payment Amount</p>
-                    <p className="text-2xl font-bold text-blue-900">${amount.toFixed(2)} USD</p>
+                    <p className="text-2xl font-bold text-blue-900">Lkr {amount.toFixed(2)}</p>
                 </div>
 
                 <form onSubmit={handleLogin} className="space-y-4">
@@ -170,7 +170,7 @@ export default function MockPayPal({ orderId, amount, returnUrl, cancelUrl }: Mo
                         </div>
                         <div className="flex justify-between text-lg font-semibold pt-3 border-t border-gray-200">
                             <span className="text-gray-900">Total:</span>
-                            <span className="text-green-600">${amount.toFixed(2)} USD</span>
+                            <span className="text-green-600">Lkr {amount.toFixed(2)}</span>
                         </div>
                     </div>
                 </div>
@@ -190,7 +190,7 @@ export default function MockPayPal({ orderId, amount, returnUrl, cancelUrl }: Mo
                                 Processing Payment...
                             </span>
                         ) : (
-                            `Pay $${amount.toFixed(2)}`
+                            `Pay Lkr ${amount.toFixed(2)}`
                         )}
                     </Button>
                     
@@ -224,7 +224,7 @@ export default function MockPayPal({ orderId, amount, returnUrl, cancelUrl }: Mo
                     </div>
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">Processing Payment</h2>
-                <p className="text-gray-600">Please wait while we process your payment of ${amount.toFixed(2)}</p>
+                <p className="text-gray-600">Please wait while we process your payment of Lkr {amount.toFixed(2)}</p>
             </CardContent>
         </Card>
     );
@@ -238,7 +238,7 @@ export default function MockPayPal({ orderId, amount, returnUrl, cancelUrl }: Mo
                     </div>
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">Payment Successful!</h2>
-                <p className="text-gray-600 mb-4">Your payment of ${amount.toFixed(2)} has been processed</p>
+                <p className="text-gray-600 mb-4">Your payment of Lkr {amount.toFixed(2)} has been processed</p>
                 <p className="text-sm text-gray-500">Redirecting you back to the merchant...</p>
             </CardContent>
         </Card>

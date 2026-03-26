@@ -137,7 +137,7 @@ export default function Products() {
 
         toast({
             title: 'Checkout initiated',
-            description: `Processing ${totalItems} items totaling $${totalAmount.toFixed(2)}`,
+            description: `Processing ${totalItems} items totaling Lkr ${totalAmount.toFixed(2)}`,
         });
     };
 
@@ -162,7 +162,7 @@ export default function Products() {
                                         <ShoppingCart className="h-5 w-5 text-[#00447C]" />
                                         <div>
                                             <div className="text-sm font-semibold">{totalItems} items</div>
-                                            <div className="text-xs text-muted-foreground">${totalAmount.toFixed(2)}</div>
+                                            <div className="text-xs text-muted-foreground">Lkr {totalAmount.toFixed(2)}</div>
                                         </div>
                                     </div>
                                     <div className="flex gap-2">
@@ -311,7 +311,7 @@ export default function Products() {
                                         {/* Price and Cart Actions */}
                                         <div className="flex items-center justify-between pt-2 border-t">
                                             <div className="text-lg font-bold text-[#00447C]">
-                                                ${product.price.toFixed(2)}
+                                                Lkr {product.price.toFixed(2)}
                                             </div>
 
                                             {quantityInCart > 0 ? (

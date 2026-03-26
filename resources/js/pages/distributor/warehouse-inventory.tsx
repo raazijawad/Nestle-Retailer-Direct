@@ -271,7 +271,7 @@ export default function WarehouseInventory({ products, stats }: Props) {
                                             <p className="text-[10px] text-slate-500 line-clamp-2 mt-0.5">{product.description}</p>
                                         </div>
                                         <div className="flex items-center justify-between">
-                                            <span className="text-base font-bold text-[#00447C]">${product.price.toFixed(2)}</span>
+                                            <span className="text-base font-bold text-[#00447C]">Lkr {product.price.toFixed(2)}</span>
                                             <span className="text-xs text-slate-600 font-medium">{product.stock_quantity} units</span>
                                         </div>
                                         <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">

@@ -256,7 +256,7 @@ export default function Stock({ products, categories }: Props) {
                                                     </div>
                                                 </td>
                                                 <td className="px-4 py-3 text-sm font-semibold text-[#00447C]">
-                                                    ${product.price.toFixed(2)}
+                                                    Lkr {product.price.toFixed(2)}
                                                 </td>
                                                 <td className="px-4 py-3">
                                                     <div className="flex items-center gap-2">
@@ -321,7 +321,7 @@ export default function Stock({ products, categories }: Props) {
                                                         <Badge className={`${getStockStatusBadge(product.stock_status)} text-[10px] px-1.5 py-0`}>
                                                             {getStockStatusLabel(product.stock_status)}
                                                         </Badge>
-                                                        <span className="text-xs font-semibold text-[#00447C]">${product.price.toFixed(2)}</span>
+                                                        <span className="text-xs font-semibold text-[#00447C]">Lkr {product.price.toFixed(2)}</span>
                                                     </div>
                                                 </div>
                                             </div>
