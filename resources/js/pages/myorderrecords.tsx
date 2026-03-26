@@ -1,6 +1,7 @@
 import { Head } from '@inertiajs/react';
-import { Clock, Package, Calendar, DollarSign, ChevronRight } from 'lucide-react';
+import { Clock, Package, Calendar, DollarSign, ChevronRight, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { useState } from 'react';
 
 interface OrderItem {
     product_name: string;
@@ -27,6 +28,8 @@ interface Props {
         pending_orders: number;
         completed_orders: number;
         total_spent: number;
+        rejected_orders?: number;
+        approved_orders?: number;
     };
 }
 
@@ -46,6 +49,11 @@ function getStatusBadgeClass(status: string): string {
 }
 
 export default function MyOrderRecords({ orders, stats }: Props) {
+    const [filter, setFilter] = useState('all');
+
+    const filteredOrders = filter === 'all' ? orders : orders.filter(o => o.status === filter);
+    const pendingOrders = filteredOrders.filter(o => o.status === 'pending');
+    const otherOrders = filteredOrders.filter(o => o.status !== 'pending');
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 flex items-start justify-center py-4 px-3 md:py-8">
             <Head title="My Orders" />
@@ -85,7 +93,7 @@ export default function MyOrderRecords({ orders, stats }: Props) {
                 </header>
 
                 {/* Content */}
-                <main className="relative bg-white/60 backdrop-blur-sm border-x border-slate-200/50 px-4 md:px-6 py-6 md:py-8 pb-40">
+                <main className="relative bg-white/60 backdrop-blur-sm border-x border-slate-200/50 px-4 md:px-6 py-6 md:py-8 pb-48 md:pb-40">
                     {/* Stats Cards */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
                         <div className="group relative">
@@ -141,95 +149,134 @@ export default function MyOrderRecords({ orders, stats }: Props) {
                         </div>
                     </div>
 
-                    {/* Orders List */}
-                    <div className="space-y-3 md:space-y-4">
-                        {orders.length === 0 ? (
-                            <div className="relative bg-white rounded-2xl border border-slate-200/50 shadow-sm overflow-hidden">
-                                <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-transparent"></div>
-                                <div className="relative flex flex-col items-center justify-center py-16 text-center px-6">
-                                    <Package className="h-16 w-16 text-slate-300 mb-4" />
-                                    <h3 className="text-lg font-semibold text-slate-900 mb-2">No orders yet</h3>
-                                    <p className="text-slate-500 text-sm">Your order history will appear here</p>
-                                </div>
-                            </div>
-                        ) : (
-                            orders.map((order, index) => (
-                                <div
-                                    key={order.id}
-                                    className="group relative"
-                                    style={{ animationDelay: `${index * 100}ms` }}
+                    {/* Filter Tabs */}
+                    <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0 mb-6">
+                        <div className="flex gap-2 p-1.5 bg-white rounded-xl border border-slate-200/50 shadow-sm w-fit min-w-max">
+                            {['all', 'pending', 'approved', 'rejected'].map((status) => (
+                                <button
+                                    key={status}
+                                    onClick={() => setFilter(status)}
+                                    className={`px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-medium transition-all duration-300 whitespace-nowrap ${
+                                        filter === status
+                                            ? 'bg-gradient-to-r from-[#00447C] to-[#003d6f] text-white shadow-md'
+                                            : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                                    }`}
                                 >
-                                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-blue-600/5 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                                    <div className="relative bg-white rounded-2xl border border-blue-200/50 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
-                                        {/* Top accent bar */}
-                                        <div className="h-1 bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600"></div>
+                                    {status.charAt(0).toUpperCase() + status.slice(1)}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
 
-                                        <div className="p-4 md:p-5">
-                                            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-3 md:mb-4">
-                                                <div className="flex items-center gap-3 md:gap-4 flex-1">
-                                                    <div className="relative flex-shrink-0">
-                                                        <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl blur-md opacity-50"></div>
-                                                        <div className="relative h-10 w-10 md:h-12 md:w-12 rounded-xl bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold text-base md:text-lg shadow-lg">
-                                                            #{order.id}
-                                                        </div>
-                                                    </div>
-                                                    <div className="min-w-0 flex-1">
-                                                        <div className="font-bold text-sm md:text-base text-slate-900 truncate">Order #{order.id}</div>
-                                                        <div className="text-xs text-slate-600 font-medium truncate">
-                                                            Dist: {order.distributor_name}
-                                                        </div>
-                                                        <div className="text-xs text-slate-500 mt-1 flex items-center gap-1">
-                                                            <Clock className="h-3 w-3" />
-                                                            {order.created_date}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <Badge className={getStatusBadgeClass(order.status)} variant="outline">
-                                                    {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                                                </Badge>
-                                            </div>
-
-                                            {/* Order Items */}
-                                            <div className="bg-gradient-to-br from-slate-50 to-slate-100/50 rounded-xl p-3 md:p-4 mb-3 md:mb-4 border border-slate-200/50">
-                                                <div className="text-xs font-semibold text-slate-700 mb-2 md:mb-3 flex items-center gap-2">
-                                                    <Package className="h-3.5 w-3.5" />
-                                                    Order Items
-                                                </div>
-                                                <div className="space-y-1.5 md:space-y-2">
-                                                    {order.items.map((item, itemIndex) => (
-                                                        <div
-                                                            key={itemIndex}
-                                                            className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 text-xs p-2 rounded-lg bg-white/50 border border-slate-200/50"
-                                                        >
-                                                            <span className="font-medium text-slate-700 break-words">{item.product_name}</span>
-                                                            <div className="text-right flex-shrink-0">
-                                                                <span className="text-slate-600">
-                                                                    Qty: {item.quantity} × LKR {item.price.toFixed(2)}
-                                                                </span>
-                                                                <span className="font-bold text-slate-900 ml-2">
-                                                                    = LKR {item.subtotal.toFixed(2)}
-                                                                </span>
-                                                            </div>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </div>
-
-                                            {/* Total Amount */}
-                                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-3 md:pt-4 border-t border-slate-200/50">
-                                                <div>
-                                                    <div className="text-xs text-slate-500 font-medium mb-0.5">Total Amount</div>
-                                                    <div className="text-xl md:text-2xl font-bold bg-gradient-to-br from-slate-900 to-slate-700 bg-clip-text text-transparent">
-                                                        LKR {order.total_amount.toFixed(2)}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                    {/* Pending Orders Section */}
+                    {pendingOrders.length > 0 ? (
+                        <div className="relative mb-6">
+                            <div className="absolute -left-4 top-0 bottom-0 w-1 bg-gradient-to-b from-amber-400 to-amber-600 rounded-full hidden md:block"></div>
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-4 sm:mb-6 pl-0 sm:pl-4">
+                                <div className="relative flex-shrink-0">
+                                    <div className="absolute inset-0 bg-amber-400/30 rounded-full blur-md"></div>
+                                    <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center">
+                                        <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                                     </div>
                                 </div>
-                            ))
-                        )}
-                    </div>
+                                <div className="flex-1">
+                                    <h2 className="text-base sm:text-lg font-bold text-slate-900">Pending Approval</h2>
+                                    <p className="text-xs text-slate-500 font-medium">Awaiting distributor approval</p>
+                                </div>
+                                <Badge className="bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-md self-start sm:self-center">
+                                    {pendingOrders.length}
+                                </Badge>
+                            </div>
+                            <div className="grid gap-3 md:gap-4">
+                                {pendingOrders.map((order, index) => (
+                                    <OrderCard key={order.id} order={order} index={index} />
+                                ))}
+                            </div>
+                        </div>
+                    ) : filter === 'pending' ? (
+                        <div className="relative bg-white rounded-2xl border border-slate-200/50 shadow-sm overflow-hidden mb-6">
+                            <div className="absolute inset-0 bg-gradient-to-br from-amber-50/30 to-transparent"></div>
+                            <div className="relative flex flex-col items-center justify-center py-12 text-center px-6">
+                                <div className="relative mb-4">
+                                    <div className="absolute inset-0 bg-amber-400/20 rounded-full blur-xl"></div>
+                                    <div className="relative w-16 h-16 rounded-full bg-gradient-to-br from-amber-100 to-amber-200 flex items-center justify-center">
+                                        <AlertCircle className="h-8 w-8 text-amber-400" />
+                                    </div>
+                                </div>
+                                <h3 className="text-lg font-bold text-slate-900 mb-2">No pending orders</h3>
+                                <p className="text-slate-500 text-sm">There are no orders awaiting approval at the moment.</p>
+                            </div>
+                        </div>
+                    ) : null}
+
+                    {/* Other Orders Section (Approved, Rejected, Completed) */}
+                    {otherOrders.length > 0 ? (
+                        <div className="relative">
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+                                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-slate-400 to-slate-600 flex items-center justify-center flex-shrink-0">
+                                    <Package className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                                </div>
+                                <div className="flex-1">
+                                    <h2 className="text-base sm:text-lg font-bold text-slate-900">Processed Orders</h2>
+                                    <p className="text-xs text-slate-500 font-medium">Completed decisions</p>
+                                </div>
+                                <Badge variant="outline" className="self-start sm:self-center flex-shrink-0">
+                                    {otherOrders.length}
+                                </Badge>
+                            </div>
+
+                            <div className="grid gap-3">
+                                {otherOrders.map((order) => (
+                                    <OrderCard key={order.id} order={order} index={0} />
+                                ))}
+                            </div>
+                        </div>
+                    ) : (filter === 'approved' || filter === 'rejected') ? (
+                        <div className={`relative bg-white rounded-2xl border border-slate-200/50 shadow-sm overflow-hidden ${filter === 'pending' ? '' : 'mt-6'}`}>
+                            <div className={`absolute inset-0 bg-gradient-to-br to-transparent ${
+                                filter === 'approved' ? 'from-emerald-50/30' : 'from-red-50/30'
+                            }`}></div>
+                            <div className="relative flex flex-col items-center justify-center py-12 text-center px-6">
+                                <div className="relative mb-4">
+                                    <div className={`absolute inset-0 rounded-full blur-xl ${
+                                        filter === 'approved' ? 'bg-emerald-400/20' : 'bg-red-400/20'
+                                    }`}></div>
+                                    <div className={`relative w-16 h-16 rounded-full flex items-center justify-center ${
+                                        filter === 'approved'
+                                            ? 'bg-gradient-to-br from-emerald-100 to-emerald-200'
+                                            : 'bg-gradient-to-br from-red-100 to-red-200'
+                                    }`}>
+                                        {filter === 'approved' ? (
+                                            <CheckCircle className="h-8 w-8 text-emerald-400" />
+                                        ) : (
+                                            <XCircle className="h-8 w-8 text-red-400" />
+                                        )}
+                                    </div>
+                                </div>
+                                <h3 className="text-lg font-bold text-slate-900 mb-2">
+                                    No {filter} orders
+                                </h3>
+                                <p className="text-slate-500 text-sm">
+                                    {filter === 'approved'
+                                        ? 'There are no approved orders yet.'
+                                        : 'There are no rejected orders yet.'
+                                    }
+                                </p>
+                            </div>
+                        </div>
+                    ) : null}
+
+                    {/* Empty State for All Filter */}
+                    {filter === 'all' && filteredOrders.length === 0 && (
+                        <div className="relative bg-white rounded-2xl border border-slate-200/50 shadow-sm overflow-hidden">
+                            <div className="absolute inset-0 bg-gradient-to-br from-slate-50/50 to-transparent"></div>
+                            <div className="relative flex flex-col items-center justify-center py-12 text-center px-6">
+                                <Package className="h-16 w-16 text-slate-300 mb-4" />
+                                <h3 className="text-lg font-semibold text-slate-900 mb-2">No orders yet</h3>
+                                <p className="text-slate-500 text-sm">Your order history will appear here</p>
+                            </div>
+                        </div>
+                    )}
                 </main>
             </div>
 
@@ -297,6 +344,84 @@ export default function MyOrderRecords({ orders, stats }: Props) {
                     </div>
                 </div>
             </footer>
+        </div>
+    );
+}
+
+// Order Card Component
+function OrderCard({ order, index }: { order: Order; index: number }) {
+    return (
+        <div
+            className="group relative"
+            style={{ animationDelay: `${index * 100}ms` }}
+        >
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-blue-600/5 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div className="relative bg-white rounded-2xl border border-blue-200/50 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
+                {/* Top accent bar */}
+                <div className="h-1 bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600"></div>
+
+                <div className="p-4 md:p-5">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-3 md:mb-4">
+                        <div className="flex items-center gap-3 md:gap-4 flex-1">
+                            <div className="relative flex-shrink-0">
+                                <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl blur-md opacity-50"></div>
+                                <div className="relative h-10 w-10 md:h-12 md:w-12 rounded-xl bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold text-base md:text-lg shadow-lg">
+                                    #{order.id}
+                                </div>
+                            </div>
+                            <div className="min-w-0 flex-1">
+                                <div className="font-bold text-sm md:text-base text-slate-900 truncate">Order #{order.id}</div>
+                                <div className="text-xs text-slate-600 font-medium truncate">
+                                    Dist: {order.distributor_name}
+                                </div>
+                                <div className="text-xs text-slate-500 mt-1 flex items-center gap-1">
+                                    <Clock className="h-3 w-3" />
+                                    {order.created_date}
+                                </div>
+                            </div>
+                        </div>
+                        <Badge className={getStatusBadgeClass(order.status)} variant="outline">
+                            {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                        </Badge>
+                    </div>
+
+                    {/* Order Items */}
+                    <div className="bg-gradient-to-br from-slate-50 to-slate-100/50 rounded-xl p-3 md:p-4 mb-3 md:mb-4 border border-slate-200/50">
+                        <div className="text-xs font-semibold text-slate-700 mb-2 md:mb-3 flex items-center gap-2">
+                            <Package className="h-3.5 w-3.5" />
+                            Order Items
+                        </div>
+                        <div className="space-y-1.5 md:space-y-2">
+                            {order.items.map((item, itemIndex) => (
+                                <div
+                                    key={itemIndex}
+                                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 text-xs p-2 rounded-lg bg-white/50 border border-slate-200/50"
+                                >
+                                    <span className="font-medium text-slate-700 break-words">{item.product_name}</span>
+                                    <div className="text-right flex-shrink-0">
+                                        <span className="text-slate-600">
+                                            Qty: {item.quantity} × LKR {item.price.toFixed(2)}
+                                        </span>
+                                        <span className="font-bold text-slate-900 ml-2">
+                                            = LKR {item.subtotal.toFixed(2)}
+                                        </span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Total Amount */}
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-3 md:pt-4 border-t border-slate-200/50">
+                        <div>
+                            <div className="text-xs text-slate-500 font-medium mb-0.5">Total Amount</div>
+                            <div className="text-xl md:text-2xl font-bold bg-gradient-to-br from-slate-900 to-slate-700 bg-clip-text text-transparent">
+                                LKR {order.total_amount.toFixed(2)}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }

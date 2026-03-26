@@ -605,16 +605,16 @@ export default function QuickReorder({ products, distributors }: Props) {
 
             {/* Payment Modal */}
             {showPaymentModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-3 md:p-4 bg-black/50 backdrop-blur-sm">
-                    <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-                        <div className="bg-gradient-to-r from-[#00447C] to-[#00284a] px-4 md:px-6 py-3 md:py-4">
+                <div className="fixed inset-0 z-[60] flex items-end md:items-center justify-center p-0 md:p-4 bg-black/50 backdrop-blur-sm">
+                    <div className="bg-white rounded-t-2xl md:rounded-2xl shadow-2xl max-w-md w-full max-h-[80vh] overflow-y-auto mb-0 md:mb-0">
+                        <div className="bg-gradient-to-r from-[#00447C] to-[#00284a] px-4 md:px-6 py-3 md:py-4 sticky top-0 z-10">
                             <h3 className="text-base md:text-lg font-bold text-white flex items-center gap-2">
                                 <CreditCard className="h-4 w-4 md:h-5 md:w-5" />
                                 Select Payment Method
                             </h3>
                         </div>
 
-                        <div className="p-4 md:p-6 space-y-4">
+                        <div className="p-4 md:p-5 space-y-3">
                             <div className="bg-gray-50 rounded-lg p-3 md:p-4">
                                 <div className="flex justify-between items-center mb-2">
                                     <span className="text-xs md:text-sm text-gray-600">Total Items</span>
@@ -626,72 +626,72 @@ export default function QuickReorder({ products, distributors }: Props) {
                                 </div>
                             </div>
 
-                            <div className="space-y-2 md:space-y-3">
+                            <div className="space-y-2">
                                 <button
                                     onClick={() => setSelectedPaymentMethod('paypal')}
-                                    className={`w-full p-3 md:p-4 rounded-xl border-2 flex items-center gap-2 md:gap-4 ${
+                                    className={`w-full p-3 rounded-xl border-2 flex items-center gap-3 ${
                                         selectedPaymentMethod === 'paypal'
                                             ? 'border-[#00447C] bg-blue-50'
                                             : 'border-gray-200'
                                     }`}
                                 >
-                                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
-                                        <CreditCard className="h-5 w-5 md:h-6 md:w-6 text-white" />
+                                    <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
+                                        <CreditCard className="h-5 w-5 text-white" />
                                     </div>
                                     <div className="flex-1 text-left min-w-0">
-                                        <div className="font-semibold text-sm md:text-base">PayPal</div>
+                                        <div className="font-semibold text-sm">PayPal</div>
                                         <div className="text-xs text-gray-500">Pay securely online</div>
                                     </div>
                                 </button>
 
                                 <button
                                     onClick={() => setSelectedPaymentMethod('credit_card')}
-                                    className={`w-full p-3 md:p-4 rounded-xl border-2 flex items-center gap-2 md:gap-4 ${
+                                    className={`w-full p-3 rounded-xl border-2 flex items-center gap-3 ${
                                         selectedPaymentMethod === 'credit_card'
                                             ? 'border-[#00447C] bg-blue-50'
                                             : 'border-gray-200'
                                     }`}
                                 >
-                                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0">
-                                        <Banknote className="h-5 w-5 md:h-6 md:w-6 text-white" />
+                                    <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0">
+                                        <Banknote className="h-5 w-5 text-white" />
                                     </div>
                                     <div className="flex-1 text-left min-w-0">
-                                        <div className="font-semibold text-sm md:text-base">Credit Card</div>
+                                        <div className="font-semibold text-sm">Credit Card</div>
                                         <div className="text-xs text-gray-500">Visa, Mastercard, etc.</div>
                                     </div>
                                 </button>
 
                                 <button
                                     onClick={() => setSelectedPaymentMethod('cod')}
-                                    className={`w-full p-3 md:p-4 rounded-xl border-2 flex items-center gap-2 md:gap-4 ${
+                                    className={`w-full p-3 rounded-xl border-2 flex items-center gap-3 ${
                                         selectedPaymentMethod === 'cod'
                                             ? 'border-[#00447C] bg-blue-50'
                                             : 'border-gray-200'
                                     }`}
                                 >
-                                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-emerald-600 flex items-center justify-center flex-shrink-0">
-                                        <DollarSign className="h-5 w-5 md:h-6 md:w-6 text-white" />
+                                    <div className="w-10 h-10 rounded-full bg-emerald-600 flex items-center justify-center flex-shrink-0">
+                                        <DollarSign className="h-5 w-5 text-white" />
                                     </div>
                                     <div className="flex-1 text-left min-w-0">
-                                        <div className="font-semibold text-sm md:text-base">Cash on Delivery</div>
+                                        <div className="font-semibold text-sm">Cash on Delivery</div>
                                         <div className="text-xs text-gray-500">Pay when you receive</div>
                                     </div>
                                 </button>
                             </div>
                         </div>
 
-                        <div className="flex gap-2 md:gap-3 p-4 md:p-6 pt-0">
+                        <div className="flex gap-2 p-4 pt-0 sticky bottom-0 bg-white border-t border-gray-100">
                             <button
                                 onClick={() => setShowPaymentModal(false)}
                                 disabled={isSubmitting}
-                                className="flex-1 px-3 md:px-4 py-2.5 md:py-3 rounded-xl border border-gray-300 font-semibold text-sm md:text-base hover:bg-gray-50"
+                                className="flex-1 px-3 py-2.5 rounded-xl border border-gray-300 font-semibold text-sm hover:bg-gray-50"
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={handlePaymentConfirm}
                                 disabled={isSubmitting}
-                                className="flex-1 px-3 md:px-4 py-2.5 md:py-3 rounded-xl bg-gradient-to-r from-[#00447C] to-[#003d6f] text-white font-semibold text-sm md:text-base"
+                                className="flex-1 px-3 py-2.5 rounded-xl bg-gradient-to-r from-[#00447C] to-[#003d6f] text-white font-semibold text-sm"
                             >
                                 {isSubmitting ? 'Processing...' : (selectedPaymentMethod === 'paypal' ? 'Pay with PayPal' : 'Place Order')}
                             </button>
@@ -702,16 +702,16 @@ export default function QuickReorder({ products, distributors }: Props) {
 
             {/* Credit Card Modal */}
             {showCreditCardModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-3 md:p-4 bg-black/50 backdrop-blur-sm">
-                    <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-                        <div className="bg-gradient-to-r from-purple-600 to-purple-800 px-4 md:px-6 py-3 md:py-4">
+                <div className="fixed inset-0 z-[60] flex items-end md:items-center justify-center p-0 md:p-4 bg-black/50 backdrop-blur-sm">
+                    <div className="bg-white rounded-t-2xl md:rounded-2xl shadow-2xl max-w-md w-full max-h-[85vh] overflow-y-auto mb-0 md:mb-0">
+                        <div className="bg-gradient-to-r from-purple-600 to-purple-800 px-4 md:px-6 py-3 md:py-4 sticky top-0 z-10">
                             <h3 className="text-base md:text-lg font-bold text-white flex items-center gap-2">
                                 <Banknote className="h-4 w-4 md:h-5 md:w-5" />
                                 Credit Card Payment
                             </h3>
                         </div>
 
-                        <div className="p-4 md:p-6 space-y-4">
+                        <div className="p-4 md:p-5 space-y-4">
                             <div className="bg-gray-50 rounded-lg p-3 md:p-4">
                                 <div className="flex justify-between items-center mb-2">
                                     <span className="text-xs md:text-sm text-gray-600">Total Items</span>
@@ -723,7 +723,7 @@ export default function QuickReorder({ products, distributors }: Props) {
                                 </div>
                             </div>
 
-                            <div className="space-y-4">
+                            <div className="space-y-3">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Card Number</label>
                                     <input
@@ -733,7 +733,7 @@ export default function QuickReorder({ products, distributors }: Props) {
                                         value={cardNumber}
                                         onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
                                         placeholder="1234 5678 9012 3456"
-                                        className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 font-mono"
+                                        className="w-full px-3 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 font-mono text-sm"
                                         maxLength={19}
                                         autoComplete="cc-number"
                                     />
@@ -747,12 +747,12 @@ export default function QuickReorder({ products, distributors }: Props) {
                                         value={cardName}
                                         onChange={(e) => setCardName(e.target.value)}
                                         placeholder="John Doe"
-                                        className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                        className="w-full px-3 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm"
                                         autoComplete="cc-name"
                                     />
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-2 gap-3">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
                                         <input
@@ -761,7 +761,7 @@ export default function QuickReorder({ products, distributors }: Props) {
                                             value={cardExpiry}
                                             onChange={(e) => setCardExpiry(formatExpiryDate(e.target.value))}
                                             placeholder="MM/YY"
-                                            className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 font-mono text-center"
+                                            className="w-full px-3 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 font-mono text-center text-sm"
                                             maxLength={5}
                                             autoComplete="cc-exp"
                                         />
@@ -774,7 +774,7 @@ export default function QuickReorder({ products, distributors }: Props) {
                                             value={cardCvv}
                                             onChange={(e) => setCardCvv(e.target.value.replace(/\D/g, '').slice(0, 3))}
                                             placeholder="123"
-                                            className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 font-mono text-center"
+                                            className="w-full px-3 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 font-mono text-center text-sm"
                                             maxLength={3}
                                             autoComplete="cc-csc"
                                         />
@@ -783,7 +783,7 @@ export default function QuickReorder({ products, distributors }: Props) {
                             </div>
                         </div>
 
-                        <div className="flex gap-2 md:gap-3 p-4 md:p-6 pt-0">
+                        <div className="flex gap-2 p-4 pt-0 sticky bottom-0 bg-white border-t border-gray-100">
                             <button
                                 onClick={() => {
                                     setShowCreditCardModal(false);
@@ -795,14 +795,14 @@ export default function QuickReorder({ products, distributors }: Props) {
                                     setCardName('');
                                 }}
                                 disabled={isSubmitting}
-                                className="flex-1 px-3 md:px-4 py-2.5 md:py-3 rounded-xl border border-gray-300 font-semibold text-sm md:text-base hover:bg-gray-50"
+                                className="flex-1 px-3 py-2.5 rounded-xl border border-gray-300 font-semibold text-sm hover:bg-gray-50"
                             >
                                 Back
                             </button>
                             <button
                                 onClick={handleCreditCardSubmit}
                                 disabled={isSubmitting}
-                                className="flex-1 px-3 md:px-4 py-2.5 md:py-3 rounded-xl bg-gradient-to-r from-purple-600 to-purple-700 text-white font-semibold text-sm md:text-base"
+                                className="flex-1 px-3 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-purple-700 text-white font-semibold text-sm"
                             >
                                 {isSubmitting ? 'Processing...' : `Pay LKR ${totalAmount.toFixed(2)}`}
                             </button>
