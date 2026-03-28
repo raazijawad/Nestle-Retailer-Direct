@@ -10,12 +10,13 @@ use Inertia\Inertia;
 class UserApprovalsController extends Controller
 {
     /**
-     * Display pending user approvals.
+     * Display all user approvals with status.
      */
     public function index()
     {
-        $pendingUsers = User::where('approval_status', 'pending')
+        $allUsers = User::whereNotNull('approval_status')
             ->with(['shopProfile', 'distributorProfile'])
+            ->orderByRaw("CASE approval_status WHEN 'pending' THEN 1 WHEN 'approved' THEN 2 WHEN 'rejected' THEN 3 END")
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($user) {
@@ -24,13 +25,20 @@ class UserApprovalsController extends Controller
                     'name' => $user->name,
                     'email' => $user->email,
                     'role' => $user->role,
+                    'approval_status' => $user->approval_status,
                     'created_at' => $user->created_at->diffForHumans(),
                     'profile' => $user->role === 'retailer' ? $user->shopProfile : $user->distributorProfile,
                 ];
             });
 
+        $pendingUsers = $allUsers->where('approval_status', 'pending')->values();
+        $approvedUsers = $allUsers->where('approval_status', 'approved')->values();
+        $rejectedUsers = $allUsers->where('approval_status', 'rejected')->values();
+
         return Inertia::render('dashboard/user-approvals', [
             'pendingUsers' => $pendingUsers,
+            'approvedUsers' => $approvedUsers,
+            'rejectedUsers' => $rejectedUsers,
         ]);
     }
 

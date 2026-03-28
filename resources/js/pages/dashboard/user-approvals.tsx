@@ -37,9 +37,11 @@ interface PendingUser {
 
 interface Props {
     pendingUsers: PendingUser[];
+    approvedUsers: PendingUser[];
+    rejectedUsers: PendingUser[];
 }
 
-export default function UserApprovalsPage({ pendingUsers }: Props) {
+export default function UserApprovalsPage({ pendingUsers, approvedUsers, rejectedUsers }: Props) {
     const { flash } = usePage().props;
 
     const handleApprove = (userId: number) => {
@@ -54,6 +56,93 @@ export default function UserApprovalsPage({ pendingUsers }: Props) {
         });
     };
 
+    const getStatusBadge = (status: string) => {
+        const variants: Record<string, string> = {
+            pending: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+            approved: 'bg-green-100 text-green-800 border-green-200',
+            rejected: 'bg-red-100 text-red-800 border-red-200',
+        };
+        return (
+            <Badge className={variants[status] || 'bg-gray-100 text-gray-800 border-gray-200'}>
+                {status}
+            </Badge>
+        );
+    };
+
+    const UserCard = ({ user, showActions = false }: { user: PendingUser; showActions?: boolean }) => (
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-lg border p-4">
+            <div className="flex items-start gap-4 flex-1">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                    {user.role === 'retailer' ? (
+                        <Store className="h-6 w-6 text-primary" />
+                    ) : (
+                        <Building2 className="h-6 w-6 text-primary" />
+                    )}
+                </div>
+                <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                        <h3 className="font-semibold">{user.name}</h3>
+                        <Badge variant={user.role === 'retailer' ? 'default' : 'secondary'}>
+                            {user.role}
+                        </Badge>
+                        {user.approval_status && getStatusBadge(user.approval_status)}
+                    </div>
+                    <p className="text-sm text-muted-foreground">{user.email}</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                        Registered {user.created_at}
+                    </p>
+                    {user.profile && (
+                        <div className="mt-2 text-sm">
+                            {user.role === 'retailer' && user.profile.shop_name && (
+                                <p className="flex items-center gap-1">
+                                    <Store className="h-3 w-3" />
+                                    {user.profile.shop_name}
+                                </p>
+                            )}
+                            {user.role === 'distributor' && user.profile.company_name && (
+                                <p className="flex items-center gap-1">
+                                    <Building2 className="h-3 w-3" />
+                                    {user.profile.company_name}
+                                </p>
+                            )}
+                            {user.profile.shop_city || user.profile.company_city ? (
+                                <p className="text-muted-foreground">
+                                    {user.profile.shop_city || user.profile.company_city}
+                                </p>
+                            ) : null}
+                            {user.profile.shop_phone || user.profile.company_phone ? (
+                                <p className="text-muted-foreground">
+                                    {user.profile.shop_phone || user.profile.company_phone}
+                                </p>
+                            ) : null}
+                        </div>
+                    )}
+                </div>
+            </div>
+            {showActions && (
+                <div className="flex items-center gap-2">
+                    <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleReject(user.id)}
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                    >
+                        <X className="h-4 w-4 mr-1" />
+                        Reject
+                    </Button>
+                    <Button
+                        size="sm"
+                        onClick={() => handleApprove(user.id)}
+                        className="bg-green-600 hover:bg-green-700"
+                    >
+                        <Check className="h-4 w-4 mr-1" />
+                        Approve
+                    </Button>
+                </div>
+            )}
+        </div>
+    );
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="User Approvals" />
@@ -61,7 +150,7 @@ export default function UserApprovalsPage({ pendingUsers }: Props) {
                 <div className="flex items-center justify-between">
                     <div>
                         <h1 className="text-3xl font-bold tracking-tight">User Approvals</h1>
-                        <p className="text-muted-foreground mt-1">Review and approve new user registrations</p>
+                        <p className="text-muted-foreground mt-1">Review and manage user registrations</p>
                     </div>
                 </div>
 
@@ -77,13 +166,16 @@ export default function UserApprovalsPage({ pendingUsers }: Props) {
                     </div>
                 )}
 
-                {/* Pending Users List */}
+                {/* Pending Users */}
                 <Card>
                     <CardHeader>
-                        <CardTitle>Pending Approvals</CardTitle>
-                        <CardDescription>
-                            {pendingUsers.length} {pendingUsers.length === 1 ? 'user' : 'users'} waiting for approval
-                        </CardDescription>
+                        <CardTitle className="flex items-center gap-2">
+                            <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">
+                                {pendingUsers.length}
+                            </Badge>
+                            Pending Approvals
+                        </CardTitle>
+                        <CardDescription>Users waiting for approval</CardDescription>
                     </CardHeader>
                     <CardContent>
                         {pendingUsers.length === 0 ? (
@@ -97,77 +189,59 @@ export default function UserApprovalsPage({ pendingUsers }: Props) {
                         ) : (
                             <div className="space-y-4">
                                 {pendingUsers.map((user) => (
-                                    <div
-                                        key={user.id}
-                                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-lg border p-4"
-                                    >
-                                        <div className="flex items-start gap-4 flex-1">
-                                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                                                {user.role === 'retailer' ? (
-                                                    <Store className="h-6 w-6 text-primary" />
-                                                ) : (
-                                                    <Building2 className="h-6 w-6 text-primary" />
-                                                )}
-                                            </div>
-                                            <div className="flex-1">
-                                                <div className="flex items-center gap-2">
-                                                    <h3 className="font-semibold">{user.name}</h3>
-                                                    <Badge variant={user.role === 'retailer' ? 'default' : 'secondary'}>
-                                                        {user.role}
-                                                    </Badge>
-                                                </div>
-                                                <p className="text-sm text-muted-foreground">{user.email}</p>
-                                                <p className="text-xs text-muted-foreground mt-1">
-                                                    Registered {user.created_at}
-                                                </p>
-                                                {user.profile && (
-                                                    <div className="mt-2 text-sm">
-                                                        {user.role === 'retailer' && user.profile.shop_name && (
-                                                            <p className="flex items-center gap-1">
-                                                                <Store className="h-3 w-3" />
-                                                                {user.profile.shop_name}
-                                                            </p>
-                                                        )}
-                                                        {user.role === 'distributor' && user.profile.company_name && (
-                                                            <p className="flex items-center gap-1">
-                                                                <Building2 className="h-3 w-3" />
-                                                                {user.profile.company_name}
-                                                            </p>
-                                                        )}
-                                                        {user.profile.shop_city || user.profile.company_city ? (
-                                                            <p className="text-muted-foreground">
-                                                                {user.profile.shop_city || user.profile.company_city}
-                                                            </p>
-                                                        ) : null}
-                                                        {user.profile.shop_phone || user.profile.company_phone ? (
-                                                            <p className="text-muted-foreground">
-                                                                {user.profile.shop_phone || user.profile.company_phone}
-                                                            </p>
-                                                        ) : null}
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <Button
-                                                size="sm"
-                                                variant="outline"
-                                                onClick={() => handleReject(user.id)}
-                                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                                            >
-                                                <X className="h-4 w-4 mr-1" />
-                                                Reject
-                                            </Button>
-                                            <Button
-                                                size="sm"
-                                                onClick={() => handleApprove(user.id)}
-                                                className="bg-green-600 hover:bg-green-700"
-                                            >
-                                                <Check className="h-4 w-4 mr-1" />
-                                                Approve
-                                            </Button>
-                                        </div>
-                                    </div>
+                                    <UserCard key={user.id} user={user} showActions />
+                                ))}
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
+
+                {/* Approved Users */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <Badge className="bg-green-100 text-green-800 border-green-200">
+                                {approvedUsers.length}
+                            </Badge>
+                            Approved Users
+                        </CardTitle>
+                        <CardDescription>Users who have been approved</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        {approvedUsers.length === 0 ? (
+                            <div className="text-center py-8 text-muted-foreground">
+                                <p>No approved users yet</p>
+                            </div>
+                        ) : (
+                            <div className="space-y-4">
+                                {approvedUsers.map((user) => (
+                                    <UserCard key={user.id} user={user} />
+                                ))}
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
+
+                {/* Rejected Users */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <Badge className="bg-red-100 text-red-800 border-red-200">
+                                {rejectedUsers.length}
+                            </Badge>
+                            Rejected Users
+                        </CardTitle>
+                        <CardDescription>Users who have been rejected</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        {rejectedUsers.length === 0 ? (
+                            <div className="text-center py-8 text-muted-foreground">
+                                <p>No rejected users</p>
+                            </div>
+                        ) : (
+                            <div className="space-y-4">
+                                {rejectedUsers.map((user) => (
+                                    <UserCard key={user.id} user={user} />
                                 ))}
                             </div>
                         )}
