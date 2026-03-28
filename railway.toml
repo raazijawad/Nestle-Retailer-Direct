@@ -1,22 +1,37 @@
-services:
-  - type: web
-    name: nestle-retailer-direct
-    buildCommand: |
-      cp .env.example .env
-      composer install --no-dev --optimize-autoloader
-      npm install
-      npm run build
-      php artisan optimize
-    startCommand: php artisan serve --host 0.0.0.0 --port $PORT
-    env:
-      APP_NAME: Nestle-Retailer-Direct
-      APP_ENV: production
-      APP_DEBUG: false
-      LOG_CHANNEL: stderr
-      CACHE_DRIVER: database
-      SESSION_DRIVER: database
-      QUEUE_CONNECTION: sync
-      DB_CONNECTION: pgsql
-  - type: postgres
-    name: nestle-db
-    plan: free
+[build]
+builder = "NIXPACKS"
+
+[deploy]
+startCommand = "php artisan migrate --force && php artisan serve --host 0.0.0.0 --port $PORT"
+healthcheckPath = "/"
+healthcheckTimeout = 100
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 10
+
+[[services]]
+name = "nestle-retailer-direct"
+type = "web"
+
+[services.build]
+buildCommand = "cp .env.example .env && composer install --no-dev --optimize-autoloader && npm install && npm run build && php artisan optimize"
+
+[services.deploy]
+startCommand = "php artisan migrate --force && php artisan serve --host 0.0.0.0 --port $PORT"
+
+[services.environment]
+APP_NAME = "Nestle-Retailer-Direct"
+APP_ENV = "production"
+APP_DEBUG = "false"
+LOG_CHANNEL = "stderr"
+CACHE_DRIVER = "database"
+SESSION_DRIVER = "database"
+QUEUE_CONNECTION = "sync"
+DB_CONNECTION = "pgsql"
+
+[[services.volumes]]
+name = "laravel_storage"
+mountPath = "/app/storage"
+
+[[databases]]
+name = "nestle-db"
+type = "postgresql"
