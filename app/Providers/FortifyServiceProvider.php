@@ -17,6 +17,7 @@ use Inertia\Inertia;
 use Laravel\Fortify\Features;
 use Laravel\Fortify\Fortify;
 use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
+use Laravel\Fortify\Contracts\RegisterResponse;
 use Laravel\Fortify\Http\Responses\LoginResponse;
 
 class FortifyServiceProvider extends ServiceProvider
@@ -37,6 +38,7 @@ class FortifyServiceProvider extends ServiceProvider
         $this->configureActions();
         $this->configureViews();
         $this->configureRateLimiting();
+        $this->configureRegistrationResponse();
     }
 
     /**
@@ -47,19 +49,37 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
         Fortify::createUsersUsing(CreateNewUser::class);
 
-        // Custom authentication callback - must return user object, not redirect
+        // Custom authentication callback with approval status check
         Fortify::authenticateUsing(function (Request $request) {
             $credentials = $request->only(Fortify::username(), 'password');
 
-            if (Auth::attempt($credentials, $request->boolean('remember'))) {
-                $request->session()->regenerate();
-
-                event(new Login(Auth::guard('web'), Auth::user(), true));
-
-                return Auth::user();
+            // First verify credentials without logging in
+            if (!Auth::attempt($credentials, false)) {
+                return null;
             }
 
-            return null;
+            $user = Auth::user();
+
+            // Check if user is pending approval
+            if ($user && $user->isPending()) {
+                Auth::logout();
+                $request->session()->flash('status', 'Your account is pending admin approval. Please wait for approval before logging in.');
+                return null;
+            }
+
+            // Check if user is rejected
+            if ($user && $user->isRejected()) {
+                Auth::logout();
+                $request->session()->flash('status', 'Your account has been rejected. Please contact support for more information.');
+                return null;
+            }
+
+            // Now actually log in
+            Auth::attempt($credentials, $request->boolean('remember'));
+            $request->session()->regenerate();
+            event(new Login(Auth::guard('web'), $user, true));
+
+            return $user;
         });
 
         // Bind custom LoginResponse for role-based redirect
@@ -125,6 +145,25 @@ class FortifyServiceProvider extends ServiceProvider
             $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())).'|'.$request->ip());
 
             return Limit::perMinute(5)->by($throttleKey);
+        });
+    }
+
+    /**
+     * Configure registration response to redirect to login with pending message.
+     */
+    private function configureRegistrationResponse(): void
+    {
+        $this->app->singleton(RegisterResponse::class, function () {
+            return new class implements RegisterResponse {
+                public function toResponse($request)
+                {
+                    // Logout the user after registration (Fortify auto-logs in)
+                    auth()->logout();
+                    
+                    // Redirect to login with pending approval message
+                    return redirect()->route('login')->with('status', 'Account created successfully! Your account is pending admin approval. You will be able to login once approved.');
+                }
+            };
         });
     }
 }

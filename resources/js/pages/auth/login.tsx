@@ -1,4 +1,4 @@
-import { Form, Head } from '@inertiajs/react';
+import { Form, Head, usePage } from '@inertiajs/react';
 import InputError from '@/components/input-error';
 import PasswordInput from '@/components/password-input';
 import TextLink from '@/components/text-link';
@@ -11,6 +11,7 @@ import AuthLayout from '@/layouts/auth-layout';
 import { register } from '@/routes';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
+import { ArrowLeft } from 'lucide-react';
 
 type Props = {
     status?: string;
@@ -23,6 +24,51 @@ export default function Login({
     canResetPassword,
     canRegister,
 }: Props) {
+    const { errors } = usePage().props;
+    const isPendingApproval = status?.includes('pending admin approval');
+    const loginError = errors?.email;
+    const isPendingLoginError = loginError?.includes('pending admin approval');
+
+    // Show pending approval page
+    if (isPendingApproval || isPendingLoginError) {
+        return (
+            <AuthLayout
+                title="Account Pending Approval"
+                description="Your account is waiting for admin approval"
+            >
+                <Head title="Pending Approval" />
+                <div className="flex flex-col items-center justify-center gap-6 py-8">
+                    <div className="rounded-full bg-yellow-100 p-4 dark:bg-yellow-900">
+                        <svg className="h-12 w-12 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    
+                    <div className="text-center space-y-2">
+                        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                            Account Pending Approval
+                        </h2>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 max-w-md">
+                            {status || loginError}
+                        </p>
+                        <p className="text-sm text-gray-500 dark:text-gray-500">
+                            Please wait for an administrator to approve your account before logging in.
+                        </p>
+                    </div>
+
+                    <Button
+                        onClick={() => window.location.href = '/login'}
+                        className="gap-2"
+                        variant="outline"
+                    >
+                        <ArrowLeft className="h-4 w-4" />
+                        Go back to Login
+                    </Button>
+                </div>
+            </AuthLayout>
+        );
+    }
+
     return (
         <AuthLayout
             title="Log in to your account"
@@ -35,7 +81,7 @@ export default function Login({
                 resetOnSuccess={['password']}
                 className="flex flex-col gap-6"
             >
-                {({ processing, errors }) => (
+                {({ processing, errors: formErrors }) => (
                     <>
                         <div className="grid gap-6">
                             <div className="grid gap-2">
@@ -50,7 +96,7 @@ export default function Login({
                                     autoComplete="email"
                                     placeholder="email@example.com"
                                 />
-                                <InputError message={errors.email} />
+                                <InputError message={formErrors.email} />
                             </div>
 
                             <div className="grid gap-2">
@@ -74,7 +120,7 @@ export default function Login({
                                     autoComplete="current-password"
                                     placeholder="Password"
                                 />
-                                <InputError message={errors.password} />
+                                <InputError message={formErrors.password} />
                             </div>
 
                             <div className="flex items-center space-x-3">
@@ -110,7 +156,7 @@ export default function Login({
                 )}
             </Form>
 
-            {status && (
+            {status && !isPendingApproval && (
                 <div className="mb-4 text-center text-sm font-medium text-green-600">
                     {status}
                 </div>

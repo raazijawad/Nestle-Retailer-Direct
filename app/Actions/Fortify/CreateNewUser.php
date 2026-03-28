@@ -9,8 +9,6 @@ use Laravel\Fortify\Contracts\CreatesNewUsers;
 
 class CreateNewUser implements CreatesNewUsers
 {
-    use CreatesNewUsers;
-
     /**
      * Validate and create a newly registered user.
      *
@@ -30,6 +28,7 @@ class CreateNewUser implements CreatesNewUsers
             'email' => $input['email'],
             'password' => Hash::make($input['password']),
             'role' => $input['role'],
+            'approval_status' => 'pending',
         ]);
 
         // Create profile based on role

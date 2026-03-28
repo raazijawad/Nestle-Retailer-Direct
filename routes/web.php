@@ -11,6 +11,7 @@ use App\Http\Controllers\StockController;
 use App\Http\Controllers\QuickReorderController;
 use App\Http\Controllers\RetailerInventoryController;
 use App\Http\Controllers\PayPalController;
+use App\Http\Controllers\UserApprovalsController;
 
 // Home route - redirects based on user role
 Route::get('/', function () {
@@ -90,6 +91,11 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     Route::get('dashboard/orders', [OrderController::class, 'index'])->name('dashboard.orders');
     Route::post('dashboard/orders/{order}/approve', [OrderController::class, 'approve'])->name('dashboard.orders.approve');
     Route::post('dashboard/orders/{order}/reject', [OrderController::class, 'reject'])->name('dashboard.orders.reject');
+
+    // User Approvals routes
+    Route::get('dashboard/user-approvals', [UserApprovalsController::class, 'index'])->name('dashboard.user-approvals');
+    Route::post('dashboard/user-approvals/{user}/approve', [UserApprovalsController::class, 'approve'])->name('dashboard.user-approvals.approve');
+    Route::post('dashboard/user-approvals/{user}/reject', [UserApprovalsController::class, 'reject'])->name('dashboard.user-approvals.reject');
 
     // Products routes
     Route::get('products', [ProductController::class, 'index'])->name('products.index');
