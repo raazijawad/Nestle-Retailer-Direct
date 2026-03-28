@@ -2,7 +2,7 @@
 builder = "NIXPACKS"
 
 [deploy]
-startCommand = "php artisan migrate --force && php artisan db:seed --force && php artisan serve --host 0.0.0.0 --port $PORT"
+startCommand = "php artisan serve --host 0.0.0.0 --port $PORT"
 healthcheckPath = "/"
 healthcheckTimeout = 180
 restartPolicyType = "on_failure"
@@ -12,17 +12,10 @@ restartPolicyMaxRetries = 10
 name = "nestle-retailer-direct"
 type = "web"
 
-[services.build]
-buildCommand = "composer install --no-dev --optimize-autoloader && npm install && npm run build && php artisan optimize"
-
-[services.deploy]
-startCommand = "php artisan migrate --force && php artisan db:seed --force && php artisan serve --host 0.0.0.0 --port $PORT"
-
 [services.environment]
 APP_NAME = "Nestle-Retailer-Direct"
 APP_ENV = "production"
 APP_DEBUG = "false"
-APP_KEY = "base64:change-this-after-deploy"
 LOG_CHANNEL = "stderr"
 LOG_LEVEL = "info"
 BROADCAST_CONNECTION = "log"
@@ -31,7 +24,3 @@ QUEUE_CONNECTION = "sync"
 SESSION_DRIVER = "database"
 CACHE_STORE = "database"
 DB_CONNECTION = "pgsql"
-
-[[services.volumes]]
-name = "laravel_storage"
-mountPath = "/app/storage"
