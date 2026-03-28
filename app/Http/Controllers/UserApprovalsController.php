@@ -35,10 +35,19 @@ class UserApprovalsController extends Controller
         $approvedUsers = $allUsers->where('approval_status', 'approved')->values();
         $rejectedUsers = $allUsers->where('approval_status', 'rejected')->values();
 
+        $stats = [
+            'total_users' => (int) User::whereNotNull('approval_status')->count(),
+            'pending_users' => (int) User::where('approval_status', 'pending')->count(),
+            'approved_users' => (int) User::where('approval_status', 'approved')->count(),
+            'rejected_users' => (int) User::where('approval_status', 'rejected')->count(),
+        ];
+
         return Inertia::render('dashboard/user-approvals', [
             'pendingUsers' => $pendingUsers,
             'approvedUsers' => $approvedUsers,
             'rejectedUsers' => $rejectedUsers,
+            'allUsers' => $allUsers,
+            'stats' => $stats,
         ]);
     }
 
