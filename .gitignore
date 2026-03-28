@@ -27,5 +27,7 @@ yarn-error.log
 /.vscode
 /.zed
 
-.vercel
-render.yaml
+!.vercel
+
+# Allow SQLite for Vercel deployment
+!database/database.sqlite

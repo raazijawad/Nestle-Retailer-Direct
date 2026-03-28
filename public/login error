@@ -1,3 +1,0 @@
-ErrorException
-app\Providers\FortifyServiceProvider.php:161
-Undefined variable $appthis 

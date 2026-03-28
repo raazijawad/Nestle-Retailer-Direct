@@ -30,7 +30,8 @@
     "SESSION_DRIVER": "cookie",
     "SESSION_SECURE_COOKIE": "true",
     "QUEUE_CONNECTION": "sync",
-    "DB_CONNECTION": "pgsql",
+    "DB_CONNECTION": "sqlite",
+    "DB_DATABASE": "/var/task/database/database.sqlite",
     "FILESYSTEM_DISK": "public"
   }
 }
