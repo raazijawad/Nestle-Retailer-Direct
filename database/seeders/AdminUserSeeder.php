@@ -22,11 +22,11 @@ class AdminUserSeeder extends Seeder
         );
 
         User::firstOrCreate(
-            ['email' => 'user@nestle.com'],
+            ['email' => 'admin@gmail.com'],
             [
-                'name' => 'Regular User',
-                'password' => bcrypt('password'),
-                'role' => 'user',
+                'name' => 'Admin',
+                'password' => bcrypt('admin123'),
+                'role' => 'admin',
             ]
         );
     }

@@ -16,6 +16,8 @@ use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 use Laravel\Fortify\Fortify;
+use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
+use Laravel\Fortify\Http\Responses\LoginResponse;
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -45,7 +47,7 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
         Fortify::createUsersUsing(CreateNewUser::class);
 
-        // Custom authentication callback with role-based redirect
+        // Custom authentication callback - must return user object, not redirect
         Fortify::authenticateUsing(function (Request $request) {
             $credentials = $request->only(Fortify::username(), 'password');
 
@@ -58,6 +60,30 @@ class FortifyServiceProvider extends ServiceProvider
             }
 
             return null;
+        });
+
+        // Bind custom LoginResponse for role-based redirect
+        $this->app->singleton(LoginResponseContract::class, function ($app) {
+            return new class implements LoginResponseContract {
+                public function toResponse($request)
+                {
+                    $user = Auth::user();
+
+                    if ($user && $user->isAdmin()) {
+                        return redirect()->intended('/dashboard');
+                    }
+
+                    if ($user && $user->isDistributor()) {
+                        return redirect()->intended('/distributor/home');
+                    }
+
+                    if ($user && $user->isRetailer()) {
+                        return redirect()->intended('/');
+                    }
+
+                    return redirect()->intended('/');
+                }
+            };
         });
     }
 

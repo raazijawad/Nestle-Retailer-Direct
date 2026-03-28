@@ -1,0 +1,3 @@
+TypeError
+vendor\laravel\framework\src\Illuminate\Auth\SessionGuard.php:557
+Illuminate\Auth\SessionGuard::login(): Argument #1 ($user) must be of type Illuminate\Contracts\Auth\Authenticatable, Illuminate\Http\RedirectResponse given, called in C:\Users\LAPTOP i7\Documents\Projects\Nestle-Retailer-Direct\vendor\laravel\fortify\src\Actions\AttemptToAuthenticate.php on line 84

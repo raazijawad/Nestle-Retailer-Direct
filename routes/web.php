@@ -18,7 +18,10 @@ Route::get('/', function () {
         if (Auth::user()->isDistributor()) {
             return redirect()->route('distributor.home');
         }
-        // Retailers and other users stay on the home page (nestle-system-analysis)
+        if (Auth::user()->isAdmin()) {
+            return redirect()->route('dashboard');
+        }
+        // Retailers stay on the home page (nestle-system-analysis)
         return inertia('nestle-system-analysis', [
             'canRegister' => Features::enabled(Features::registration()),
         ]);
@@ -80,12 +83,14 @@ Route::middleware(['auth'])->get('/re-login', function () {
 })->name('re-login');
 
 Route::middleware(['auth', 'verified', 'admin'])->group(function () {
-    Route::inertia('dashboard', 'dashboard')->name('dashboard');
+    Route::get('/dashboard', function () {
+        return inertia('dashboard');
+    })->name('dashboard');
     Route::get('dashboard/accounts', [AccountsController::class, 'index'])->name('dashboard.accounts');
     Route::get('dashboard/orders', [OrderController::class, 'index'])->name('dashboard.orders');
     Route::post('dashboard/orders/{order}/approve', [OrderController::class, 'approve'])->name('dashboard.orders.approve');
     Route::post('dashboard/orders/{order}/reject', [OrderController::class, 'reject'])->name('dashboard.orders.reject');
-    
+
     // Products routes
     Route::get('products', [ProductController::class, 'index'])->name('products.index');
 });

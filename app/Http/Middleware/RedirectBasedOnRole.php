@@ -19,21 +19,21 @@ class RedirectBasedOnRole
         if (Auth::check()) {
             $user = Auth::user();
             $currentRoute = $request->route()->getName();
-            
+
             // If user is trying to access the home route, redirect based on role
             if ($currentRoute === 'home') {
                 if ($user->isDistributor()) {
                     return redirect()->route('distributor.home');
                 }
-                
+
                 if ($user->isAdmin()) {
                     return redirect()->route('dashboard');
                 }
-                
-                // Retailers and regular users stay on home (nestle-system-analysis page)
+
+                // Retailers stay on home (nestle-system-analysis page)
             }
         }
-        
+
         return $next($request);
     }
 }

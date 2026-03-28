@@ -111,10 +111,10 @@ class User extends Authenticatable
     }
 
     /**
-     * Check if the user is a regular user.
+     * Get the role name for display purposes.
      */
-    public function isUser(): bool
+    public function getRoleName(): string
     {
-        return $this->role === 'user';
+        return ucfirst($this->role);
     }
 }
