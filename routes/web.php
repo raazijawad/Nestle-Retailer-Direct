@@ -31,6 +31,12 @@ Route::get('/', function () {
     return redirect()->route('login');
 })->name('home');
 
+// Clear approval status session (used after admin approval)
+Route::post('/clear-approval-status', function (\Illuminate\Http\Request $request) {
+    $request->session()->forget(['status', 'email_for_approval_check']);
+    return redirect()->route('login');
+})->name('clear-approval-status');
+
 // Distributor routes
 Route::middleware(['auth', 'verified', 'distributor'])->group(function () {
     Route::get('/distributor/home', [DistributorController::class, 'home'])->name('distributor.home');

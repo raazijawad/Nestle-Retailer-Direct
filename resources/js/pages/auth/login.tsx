@@ -1,4 +1,4 @@
-import { Form, Head, usePage } from '@inertiajs/react';
+import { Form, Head, usePage, router } from '@inertiajs/react';
 import InputError from '@/components/input-error';
 import PasswordInput from '@/components/password-input';
 import TextLink from '@/components/text-link';
@@ -26,8 +26,57 @@ export default function Login({
 }: Props) {
     const { errors } = usePage().props;
     const isPendingApproval = status?.includes('pending admin approval');
+    const isAdminApproved = status?.includes('Admin approved success');
     const loginError = errors?.email;
     const isPendingLoginError = loginError?.includes('pending admin approval');
+
+    // Handle proceeding to login form (clears approval status)
+    const handleProceedToLogin = () => {
+        router.post('/clear-approval-status');
+    };
+
+    // Handle refreshing the pending approval page (checks for status update)
+    const handleRefreshPending = () => {
+        window.location.reload();
+    };
+
+    // Show admin approved success page
+    if (isAdminApproved) {
+        return (
+            <AuthLayout
+                title="Account Approved!"
+                description="Your account has been approved by admin"
+            >
+                <Head title="Account Approved" />
+                <div className="flex flex-col items-center justify-center gap-6 py-8">
+                    <div className="rounded-full bg-green-100 p-4 dark:bg-green-900">
+                        <svg className="h-12 w-12 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+
+                    <div className="text-center space-y-2">
+                        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                            Account Approved Successfully!
+                        </h2>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 max-w-md">
+                            {status}
+                        </p>
+                        <p className="text-sm text-gray-500 dark:text-gray-500">
+                            You can now log in with your credentials.
+                        </p>
+                    </div>
+
+                    <Button
+                        onClick={handleProceedToLogin}
+                        className="gap-2"
+                    >
+                        Proceed to Login
+                    </Button>
+                </div>
+            </AuthLayout>
+        );
+    }
 
     // Show pending approval page
     if (isPendingApproval || isPendingLoginError) {
@@ -57,7 +106,7 @@ export default function Login({
                     </div>
 
                     <Button
-                        onClick={() => window.location.href = '/login'}
+                        onClick={handleRefreshPending}
                         className="gap-2"
                         variant="outline"
                     >

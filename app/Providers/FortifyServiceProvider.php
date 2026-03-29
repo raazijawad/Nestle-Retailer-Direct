@@ -63,14 +63,16 @@ class FortifyServiceProvider extends ServiceProvider
             // Check if user is pending approval
             if ($user && $user->isPending()) {
                 Auth::logout();
-                $request->session()->flash('status', 'Your account is pending admin approval. Please wait for approval before logging in.');
+                // Store email and show pending message
+                $request->session()->put('email_for_approval_check', $user->email);
+                $request->session()->put('status', 'Your account is pending admin approval. Please wait for approval before logging in.');
                 return null;
             }
 
             // Check if user is rejected
             if ($user && $user->isRejected()) {
                 Auth::logout();
-                $request->session()->flash('status', 'Your account has been rejected. Please contact support for more information.');
+                $request->session()->put('status', 'Your account has been rejected. Please contact support for more information.');
                 return null;
             }
 
@@ -115,7 +117,7 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::loginView(fn (Request $request) => Inertia::render('auth/login', [
             'canResetPassword' => Features::enabled(Features::resetPasswords()),
             'canRegister' => Features::enabled(Features::registration()),
-            'status' => $request->session()->get('status'),
+            'status' => $this->getLoginStatusMessage($request),
         ]));
 
         Fortify::resetPasswordView(fn (Request $request) => Inertia::render('auth/reset-password', [
@@ -149,6 +151,58 @@ class FortifyServiceProvider extends ServiceProvider
     }
 
     /**
+     * Get the appropriate status message for the login page.
+     * Checks if the user's approval status has changed since registration.
+     */
+    private function getLoginStatusMessage(Request $request): ?string
+    {
+        $sessionStatus = $request->session()->get('status');
+        $email = $request->session()->get('email_for_approval_check');
+        
+        // If there's a session status about pending approval, check if user was since approved
+        if ($sessionStatus && str_contains($sessionStatus, 'pending admin approval')) {
+            if ($email) {
+                $user = User::where('email', $email)->first();
+                
+                if ($user && $user->isApproved()) {
+                    // User has been approved, show success message instead
+                    // Persist so refresh keeps showing it until user clicks proceed
+                    $request->session()->put('status', 'Admin approved success! You can now login with your credentials.');
+                    return 'Admin approved success! You can now login with your credentials.';
+                }
+                
+                if ($user && $user->isRejected()) {
+                    // User has been rejected
+                    $request->session()->put('status', 'Your account has been rejected. Please contact support for more information.');
+                    $request->session()->forget('email_for_approval_check');
+                    return 'Your account has been rejected. Please contact support for more information.';
+                }
+                
+                // Still pending - persist the status so refresh keeps showing it
+                $request->session()->put('status', $sessionStatus);
+                return $sessionStatus;
+            }
+            
+            // No email in session, just return the status
+            return $sessionStatus;
+        }
+        
+        // If status is the approved message, persist it
+        if ($sessionStatus && str_contains($sessionStatus, 'Admin approved success')) {
+            $request->session()->put('status', $sessionStatus);
+            return $sessionStatus;
+        }
+        
+        // If status is the rejected message, persist it
+        if ($sessionStatus && str_contains($sessionStatus, 'has been rejected')) {
+            $request->session()->put('status', $sessionStatus);
+            return $sessionStatus;
+        }
+        
+        return $sessionStatus;
+    }
+
+    /**
      * Configure registration response to redirect to login with pending message.
      */
     private function configureRegistrationResponse(): void
@@ -159,7 +213,10 @@ class FortifyServiceProvider extends ServiceProvider
                 {
                     // Logout the user after registration (Fortify auto-logs in)
                     auth()->logout();
-                    
+
+                    // Store the email for approval status checking on login page
+                    $request->session()->put('email_for_approval_check', $request->input('email'));
+
                     // Redirect to login with pending approval message
                     return redirect()->route('login')->with('status', 'Account created successfully! Your account is pending admin approval. You will be able to login once approved.');
                 }

@@ -9,10 +9,6 @@ import type { BreadcrumbItem } from '@/types';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Dashboard',
-        href: '/dashboard',
-    },
-    {
         title: 'User Approvals',
         href: '/dashboard/user-approvals',
     },
@@ -66,7 +62,7 @@ function getStatusBadgeClass(status: string): string {
     }
 }
 
-export default function UserApprovals({ allUsers, stats }: Props) {
+export default function UserApprovals({ allUsers = [], stats = { total_users: 0, pending_users: 0, approved_users: 0, rejected_users: 0 } }: Props) {
     const { toast } = useToast();
     const [filter, setFilter] = useState('all');
 
