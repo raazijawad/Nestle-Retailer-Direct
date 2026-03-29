@@ -133,7 +133,9 @@ class FortifyServiceProvider extends ServiceProvider
             'status' => $request->session()->get('status'),
         ]));
 
-        Fortify::registerView(fn () => Inertia::render('auth/register'));
+        Fortify::registerView(fn (Request $request) => Inertia::render('auth/register', [
+            'status' => $request->session()->get('status'),
+        ]));
 
         Fortify::confirmPasswordView(fn () => Inertia::render('auth/confirm-password'));
     }
@@ -158,47 +160,53 @@ class FortifyServiceProvider extends ServiceProvider
     {
         $sessionStatus = $request->session()->get('status');
         $email = $request->session()->get('email_for_approval_check');
-        
+
         // If there's a session status about pending approval, check if user was since approved
         if ($sessionStatus && str_contains($sessionStatus, 'pending admin approval')) {
             if ($email) {
                 $user = User::where('email', $email)->first();
-                
+
                 if ($user && $user->isApproved()) {
                     // User has been approved, show success message instead
                     // Persist so refresh keeps showing it until user clicks proceed
                     $request->session()->put('status', 'Admin approved success! You can now login with your credentials.');
                     return 'Admin approved success! You can now login with your credentials.';
                 }
-                
+
                 if ($user && $user->isRejected()) {
                     // User has been rejected
                     $request->session()->put('status', 'Your account has been rejected. Please contact support for more information.');
                     $request->session()->forget('email_for_approval_check');
                     return 'Your account has been rejected. Please contact support for more information.';
                 }
-                
+
                 // Still pending - persist the status so refresh keeps showing it
                 $request->session()->put('status', $sessionStatus);
                 return $sessionStatus;
             }
-            
+
             // No email in session, just return the status
             return $sessionStatus;
         }
-        
+
         // If status is the approved message, persist it
         if ($sessionStatus && str_contains($sessionStatus, 'Admin approved success')) {
             $request->session()->put('status', $sessionStatus);
             return $sessionStatus;
         }
-        
+
         // If status is the rejected message, persist it
         if ($sessionStatus && str_contains($sessionStatus, 'has been rejected')) {
             $request->session()->put('status', $sessionStatus);
             return $sessionStatus;
         }
-        
+
+        // If status is the "Account created successfully" message (from registration), persist it
+        if ($sessionStatus && str_contains($sessionStatus, 'Account created successfully')) {
+            $request->session()->put('status', $sessionStatus);
+            return $sessionStatus;
+        }
+
         return $sessionStatus;
     }
 
@@ -216,9 +224,12 @@ class FortifyServiceProvider extends ServiceProvider
 
                     // Store the email for approval status checking on login page
                     $request->session()->put('email_for_approval_check', $request->input('email'));
+                    
+                    // Store status in session (not flash, so it persists on refresh)
+                    $request->session()->put('status', 'Account created successfully! Your account is pending admin approval. You will be able to login once approved.');
 
-                    // Redirect to login with pending approval message
-                    return redirect()->route('login')->with('status', 'Account created successfully! Your account is pending admin approval. You will be able to login once approved.');
+                    // Redirect to login page
+                    return redirect()->route('login');
                 }
             };
         });

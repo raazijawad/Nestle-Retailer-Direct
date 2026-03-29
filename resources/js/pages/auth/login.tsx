@@ -24,9 +24,10 @@ export default function Login({
     canResetPassword,
     canRegister,
 }: Props) {
-    const { errors } = usePage().props;
-    const isPendingApproval = status?.includes('pending admin approval');
-    const isAdminApproved = status?.includes('Admin approved success');
+    const { errors, flash } = usePage().props;
+    const displayStatus = status || flash?.status;
+    const isPendingApproval = displayStatus?.includes('pending admin approval');
+    const isAdminApproved = displayStatus?.includes('Admin approved success');
     const loginError = errors?.email;
     const isPendingLoginError = loginError?.includes('pending admin approval');
 
@@ -60,7 +61,7 @@ export default function Login({
                             Account Approved Successfully!
                         </h2>
                         <p className="text-sm text-gray-600 dark:text-gray-400 max-w-md">
-                            {status}
+                            {displayStatus}
                         </p>
                         <p className="text-sm text-gray-500 dark:text-gray-500">
                             You can now log in with your credentials.
@@ -92,13 +93,13 @@ export default function Login({
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
-                    
+
                     <div className="text-center space-y-2">
                         <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                             Account Pending Approval
                         </h2>
                         <p className="text-sm text-gray-600 dark:text-gray-400 max-w-md">
-                            {status || loginError}
+                            {displayStatus || loginError}
                         </p>
                         <p className="text-sm text-gray-500 dark:text-gray-500">
                             Please wait for an administrator to approve your account before logging in.
@@ -205,9 +206,9 @@ export default function Login({
                 )}
             </Form>
 
-            {status && !isPendingApproval && (
+            {displayStatus && !isPendingApproval && !isAdminApproved && (
                 <div className="mb-4 text-center text-sm font-medium text-green-600">
-                    {status}
+                    {displayStatus}
                 </div>
             )}
         </AuthLayout>
