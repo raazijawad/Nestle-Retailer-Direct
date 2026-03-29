@@ -18,6 +18,8 @@ class AdminUserSeeder extends Seeder
                 'name' => 'Admin User',
                 'password' => bcrypt('password'),
                 'role' => 'admin',
+                'approval_status' => 'approved',
+                'approved_at' => now(),
                 'email_verified_at' => now(),
             ]
         );
@@ -28,6 +30,8 @@ class AdminUserSeeder extends Seeder
                 'name' => 'Admin',
                 'password' => bcrypt('admin123'),
                 'role' => 'admin',
+                'approval_status' => 'approved',
+                'approved_at' => now(),
                 'email_verified_at' => now(),
             ]
         );
